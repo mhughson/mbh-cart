@@ -29,6 +29,11 @@ unsigned char pads;
 unsigned char pads_new;
 unsigned char px;
 unsigned char py;
+signed char dx;
+signed char dy;
+unsigned char in_oam_x;
+unsigned char in_oam_y;
+const unsigned char *in_oam_data;
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
@@ -36,7 +41,7 @@ unsigned char py;
 // function prototypes
 void load_current_map(unsigned int nt);
 
-const unsigned char test_room_01[ROOM_WIDTH_TILES * 15] = 
+const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
 {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -73,7 +78,7 @@ void main (void)
 	load_current_map(NAMETABLE_A);
 
 	vram_adr(NTADR_A(7, 4));
-	vram_write("MINIMAL A53 PROJECT", 19);
+	vram_write("NESDEV COMPO 2022", 17);
 
 	ppu_on_all(); // turn on screen
 
@@ -81,6 +86,8 @@ void main (void)
 
 	px = 128;
 	py = 120;
+	dx = 1;
+	dy = 0;
 
 	// infinite loop
 	while (1)
@@ -96,7 +103,28 @@ void main (void)
 
 		clear_vram_buffer(); // do at the beginning of each frame
 
-		oam_meta_spr(px, py, meta_player_list[(tick_count >> 4) % 3]);
+
+		px += dx;
+		px += dy;
+
+		x = (px) + (dx > 0 ? 16 : 0);
+
+		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, py/16)) == 1)
+		{
+			dx *= -1;
+		}
+
+		if (dx < 0)
+		{
+			in_oam_x = px;
+			in_oam_y = py;
+			in_oam_data = meta_player_list[0];
+			c_oam_meta_spr_flipped();
+		}
+		else
+		{
+			oam_meta_spr(px, py, meta_player_list[0]);
+		}
 
 		if (pads_new & PAD_A)
 		{
@@ -127,7 +155,7 @@ void load_current_map(unsigned int nt)
 	static unsigned char* _current_room;
 	
 	// "const_cast"
-	_current_room = (unsigned char*)(test_room_01);
+	_current_room = (unsigned char*)(current_room);
 
 	// Load all the of the tiles data into the specified nametable.
 	for (y = 0; y < 15; ++y)
@@ -174,5 +202,31 @@ void load_current_map(unsigned int nt)
 			vram_write(&i, 1);
 			++index;
 		}
+	}
+}
+
+void c_oam_meta_spr_flipped(void)
+{
+	static const unsigned char* _elem;
+	static unsigned char _x;
+	static unsigned char _y;
+	static unsigned char _sprite;
+	static unsigned char _att;
+
+	if (in_oam_data == NULL)
+	{
+		return;
+	}
+
+	_elem = in_oam_data;
+
+	while (_elem[0] != END_OF_META)
+	{
+		_x = 8 - _elem[0];
+		_y = _elem[1];
+		_sprite = _elem[2];
+		_att = _elem[3] | OAM_FLIP_H;
+		_elem += 4;
+		oam_spr(in_oam_x + _x, in_oam_y + _y, _sprite, _att);
 	}
 }

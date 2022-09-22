@@ -28,7 +28,10 @@
 #define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
 
+#define META_TILE_FLAGS_OFFSET (5)
 #define META_TILE_NUM_BYTES (6)
+#define END_OF_META (128)
+#define GET_META_TILE_FLAGS(room_table_index) metatiles[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -41,11 +44,17 @@ extern unsigned char y;
 extern unsigned char tick_count;
 extern unsigned char pads;
 extern unsigned char pads_new;
-
 extern unsigned char px;
 extern unsigned char py;
+extern signed char dx;
+extern signed char dy;
+extern unsigned char in_oam_x;
+extern unsigned char in_oam_y;
+extern const unsigned char *in_oam_data;
 
 #pragma bss-name(pop)
+
+void c_oam_meta_spr_flipped(void);
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
