@@ -47,18 +47,26 @@ const unsigned char current_room[ROOM_WIDTH_TILES * 15] =
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 2, 2, 5, 2, 2, 2, 2, 2, 2, 2, 2, 6, 2, 2, 1,
+	1, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 6, 0, 0, 0, 0, 1,
+	1, 2, 2, 2, 6, 2, 2, 5, 2, 2, 2, 2, 2, 2, 2, 1,
+	0, 0, 0, 6, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 6, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 6, 2, 2, 5, 2, 2, 2, 2, 2, 2, 2, 1,
+	0, 0, 0, 6, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 6, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0,
+	1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1,
 	3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
 };
+
+
+#define FLAG_WALL 		(1 << 0)
+#define FLAG_FLOOR		(1 << 1)
+#define FLAG_UP_LEFT	(1 << 2)
+#define FLAG_UP_RIGHT	(1 << 3)
+#define FLAG_DOWN_LEFT	(1 << 4)
+#define FLAG_DOWN_RIGHT	(1 << 5)
 
 // It seems like main() MUST be in fixed back!
 void main (void) 
@@ -85,7 +93,7 @@ void main (void)
 	pal_bright(4);
 
 	px = 128;
-	py = 120;
+	py = 4 * 16;
 	dx = 1;
 	dy = 0;
 
@@ -103,15 +111,44 @@ void main (void)
 
 		clear_vram_buffer(); // do at the beginning of each frame
 
-
 		px += dx;
-		px += dy;
+		py += dy;
 
 		x = (px) + (dx > 0 ? 16 : 0);
 
-		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, py/16)) == 1)
+		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (py-8)/16)) & FLAG_WALL)
 		{
 			dx *= -1;
+		}
+
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((px + 8)/16, py/16));
+		if (pads & PAD_DOWN)
+		{
+			if ((index & FLAG_DOWN_RIGHT) && dx > 0)
+			{
+				dy = 1;
+			}
+			else if ((index & FLAG_DOWN_LEFT) && dx < 0)
+			{
+				dy = 1;
+			}
+		}
+		if (index & FLAG_FLOOR)
+		{
+			dy = 0;
+		}
+
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((px + 8)/16, (py-16)/16));
+		if (pads & PAD_UP)
+		{
+			if ((index & FLAG_DOWN_RIGHT) && dx < 0)
+			{
+				dy = -1;
+			}
+			else if ((index & FLAG_DOWN_LEFT) && dx > 0)
+			{
+				dy = -1;
+			}
 		}
 
 		if (dx < 0)
@@ -143,10 +180,10 @@ void main (void)
 			music_stop();
 		}
 
-		if (pads & PAD_LEFT) --px;
-		if (pads & PAD_RIGHT) ++px;
-		if (pads & PAD_UP) --py;
-		if (pads & PAD_DOWN) ++py;
+		// if (pads & PAD_LEFT) --px;
+		// if (pads & PAD_RIGHT) ++px;
+		// if (pads & PAD_UP) --py;
+		// if (pads & PAD_DOWN) ++py;
 	}
 }
 
