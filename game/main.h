@@ -27,12 +27,70 @@
 #define ROOM_WIDTH_PIXELS (256*ROOM_WIDTH_PAGES)
 #define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
 #define GRID_XY_TO_ROOM_INDEX(x,y) (((y) * ROOM_WIDTH_TILES) + (x))
+#define CELL_SIZE (16)
 
 #define META_TILE_FLAGS_OFFSET (5)
 #define META_TILE_NUM_BYTES (6)
 #define END_OF_META (128)
 #define GET_META_TILE_FLAGS(room_table_index) metatiles[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
 
+
+// Fixed Point Math Helpers
+#define FP_0_05 (13)
+#define FP_0_10 (26)
+#define FP_0_15 (38)
+#define FP_0_20 (51)
+#define FP_0_25 (64)
+#define FP_0_50 (128)
+#define FP_0_75 (192)
+#define HALF_POS_BIT_COUNT (8)
+#define FP_WHOLE(x) ((x)<<HALF_POS_BIT_COUNT)
+
+// Tunables
+#define JUMP_VEL (FP_WHOLE(2) + 0) // 2
+#define JUMP_HOLD_MAX (10) // 10
+#define GRAVITY (FP_0_25) // .25
+#define GRAVITY_LOW (FP_0_05)
+#define WALK_SPEED (FP_WHOLE(1) + FP_0_50)
+#define JUMP_COYOTE_DELAY (8)
+#define ATTACK_LEN (5)
+
+typedef struct anim_info
+{
+	// index into sprite_anims array.
+	unsigned char anim_current;
+	unsigned char anim_queued;
+
+	// how many ticks have passed since the last frame change.
+	unsigned char anim_ticks;
+
+	// the currently displaying frame of the current anim.
+	unsigned char anim_frame;
+} anim_info;
+
+// data speciic to player game objects.
+typedef struct animated_sprite
+{
+	// Was the last horizontal move *attempted* in the left direction?
+	unsigned char facing_left;
+
+	// Stores all of the active animation info.
+	anim_info anim;
+
+} animated_sprite;
+
+typedef struct game_actor
+{
+	animated_sprite sprite;
+
+	unsigned int pos_x;
+	unsigned int pos_y;
+
+    signed int vel_x;
+	signed int vel_y;
+
+	unsigned char facing_left;
+} game_actor;
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -44,13 +102,36 @@ extern unsigned char y;
 extern unsigned char tick_count;
 extern unsigned char pads;
 extern unsigned char pads_new;
-extern unsigned char px;
-extern unsigned char py;
-extern signed char dx;
-extern signed char dy;
+extern unsigned int px;
+extern unsigned int py;
+extern unsigned int px_old;
+extern unsigned int py_old;
+extern signed int dx;
+extern signed int dy;
 extern unsigned char in_oam_x;
 extern unsigned char in_oam_y;
 extern const unsigned char *in_oam_data;
+extern game_actor player1;
+extern unsigned int temp16;
+extern unsigned char tempFlags;
+extern unsigned char tempFlagsDown;
+extern unsigned char tempFlagsUp;
+extern unsigned char ticks_since_attack;
+extern unsigned char on_ramp;
+extern unsigned char temp_was_on_ramp;
+extern unsigned char current_room[240];
+
+// batch add
+extern unsigned char anim_index;
+extern unsigned char grounded;
+extern unsigned char jump_held_count;
+extern unsigned char can_jump;
+extern unsigned char airtime;
+extern unsigned char ticks_down;
+extern unsigned char jump_count;
+extern unsigned char on_ground;
+extern unsigned char new_jump_btn;
+extern unsigned int scroll_y;
 
 #pragma bss-name(pop)
 

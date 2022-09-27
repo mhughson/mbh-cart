@@ -11,6 +11,7 @@
         "bank_helpers.h": "c",
         "nesdoug.h": "c",
         "neslib.h": "c",
-        "NESLIB.H": "cpp"
+        "NESLIB.H": "cpp",
+        "maps_a.h": "c"
     }
 }
