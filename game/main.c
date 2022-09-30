@@ -45,6 +45,7 @@ unsigned char tempFlagsUp;
 unsigned char tempFlagsDown;
 unsigned char ticks_since_attack;
 unsigned char on_ramp;
+unsigned char is_jumping;
 unsigned char temp_was_on_ramp;
 unsigned char current_room[240];
 
@@ -130,6 +131,7 @@ void main (void)
 	py = (6 * 16) << 8;
 	dx = P1_MOVE_SPEED;
 	dy = 0;
+	is_jumping = 0;
 
 	player1.pos_x = FP_WHOLE(128);
 	player1.pos_y = FP_WHOLE(6 * 16);
@@ -192,9 +194,10 @@ void main (void)
 			dy = 0;
 			py = FP_WHOLE((((high_byte(py)) / 16)) * 16);
 			grounded = 1;
+			is_jumping = 0;
 		}
 
-		if (!on_ramp)
+		if (!on_ramp || is_jumping)
 		{
 			dy += GRAVITY_LOW;
 		}
@@ -236,6 +239,7 @@ void main (void)
 		{
 			sfx_play(0, 0);
 			dy = -(FP_WHOLE(1) + FP_0_25);
+			is_jumping = 1;
 		}
 		if (pads_new & PAD_B)
 		{
@@ -279,7 +283,7 @@ void load_current_map(unsigned int nt)
 	// "const_cast"
 	
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
-	memcpy(current_room, &rooms_maps_a[0/*cur_room_index*/][NUM_CUSTOM_PROPS], 240);	
+	memcpy(current_room, &rooms_maps_a[1/*cur_room_index*/][NUM_CUSTOM_PROPS], 240);	
 	//_current_room = (unsigned char*)(current_room);
 
 	// Load all the of the tiles data into the specified nametable.
