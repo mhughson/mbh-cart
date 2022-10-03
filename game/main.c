@@ -16,7 +16,42 @@
 #include "map_defs.h"
 #include "maps_a.h"
 
-const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x06,0x16,0x26,0x0f,0x09,0x19,0x29 };
+const unsigned char palette[16]={ 0x0f,0x05,0x23,0x37,0x0f,0x01,0x21,0x31,0x0f,0x03,0x13,0x26,0x0f,0x09,0x19,0x29 };
+
+
+typedef struct anim_def
+{
+	// how many frames to hold on each frame of animation.
+	unsigned char ticks_per_frame;
+
+	// how many frames are used in frames array.
+	// TODO: would it be better to just use a special value (eg. 0xff)
+	//		 to signify the end of the anim?
+	unsigned char anim_len;
+
+	// index into meta_sprites array
+	unsigned char frames[17];
+} anim_def;
+
+const anim_def move_right 		= { 5, 3, { 0, 1, 2 } };
+const anim_def move_right_down 	= { 5, 3, { 3, 4, 5 } };
+const anim_def move_right_up 	= { 5, 3, { 6, 7, 8 } };
+
+enum
+{
+	ANIM_MOVE_RIGHT = 0,
+	ANIM_MOVE_RIGHT_DOWN = 1,
+	ANIM_MOVE_RIGHT_UP = 2, 
+
+	NUM_ANIMS,
+};
+
+const struct anim_def* sprite_anims[] =
+{
+	&move_right,
+	&move_right_down,
+	&move_right_up,
+};
 
 // Initalized RAM variables
 //
@@ -48,6 +83,8 @@ unsigned char on_ramp;
 unsigned char is_jumping;
 unsigned char temp_was_on_ramp;
 unsigned char current_room[240];
+// Used by the anim functions to avoid passing in a parameter.
+anim_info* global_working_anim;
 
 // batch add
 unsigned char anim_index;
@@ -227,27 +264,33 @@ void main (void)
 
 		if ((player1.vel_y >> 8) < (signed int)0)
 		{
-			i = 6;
+			i = ANIM_MOVE_RIGHT_UP;
 		}
 		else if (high_byte(player1.vel_y) > 0)
 		{
-			i = 3;
+			i = ANIM_MOVE_RIGHT_DOWN;
 		}
 		else
 		{
-			i = 0;
+			i = ANIM_MOVE_RIGHT;
 		}
+
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(i);
+		commit_next_anim();
+
+		update_anim();
 
 		if (player1.vel_x < 0)
 		{
 			in_oam_x = high_byte(player1.pos_x);
 			in_oam_y = high_byte(player1.pos_y) - 16;
-			in_oam_data = meta_player_list[i];
+			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
 			c_oam_meta_spr_flipped();
 		}
 		else
 		{
-			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y) - 16, meta_player_list[i]);
+			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y) - 16, meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 		}
 
 		if (pads_new & PAD_A && grounded)
@@ -859,4 +902,44 @@ void update_player()
 	//draw_player();
 
 	PROFILE_POKE(PROF_R);
+}
+
+unsigned char update_anim()
+{
+	static const struct anim_def* cur_anim;
+	cur_anim = sprite_anims[global_working_anim->anim_current];
+
+	// Note: In WnW this was done in each draw function manually, and I'm not sure why. Perhaps
+	//		 to ensure that the first frame got played before advancing?
+	++global_working_anim->anim_ticks;
+
+	if (global_working_anim->anim_ticks >= cur_anim->ticks_per_frame)
+	{
+		global_working_anim->anim_ticks = 0;
+		++global_working_anim->anim_frame;
+		// todo: don't always loop.
+		if (global_working_anim->anim_frame >= cur_anim->anim_len)
+		{
+			global_working_anim->anim_frame = 0;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void queue_next_anim(unsigned char next_anim_index)
+{
+	global_working_anim->anim_queued = next_anim_index;
+}
+
+void commit_next_anim()
+{
+	if (global_working_anim->anim_queued != 0xff && global_working_anim->anim_queued != global_working_anim->anim_current)
+	{
+		global_working_anim->anim_current = global_working_anim->anim_queued;
+		global_working_anim->anim_frame = 0;
+		global_working_anim->anim_ticks = 0;
+	}
+
+	global_working_anim->anim_queued = 0xff;
 }

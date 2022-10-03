@@ -117,6 +117,8 @@ extern unsigned char on_ramp;
 extern unsigned char is_jumping;
 extern unsigned char temp_was_on_ramp;
 extern unsigned char current_room[240];
+// Used by the anim functions to avoid passing in a parameter.
+extern anim_info* global_working_anim;
 
 // batch add
 extern unsigned char anim_index;
@@ -133,6 +135,9 @@ extern unsigned int scroll_y;
 #pragma bss-name(pop)
 
 void c_oam_meta_spr_flipped(void);
+unsigned char update_anim();
+void queue_next_anim(unsigned char next_anim_index);
+void commit_next_anim();
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
