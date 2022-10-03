@@ -135,6 +135,8 @@ void main (void)
 
 	player1.pos_x = FP_WHOLE(128);
 	player1.pos_y = FP_WHOLE(6 * 16);
+	player1.vel_x = P1_MOVE_SPEED;
+	player1.vel_y = 0;
 
 	// infinite loop
 	while (1)
@@ -223,16 +225,29 @@ void main (void)
 			}
 		}
 
+		if ((dy >> 8) < (signed int)0)
+		{
+			i = 6;
+		}
+		else if (high_byte(dy) > 0)
+		{
+			i = 3;
+		}
+		else
+		{
+			i = 0;
+		}
+
 		if (dx < 0)
 		{
 			in_oam_x = high_byte(px);
 			in_oam_y = high_byte(py) - 16;
-			in_oam_data = meta_player_list[0];
+			in_oam_data = meta_player_list[i];
 			c_oam_meta_spr_flipped();
 		}
 		else
 		{
-			oam_meta_spr(high_byte(px), high_byte(py) - 16, meta_player_list[0]);
+			oam_meta_spr(high_byte(px), high_byte(py) - 16, meta_player_list[i]);
 		}
 
 		if (pads_new & PAD_A && grounded)
