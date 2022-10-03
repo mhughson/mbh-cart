@@ -153,25 +153,25 @@ void main (void)
 		clear_vram_buffer(); // do at the beginning of each frame
 
 #if 1
-		px_old = px;
-		py_old = py;
+		px_old = player1.pos_x;
+		py_old = player1.pos_y;
 
-		px += (pads & PAD_LEFT) ? dx >> 1 : dx;
-		py += (pads & PAD_LEFT) ? dy >> 1 : dy;
+		player1.pos_x += (pads & PAD_LEFT) ? player1.vel_x >> 1 : player1.vel_x;
+		player1.pos_y += (pads & PAD_LEFT) ? player1.vel_y >> 1 : player1.vel_y;
 
-		x = (high_byte(px)) + (dx > 0 ? 16 : 0);
+		x = (high_byte(player1.pos_x)) + (player1.vel_x > 0 ? 16 : 0);
 
-		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(py)-8)/16)) & FLAG_WALL)
+		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(player1.pos_y)-8)/16)) & FLAG_WALL)
 		{
-			dx *= -1;
+			player1.vel_x *= -1;
 		}
 
-		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(px) + 8)/16, high_byte(py)/16));
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, high_byte(player1.pos_y)/16));
 		
 		on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
 
 		i = 0;
-		if (((high_byte(px_old) + 8) / 16) != ((high_byte(px) + 8) / 16))
+		if (((high_byte(px_old) + 8) / 16) != ((high_byte(player1.pos_x) + 8) / 16))
 		{
 			i = 1;
 		}
@@ -179,29 +179,29 @@ void main (void)
 
 		if (i && pads & PAD_DOWN)
 		{
-			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && dx > 0)
+			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x > 0)
 			{
-				dy = P1_MOVE_SPEED;
+				player1.vel_y = P1_MOVE_SPEED;
 				temp_was_on_ramp = 1;
 			}
-			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && dx < 0)
+			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
 			{
-				dy = P1_MOVE_SPEED;
+				player1.vel_y = P1_MOVE_SPEED;
 				temp_was_on_ramp = 1;
 			}
 		}
 		grounded = 0;
-		if (dy >= 0 && index & FLAG_FLOOR && !on_ramp)
+		if (player1.vel_y >= 0 && index & FLAG_FLOOR && !on_ramp)
 		{
-			dy = 0;
-			py = FP_WHOLE((((high_byte(py)) / 16)) * 16);
+			player1.vel_y = 0;
+			player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y)) / 16)) * 16);
 			grounded = 1;
 			is_jumping = 0;
 		}
 
 		if (!on_ramp || is_jumping)
 		{
-			dy += GRAVITY_LOW;
+			player1.vel_y += GRAVITY_LOW;
 		}
 
 		// if (index == 0)
@@ -210,26 +210,26 @@ void main (void)
 		// 	py = FP_WHOLE((((high_byte(py)) / 16)) * 16);
 		// }
 
-		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(px) + 8)/16, (high_byte(py)-16)/16));
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y)-16)/16));
 		if (i && pads & PAD_UP)
 		{
-			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && dx < 0)
+			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
 			{
-				dy = -P1_MOVE_SPEED;
+				player1.vel_y = -P1_MOVE_SPEED;
 				temp_was_on_ramp = 1;
 			}
-			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && dx > 0)
+			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && player1.vel_x > 0)
 			{
-				dy = -P1_MOVE_SPEED;
+				player1.vel_y = -P1_MOVE_SPEED;
 				temp_was_on_ramp = 1;
 			}
 		}
 
-		if ((dy >> 8) < (signed int)0)
+		if ((player1.vel_y >> 8) < (signed int)0)
 		{
 			i = 6;
 		}
-		else if (high_byte(dy) > 0)
+		else if (high_byte(player1.vel_y) > 0)
 		{
 			i = 3;
 		}
@@ -238,22 +238,22 @@ void main (void)
 			i = 0;
 		}
 
-		if (dx < 0)
+		if (player1.vel_x < 0)
 		{
-			in_oam_x = high_byte(px);
-			in_oam_y = high_byte(py) - 16;
+			in_oam_x = high_byte(player1.pos_x);
+			in_oam_y = high_byte(player1.pos_y) - 16;
 			in_oam_data = meta_player_list[i];
 			c_oam_meta_spr_flipped();
 		}
 		else
 		{
-			oam_meta_spr(high_byte(px), high_byte(py) - 16, meta_player_list[i]);
+			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y) - 16, meta_player_list[i]);
 		}
 
 		if (pads_new & PAD_A && grounded)
 		{
 			sfx_play(0, 0);
-			dy = -(FP_WHOLE(1) + FP_0_25);
+			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
 			is_jumping = 1;
 		}
 		if (pads_new & PAD_B)
