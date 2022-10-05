@@ -113,9 +113,9 @@ extern unsigned char tempFlags;
 extern unsigned char tempFlagsDown;
 extern unsigned char tempFlagsUp;
 extern unsigned char ticks_since_attack;
-extern unsigned char on_ramp;
+extern unsigned char temp_on_ramp;
 extern unsigned char is_jumping;
-extern unsigned char temp_was_on_ramp;
+extern unsigned char is_on_ramp;
 extern unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;

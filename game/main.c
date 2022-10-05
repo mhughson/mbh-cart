@@ -79,9 +79,9 @@ unsigned char tempFlags;
 unsigned char tempFlagsUp;
 unsigned char tempFlagsDown;
 unsigned char ticks_since_attack;
-unsigned char on_ramp;
+unsigned char temp_on_ramp;
 unsigned char is_jumping;
-unsigned char temp_was_on_ramp;
+unsigned char is_on_ramp;
 unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 anim_info* global_working_anim;
@@ -205,7 +205,7 @@ void main (void)
 
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, high_byte(player1.pos_y)/16));
 		
-		on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
+		temp_on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
 
 		i = 0;
 		if (((high_byte(px_old) + 8) / 16) != ((high_byte(player1.pos_x) + 8) / 16))
@@ -219,26 +219,28 @@ void main (void)
 			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x > 0)
 			{
 				player1.vel_y = P1_MOVE_SPEED;
-				temp_was_on_ramp = 1;
+				is_on_ramp = 1;
 			}
 			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
 			{
 				player1.vel_y = P1_MOVE_SPEED;
-				temp_was_on_ramp = 1;
+				is_on_ramp = 1;
 			}
 		}
+
+		if (!temp_on_ramp || is_jumping)
+		{
+			player1.vel_y += GRAVITY_LOW;
+		}
+
 		grounded = 0;
-		if (player1.vel_y >= 0 && index & FLAG_FLOOR && !on_ramp)
+		if (player1.vel_y >= 0 && index & FLAG_FLOOR && (!is_on_ramp || !temp_on_ramp))// (!on_ramp || ((pads & PAD_DOWN) == 0)))
 		{
 			player1.vel_y = 0;
 			player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y)) / 16)) * 16);
 			grounded = 1;
 			is_jumping = 0;
-		}
-
-		if (!on_ramp || is_jumping)
-		{
-			player1.vel_y += GRAVITY_LOW;
+			is_on_ramp = 0;
 		}
 
 		// if (index == 0)
@@ -253,12 +255,12 @@ void main (void)
 			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
 			{
 				player1.vel_y = -P1_MOVE_SPEED;
-				temp_was_on_ramp = 1;
+				is_on_ramp = 1;
 			}
 			else if ((index & (FLAG_DOWN_LEFT)) && (index & FLAG_ENTRY) && player1.vel_x > 0)
 			{
 				player1.vel_y = -P1_MOVE_SPEED;
-				temp_was_on_ramp = 1;
+				is_on_ramp = 1;
 			}
 		}
 
@@ -646,8 +648,8 @@ void update_player()
 
 	// Assume not on the ground each frame, until we detect we hit it.
 	grounded = 0;
-	temp_was_on_ramp = on_ramp;
-	on_ramp = 0;
+	is_on_ramp = temp_on_ramp;
+	temp_on_ramp = 0;
 
 	// Roof check
 	if (player1.vel_y < 0 && 0)
@@ -694,7 +696,7 @@ void update_player()
 				tempFlagsUp = GET_META_TILE_FLAGS(index16);
 				
 
-				if (tempFlags & FLAG_DOWN_LEFT && (temp_was_on_ramp || player1.vel_x > 0))
+				if (tempFlags & FLAG_DOWN_LEFT && (is_on_ramp || player1.vel_x > 0))
 				{
 					jump_count = 0;
 					grounded = 1;
@@ -702,11 +704,11 @@ void update_player()
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
-					on_ramp = 1;
+					temp_on_ramp = 1;
 					//player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y) - 1) / 16) * 16) + (16 - (high_byte(player1.pos_x) % 16)));
 					//break;
 				}
-				else if (tempFlagsUp & FLAG_DOWN_LEFT && (temp_was_on_ramp || player1.vel_x > 0))
+				else if (tempFlagsUp & FLAG_DOWN_LEFT && (is_on_ramp || player1.vel_x > 0))
 				{
 					jump_count = 0;
 					grounded = 1;
@@ -714,7 +716,7 @@ void update_player()
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
-					on_ramp = 1;
+					temp_on_ramp = 1;
 					//player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y) - 1) / 16) * 16) + (16 - (high_byte(player1.pos_x) % 16)));
 					//break;
 				}
@@ -738,11 +740,11 @@ void update_player()
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
-					on_ramp = 1;
+					temp_on_ramp = 1;
 					//player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y) - 1) / 16) * 16) + (16 - (high_byte(player1.pos_x) % 16)));
 					//break;
 				}
-				else if ((tempFlags & FLAG_DOWN_LEFT) && (temp_was_on_ramp && player1.vel_x < 0))
+				else if ((tempFlags & FLAG_DOWN_LEFT) && (is_on_ramp && player1.vel_x < 0))
 				{
 					jump_count = 0;
 					grounded = 1;
@@ -750,7 +752,7 @@ void update_player()
 					player1.vel_y = 0;
 					airtime = 0;
 					hit_kill_box = 0;
-					on_ramp = 1;
+					temp_on_ramp = 1;
 					//player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y) - 1) / 16) * 16) + (16 - (high_byte(player1.pos_x) % 16)));
 					//break;
 				}
