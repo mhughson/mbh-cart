@@ -198,12 +198,12 @@ void main (void)
 
 		x = (high_byte(player1.pos_x)) + (player1.vel_x > 0 ? 16 : 0);
 
-		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(player1.pos_y)-8)/16)) & FLAG_WALL)
+		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(player1.pos_y) + 8)/16)) & FLAG_WALL)
 		{
 			player1.vel_x *= -1;
 		}
 
-		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, high_byte(player1.pos_y)/16));
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 16)/16));
 		
 		temp_on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
 
@@ -249,7 +249,7 @@ void main (void)
 		// 	py = FP_WHOLE((((high_byte(py)) / 16)) * 16);
 		// }
 
-		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y)-16)/16));
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y))/16));
 		if (i && pads & PAD_UP)
 		{
 			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
@@ -286,13 +286,13 @@ void main (void)
 		if (player1.vel_x < 0)
 		{
 			in_oam_x = high_byte(player1.pos_x);
-			in_oam_y = high_byte(player1.pos_y) - 16;
+			in_oam_y = high_byte(player1.pos_y);
 			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
 			c_oam_meta_spr_flipped();
 		}
 		else
 		{
-			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y) - 16, meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 		}
 
 		if (pads_new & PAD_A && grounded)
