@@ -85,6 +85,9 @@ unsigned char is_on_ramp;
 unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 anim_info* global_working_anim;
+unsigned char score;
+char in_x_tile; 
+char in_y_tile;
 
 // batch add
 unsigned char anim_index;
@@ -130,13 +133,13 @@ const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 8, 15 };
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
 
-#define FLAG_WALL 		(1 << 0)
-#define FLAG_FLOOR		(1 << 1)
-#define FLAG_UP_LEFT	(1 << 2)
-#define FLAG_UP_RIGHT	(1 << 3)
-#define FLAG_DOWN_LEFT	(1 << 4)
-#define FLAG_DOWN_RIGHT	(1 << 5)
-#define FLAG_ENTRY		(1 << 7)
+#define FLAG_FLOOR			(1 << 1)
+#define FLAG_WALL 			(1 << 0)
+#define FLAG_COLLECTIBLE	(1 << 2)
+//#define FLAG_UP_RIGHT		(1 << 3) // unused
+#define FLAG_DOWN_LEFT		(1 << 4)
+#define FLAG_DOWN_RIGHT		(1 << 5)
+#define FLAG_ENTRY			(1 << 7)
 
 #define P1_MOVE_SPEED (FP_WHOLE(1))
 
@@ -264,6 +267,18 @@ void main (void)
 			}
 		}
 
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16));
+		if (index & FLAG_COLLECTIBLE)
+		{
+			++score;
+			one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
+			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
+			in_y_tile = (high_byte(player1.pos_y) + 8)/16;
+			current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
+			vram_buffer_load_2x2_metatile();
+			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
+		}
+
 		if ((player1.vel_y >> 8) < (signed int)0)
 		{
 			i = ANIM_MOVE_RIGHT_UP;
@@ -334,6 +349,59 @@ void main (void)
 		}	
 #endif		
 	}
+}
+
+void vram_buffer_load_2x2_metatile()
+{
+	// Function gets called from a lot of places, so not safe to use globals.
+	static unsigned char local_x;
+	static unsigned char local_y;
+	static unsigned char local_i;
+	static unsigned int local_index16;
+	static unsigned int local_att_index16;
+	static unsigned char local_temp_a_8;
+	static unsigned char local_temp_b_8;
+
+	// SPRITES
+
+	// handle which order to load meta tile rows in.
+	local_temp_a_8 = 0;
+	local_temp_b_8 = 2;
+
+	local_index16 = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+	local_att_index16 = current_room[local_index16] * META_TILE_NUM_BYTES;
+	multi_vram_buffer_horz(&metatiles[local_att_index16+local_temp_a_8], 2, get_ppu_addr(0, in_x_tile * CELL_SIZE, in_y_tile * CELL_SIZE));
+	multi_vram_buffer_horz(&metatiles[local_att_index16+local_temp_b_8], 2, get_ppu_addr(0, in_x_tile * CELL_SIZE, (in_y_tile * CELL_SIZE) + 8));
+
+	// ATTRIBUTES
+
+	// Attributes are in 2x2 meta tile chunks, so we need to round down to the nearest,
+	// multiple of 2 (eg. if you pass in index 5, we want to start on 4).
+	local_x = (in_x_tile / 2) * 2;
+	local_y = (in_y_tile / 2) * 2;
+
+	local_i = 0;
+
+	// room index.
+	local_index16 = GRID_XY_TO_ROOM_INDEX(local_x, local_y);
+	// meta tile palette index.
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	// bit shift amount
+	local_i |= ((metatiles)[local_att_index16]);
+
+	local_index16 = local_index16 + 1; //(local_y * 16) + (local_x + 1);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= ((metatiles)[local_att_index16]) << 2;
+
+	local_index16 = local_index16 + 15; //((local_y + 1) * 16) + (local_x);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= ((metatiles)[local_att_index16]) << 4;
+
+	local_index16 = local_index16 + 1; //((local_y + 1) * 16) + (local_x + 1);
+	local_att_index16 = (current_room[local_index16] * META_TILE_NUM_BYTES) + 4;
+	local_i |= ((metatiles)[local_att_index16]) << 6;	
+
+	one_vram_buffer(local_i, get_at_addr(0, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
 }
 
 void load_current_map(unsigned int nt)

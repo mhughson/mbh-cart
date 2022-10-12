@@ -119,6 +119,9 @@ extern unsigned char is_on_ramp;
 extern unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
+extern unsigned char score;
+extern char in_x_tile; 
+extern char in_y_tile;
 
 // batch add
 extern unsigned char anim_index;
@@ -138,6 +141,7 @@ void c_oam_meta_spr_flipped(void);
 unsigned char update_anim();
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
+void vram_buffer_load_2x2_metatile();
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
