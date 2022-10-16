@@ -93,6 +93,7 @@ anim_info* global_working_anim;
 unsigned char score;
 char in_x_tile; 
 char in_y_tile;
+unsigned char cur_sfx_chan;
 
 // batch add
 unsigned char anim_index;
@@ -201,8 +202,48 @@ void main (void)
 		px_old = player1.pos_x;
 		py_old = player1.pos_y;
 
-		player1.pos_x += (pads & PAD_LEFT) ? player1.vel_x >> 1 : player1.vel_x;
-		player1.pos_y += (pads & PAD_LEFT) ? player1.vel_y >> 1 : player1.vel_y;
+#define SPEED_BRAKES
+#ifdef SPEED_LEFTRIGHT
+		if (pads & PAD_LEFT)
+		{
+			// going right
+			if (player1.vel_x > 0)
+			{
+				player1.pos_x += player1.vel_x >> 1;
+				player1.pos_y += player1.vel_y >> 1;				
+			}
+			// going left
+			else if (player1.vel_x < 0)
+			{
+				player1.pos_x += player1.vel_x << 1;
+				player1.pos_y += player1.vel_y << 1;				
+			}
+		}
+		else if (pads & PAD_RIGHT)
+		{
+			// going right
+			if (player1.vel_x > 0)
+			{
+				player1.pos_x += player1.vel_x << 1;
+				player1.pos_y += player1.vel_y << 1;				
+			}
+			// going left
+			else if (player1.vel_x < 0)
+			{
+				player1.pos_x += player1.vel_x >> 1;
+				player1.pos_y += player1.vel_y >> 1;				
+			}
+		}
+		else
+		{
+			player1.pos_x += player1.vel_x;
+			player1.pos_y += player1.vel_y;
+		}
+#endif // SPEED_LEFTRIGHT
+#ifdef SPEED_BRAKES
+		player1.pos_x += (pads & PAD_B) ? player1.vel_x >> 1 : player1.vel_x;
+		player1.pos_y += (pads & PAD_B) ? player1.vel_y >> 1 : player1.vel_y;
+#endif
 
 		x = (high_byte(player1.pos_x)) + (player1.vel_x > 0 ? 16 : 0);
 
@@ -281,6 +322,7 @@ void main (void)
 			in_y_tile = (high_byte(player1.pos_y) + 8)/16;
 			current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
 			vram_buffer_load_2x2_metatile();
+			sfx_play(2, ++cur_sfx_chan);
 			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
 		}
 
@@ -317,14 +359,11 @@ void main (void)
 
 		if (pads_new & PAD_A && grounded)
 		{
-			sfx_play(0, 0);
+			sfx_play(5, ++cur_sfx_chan);
 			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
 			is_jumping = 1;
 		}
-		if (pads_new & PAD_B)
-		{
-			sfx_play(2, 0);
-		}
+
 		if (pads_new & PAD_START)
 		{
 			music_play(0);
@@ -332,6 +371,22 @@ void main (void)
 		if (pads_new & PAD_SELECT)
 		{
 			music_stop();
+		}
+
+		if ((grounded || temp_on_ramp) && !is_jumping && (tick_count % 16 == 0))
+		{
+			if (player1.vel_y < 0)
+			{
+				sfx_play(7, ++cur_sfx_chan);
+			}
+			else if (player1.vel_y > 0)
+			{
+				sfx_play(8, ++cur_sfx_chan);
+			}
+			else 
+			{
+				sfx_play(4, ++cur_sfx_chan);
+			}
 		}
 
 		// if (pads & PAD_LEFT) --px;

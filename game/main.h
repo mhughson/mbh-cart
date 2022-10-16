@@ -123,6 +123,10 @@ extern unsigned char score;
 extern char in_x_tile; 
 extern char in_y_tile;
 
+// Counter used to ensure each sound effect ends up on a different
+// channel. (no regard to priority)
+extern unsigned char cur_sfx_chan;
+
 // batch add
 extern unsigned char anim_index;
 extern unsigned char grounded;
