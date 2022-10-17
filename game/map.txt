@@ -5,7 +5,7 @@ crt0.o:
     BSS               Offs=000000  Size=000040  Align=00001  Fill=0000
     ZEROPAGE          Offs=000000  Size=000034  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
-    BANK2             Offs=000000  Size=0024B5  Align=00001  Fill=0000
+    BANK2             Offs=000000  Size=001418  Align=00001  Fill=0000
     STARTUP           Offs=000000  Size=0000F3  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
 main.o:
@@ -90,7 +90,7 @@ ZEROPAGE              000000  0000E5  0000E6  00001
 DATA                  000300  000305  000006  00001
 BSS                   000306  000493  00018E  00001
 BANK1                 008000  009407  001408  00001
-BANK2                 008000  00A4B4  0024B5  00001
+BANK2                 008000  009417  001418  00001
 STARTUP               00C000  00C0F2  0000F3  00001
 CODE                  00C0F3  00F904  003812  00001
 VECTORS               00FFFA  00FFFF  000006  00001
