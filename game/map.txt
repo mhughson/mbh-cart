@@ -21,7 +21,7 @@ donut.o:
 unpack.o:
     CODE              Offs=003258  Size=00036C  Align=00001  Fill=0000
     ZEROPAGE          Offs=000086  Size=000046  Align=00001  Fill=0000
-    BANK1             Offs=000000  Size=001408  Align=00001  Fill=0000
+    BANK1             Offs=000000  Size=001452  Align=00001  Fill=0000
 PRG0.o:
 PRG1.o:
 PRG2.o:
@@ -89,7 +89,7 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  0000E5  0000E6  00001
 DATA                  000300  000305  000006  00001
 BSS                   000306  000493  00018E  00001
-BANK1                 008000  009407  001408  00001
+BANK1                 008000  009451  001452  00001
 BANK2                 008000  009417  001418  00001
 STARTUP               00C000  00C0F2  0000F3  00001
 CODE                  00C0F3  00F904  003812  00001

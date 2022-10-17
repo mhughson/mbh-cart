@@ -2195,7 +2195,7 @@
                 {
                  "name":"flag1",
                  "type":"bool",
-                 "value":true
+                 "value":false
                 }, 
                 {
                  "name":"flag2",
