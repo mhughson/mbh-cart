@@ -16,6 +16,10 @@
 #include "map_defs.h"
 #include "maps_a.h"
 
+#include "NES_ST/screen_boot.h"
+#include "NES_ST/screen_title.h"
+#include "NES_ST/screen_gameover.h"
+
 const unsigned char palette[16]={ 0x0f,0x0f,0x13,0x37,0x0f,0x17,0x29,0x20,0x0f,0x13,0x23,0x33,0x0f,0x14,0x24,0x34 };
 const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0f,0x07,0x16,0x38,0x0f,0x09,0x19,0x29 };
 
@@ -89,6 +93,8 @@ unsigned char score;
 char in_x_tile; 
 char in_y_tile;
 unsigned char cur_sfx_chan;
+unsigned char char_state;
+unsigned char cur_state;
 
 // batch add
 unsigned char anim_index;
@@ -108,6 +114,7 @@ unsigned int scroll_y;
 // function prototypes
 void load_current_map(unsigned int nt);
 void update_player();
+void update_gameplay();
 
 // const unsigned char current_room[ROOM_WIDTH_TILES * 15] = 
 // {
@@ -133,11 +140,13 @@ const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 8, 15 };
 #define NUM_X_COLLISION_OFFSETS 2
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
+const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 
-#define FLAG_FLOOR			(1 << 1)
+
 #define FLAG_WALL 			(1 << 0)
+#define FLAG_FLOOR			(1 << 1)
 #define FLAG_COLLECTIBLE	(1 << 2)
-//#define FLAG_UP_RIGHT		(1 << 3) // unused
+#define FLAG_KILL			(1 << 3)
 #define FLAG_DOWN_LEFT		(1 << 4)
 #define FLAG_DOWN_RIGHT		(1 << 5)
 #define FLAG_ENTRY			(1 << 7)
@@ -159,25 +168,8 @@ void main (void)
 	pal_bg(palette_bg);
 	pal_spr(palette);
 
-	load_current_map(NAMETABLE_A);
-
-	vram_adr(NTADR_A(7, 2));
-	vram_write("NESDEV COMPO 2022", 17);
-
-	ppu_on_all(); // turn on screen
-
-	pal_bright(4);
-
-	px = 128 << 8;
-	py = (6 * 16) << 8;
-	dx = P1_MOVE_SPEED;
-	dy = 0;
-	is_jumping = 0;
-
-	player1.pos_x = FP_WHOLE(128);
-	player1.pos_y = FP_WHOLE(6 * 16);
-	player1.vel_x = P1_MOVE_SPEED;
-	player1.vel_y = 0;
+	cur_state = 0xff;
+	go_to_state(STATE_BOOT);
 
 	// infinite loop
 	while (1)
@@ -192,6 +184,54 @@ void main (void)
 		pads_new = get_pad_new(0) | get_pad_new(1); // newly pressed button. do pad_poll first
 
 		clear_vram_buffer(); // do at the beginning of each frame
+
+		switch (cur_state)
+		{
+			case STATE_BOOT:
+			{
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_TITLE);
+				}
+				break;
+			}
+
+			case STATE_TITLE:
+			{
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_GAMEPLAY);
+				}				
+				break;
+			}
+
+			case STATE_GAMEPLAY:
+			{
+				update_gameplay();
+				break;
+			}
+
+			case STATE_GAMEOVER:
+			{
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_TITLE);
+				}				
+				break;
+			}
+		}
+	}
+}
+
+void update_gameplay()
+{
+	{
+		if ((tick_count % 32) == 0)
+		{
+			++char_state;
+			char_state = char_state & (NUM_BG_BANKS - 1); // %NUM_BG_BANKS assumes power of 2
+			set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
+		}
 
 #if 1
 		px_old = player1.pos_x;
@@ -320,6 +360,10 @@ void main (void)
 			sfx_play(2, ++cur_sfx_chan);
 			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
 		}
+		if (index & FLAG_KILL)
+		{
+			go_to_state(STATE_GAMEOVER);
+		}
 
 		if ((player1.vel_y >> 8) < (signed int)0)
 		{
@@ -368,21 +412,21 @@ void main (void)
 			music_stop();
 		}
 
-		if ((grounded || temp_on_ramp) && !is_jumping && (tick_count % 16 == 0))
-		{
-			if (player1.vel_y < 0)
-			{
-				sfx_play(7, ++cur_sfx_chan);
-			}
-			else if (player1.vel_y > 0)
-			{
-				sfx_play(8, ++cur_sfx_chan);
-			}
-			else 
-			{
-				sfx_play(4, ++cur_sfx_chan);
-			}
-		}
+		// if ((grounded || temp_on_ramp) && !is_jumping && (tick_count % 16 == 0))
+		// {
+		// 	if (player1.vel_y < 0)
+		// 	{
+		// 		sfx_play(7, ++cur_sfx_chan);
+		// 	}
+		// 	else if (player1.vel_y > 0)
+		// 	{
+		// 		sfx_play(8, ++cur_sfx_chan);
+		// 	}
+		// 	else 
+		// 	{
+		// 		sfx_play(4, ++cur_sfx_chan);
+		// 	}
+		// }
 
 		// if (pads & PAD_LEFT) --px;
 		// if (pads & PAD_RIGHT) ++px;
@@ -1067,4 +1111,84 @@ void commit_next_anim()
 	}
 
 	global_working_anim->anim_queued = 0xff;
+}
+
+void go_to_state(unsigned char next_state)
+{
+	if (next_state == cur_state)
+	{
+		return;
+	}
+
+	switch (next_state)
+	{	
+		default:
+		{
+			break;
+		}
+	}
+
+	cur_state = next_state;
+
+	switch (cur_state)
+	{
+		case STATE_BOOT:
+		{
+			ppu_off();
+			vram_adr(NTADR_A(0, 0));
+			vram_unrle(screen_boot);
+			ppu_on_all();
+			break;
+		}
+
+		case STATE_TITLE:
+		{
+			ppu_off();
+			vram_adr(NTADR_A(0, 0));
+			vram_unrle(screen_title);
+			ppu_on_all();
+			break;
+		}
+
+		case STATE_GAMEPLAY:
+		{
+			ppu_off();
+
+			load_current_map(NAMETABLE_A);
+
+			vram_adr(NTADR_A(7, 2));
+			vram_write("NESDEV COMPO 2022", 17);
+
+			ppu_on_all(); // turn on screen
+
+			pal_bright(4);
+
+			px = 128 << 8;
+			py = (6 * 16) << 8;
+			dx = P1_MOVE_SPEED;
+			dy = 0;
+			is_jumping = 0;
+
+			player1.pos_x = FP_WHOLE(128);
+			player1.pos_y = FP_WHOLE(6 * 16);
+			player1.vel_x = P1_MOVE_SPEED;
+			player1.vel_y = 0;
+
+			break;
+		}
+
+		case STATE_GAMEOVER:
+		{
+			ppu_off();
+			vram_adr(NTADR_A(0, 0));
+			vram_unrle(screen_gameover);
+			ppu_on_all();
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+	}
 }

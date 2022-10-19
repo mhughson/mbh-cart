@@ -55,6 +55,13 @@
 #define JUMP_COYOTE_DELAY (8)
 #define ATTACK_LEN (5)
 
+#define NUM_BG_BANKS 2 // MUST BE POWER OF 2
+
+enum STATES 
+{
+	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER
+};
+
 typedef struct anim_info
 {
 	// index into sprite_anims array.
@@ -122,6 +129,8 @@ extern anim_info* global_working_anim;
 extern unsigned char score;
 extern char in_x_tile; 
 extern char in_y_tile;
+extern unsigned char char_state;
+extern unsigned char cur_state;
 
 // Counter used to ensure each sound effect ends up on a different
 // channel. (no regard to priority)
@@ -146,6 +155,7 @@ unsigned char update_anim();
 void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
 void vram_buffer_load_2x2_metatile();
+void go_to_state(unsigned char next_state);
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 

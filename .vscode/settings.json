@@ -12,6 +12,9 @@
         "nesdoug.h": "c",
         "neslib.h": "c",
         "NESLIB.H": "cpp",
-        "maps_a.h": "c"
+        "maps_a.h": "c",
+        "map_defs.h": "c",
+        "screen_title.h": "c",
+        "screen_boot.h": "c"
     }
 }

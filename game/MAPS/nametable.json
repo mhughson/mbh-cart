@@ -3572,7 +3572,7 @@
                 {
                  "name":"flag3",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag4",
@@ -3616,7 +3616,7 @@
                 {
                  "name":"flag3",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag4",
@@ -3660,7 +3660,7 @@
                 {
                  "name":"flag3",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag4",
@@ -3704,7 +3704,7 @@
                 {
                  "name":"flag3",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag4",
