@@ -41,11 +41,19 @@ const anim_def move_right 		= { 5, 3, { 0, 1, 2 } };
 const anim_def move_right_down 	= { 5, 3, { 3, 4, 5 } };
 const anim_def move_right_up 	= { 5, 3, { 6, 7, 8 } };
 
+const anim_def goblin_move_right 		= { 5, 3, { 9, 10, 11 } };
+const anim_def goblin_move_right_down 	= { 5, 3, { 12, 13, 14 } };
+const anim_def goblin_move_right_up 	= { 5, 3, { 15, 16, 17 } };
+
 enum
 {
 	ANIM_MOVE_RIGHT = 0,
 	ANIM_MOVE_RIGHT_DOWN = 1,
 	ANIM_MOVE_RIGHT_UP = 2, 
+
+	ANIM_GOBLIN_MOVE_RIGHT,
+	ANIM_GOBLIN_MOVE_RIGHT_DOWN,
+	ANIM_GOBLIN_MOVE_RIGHT_UP, 	
 
 	NUM_ANIMS,
 };
@@ -55,6 +63,10 @@ const struct anim_def* sprite_anims[] =
 	&move_right,
 	&move_right_down,
 	&move_right_up,
+
+	&goblin_move_right,
+	&goblin_move_right_down,
+	&goblin_move_right_up,
 };
 
 // Initalized RAM variables
@@ -78,6 +90,7 @@ unsigned char in_oam_x;
 unsigned char in_oam_y;
 const unsigned char *in_oam_data;
 game_actor player1;
+game_actor enemy1;
 unsigned int temp16;
 unsigned char tempFlags;
 unsigned char tempFlagsUp;
@@ -412,26 +425,20 @@ void update_gameplay()
 			music_stop();
 		}
 
-		// if ((grounded || temp_on_ramp) && !is_jumping && (tick_count % 16 == 0))
-		// {
-		// 	if (player1.vel_y < 0)
-		// 	{
-		// 		sfx_play(7, ++cur_sfx_chan);
-		// 	}
-		// 	else if (player1.vel_y > 0)
-		// 	{
-		// 		sfx_play(8, ++cur_sfx_chan);
-		// 	}
-		// 	else 
-		// 	{
-		// 		sfx_play(4, ++cur_sfx_chan);
-		// 	}
-		// }
 
-		// if (pads & PAD_LEFT) --px;
-		// if (pads & PAD_RIGHT) ++px;
-		// if (pads & PAD_UP) --py;
-		// if (pads & PAD_DOWN) ++py;
+		// goblin test
+		enemy1.pos_x += enemy1.vel_x;
+		enemy1.pos_y += enemy1.vel_y;
+		global_working_anim = &enemy1.sprite.anim;
+		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT);
+		commit_next_anim();
+		update_anim();
+		oam_meta_spr(
+			high_byte(enemy1.pos_x), 
+			high_byte(enemy1.pos_y), 
+			meta_player_list[sprite_anims[enemy1.sprite.anim.anim_current]->frames[enemy1.sprite.anim.anim_frame]]);
+
+
 #else
 	update_player();
 
@@ -1173,6 +1180,11 @@ void go_to_state(unsigned char next_state)
 			player1.pos_y = FP_WHOLE(6 * 16);
 			player1.vel_x = P1_MOVE_SPEED;
 			player1.vel_y = 0;
+
+			enemy1.pos_x = FP_WHOLE(2 * 16);
+			enemy1.pos_y = FP_WHOLE(9 * 16);
+			enemy1.vel_x = P1_MOVE_SPEED;
+			enemy1.vel_y = 0;
 
 			break;
 		}

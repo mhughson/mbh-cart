@@ -115,6 +115,7 @@ extern unsigned char in_oam_x;
 extern unsigned char in_oam_y;
 extern const unsigned char *in_oam_data;
 extern game_actor player1;
+extern game_actor enemy1;
 extern unsigned int temp16;
 extern unsigned char tempFlags;
 extern unsigned char tempFlagsDown;

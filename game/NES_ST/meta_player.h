@@ -115,6 +115,123 @@ const unsigned char meta_player_Metasprite8_data[]={
 
 };
 
+const unsigned char meta_player_Metasprite9_data[]={
+
+	  0,- 8,0x60,1,
+	  8,- 8,0x61,1,
+	  0,  0,0x70,1,
+	  8,  0,0x71,1,
+
+	  0,  8,0x80,1,
+	  8,  8,0x81,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite10_data[]={
+
+	  0,- 8,0x62,1,
+	  8,- 8,0x63,1,
+	  0,  0,0x72,1,
+	  8,  0,0x73,1,
+
+	  0,  8,0x82,1,
+	  8,  8,0x83,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite11_data[]={
+
+	  0,- 8,0x64,1,
+	  8,- 8,0x65,1,
+	  0,  0,0x74,1,
+	  8,  0,0x75,1,
+
+	  0,  8,0x84,1,
+	  8,  8,0x85,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite12_data[]={
+
+	  0,- 8,0x66,1,
+	  8,- 8,0x67,1,
+	  0,  0,0x76,1,
+	  8,  0,0x77,1,
+
+	  0,  8,0x86,1,
+	  8,  8,0x87,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite13_data[]={
+
+	  0,- 8,0x68,1,
+	  8,- 8,0x69,1,
+	  0,  0,0x78,1,
+	  8,  0,0x79,1,
+
+	  0,  8,0x88,1,
+	  8,  8,0x89,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite14_data[]={
+
+	  0,- 8,0x6a,1,
+	  8,- 8,0x6b,1,
+	  0,  0,0x7a,1,
+	  8,  0,0x7b,1,
+
+	  0,  8,0x8a,1,
+	  8,  8,0x8b,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite15_data[]={
+
+	  0,- 8,0x90,1,
+	  8,- 8,0x91,1,
+	  0,  0,0xa0,1,
+	  8,  0,0xa1,1,
+
+	  0,  8,0xb0,1,
+	  8,  8,0xb1,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite16_data[]={
+
+	  0,- 8,0x92,1,
+	  8,- 8,0x93,1,
+	  0,  0,0xa2,1,
+	  8,  0,0xa3,1,
+
+	  0,  8,0xb2,1,
+	  8,  8,0xb3,1,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite17_data[]={
+
+	  0,- 8,0x94,1,
+	  8,- 8,0x95,1,
+	  0,  0,0xa4,1,
+	  8,  0,0xa5,1,
+
+	  0,  8,0xb4,1,
+	  8,  8,0xb5,1,
+	0x80
+
+};
+
 const unsigned char* const meta_player_list[]={
 
 	meta_player_Metasprite0_data,
@@ -125,7 +242,16 @@ const unsigned char* const meta_player_list[]={
 	meta_player_Metasprite5_data,
 	meta_player_Metasprite6_data,
 	meta_player_Metasprite7_data,
-	meta_player_Metasprite8_data
+	meta_player_Metasprite8_data,
+	meta_player_Metasprite9_data,
+	meta_player_Metasprite10_data,
+	meta_player_Metasprite11_data,
+	meta_player_Metasprite12_data,
+	meta_player_Metasprite13_data,
+	meta_player_Metasprite14_data,
+	meta_player_Metasprite15_data,
+	meta_player_Metasprite16_data,
+	meta_player_Metasprite17_data
 
 };
 
