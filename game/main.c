@@ -108,6 +108,8 @@ char in_y_tile;
 unsigned char cur_sfx_chan;
 unsigned char char_state;
 unsigned char cur_state;
+game_actor* in_obj_a;
+game_actor* in_obj_b;
 
 // batch add
 unsigned char anim_index;
@@ -238,15 +240,15 @@ void main (void)
 
 void update_gameplay()
 {
+	if ((tick_count % 32) == 0)
 	{
-		if ((tick_count % 32) == 0)
-		{
-			++char_state;
-			char_state = char_state & (NUM_BG_BANKS - 1); // %NUM_BG_BANKS assumes power of 2
-			set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
-		}
+		++char_state;
+		char_state = char_state & (NUM_BG_BANKS - 1); // %NUM_BG_BANKS assumes power of 2
+		set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
+	}
 
-#if 1
+	if (!player1.is_dead)
+	{
 		px_old = player1.pos_x;
 		py_old = player1.pos_y;
 
@@ -361,6 +363,13 @@ void update_gameplay()
 			}
 		}
 
+		if (pads_new & PAD_A && grounded)
+		{
+			sfx_play(5, ++cur_sfx_chan);
+			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
+			is_jumping = 1;
+		}		
+
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16));
 		if (index & FLAG_COLLECTIBLE)
 		{
@@ -375,7 +384,7 @@ void update_gameplay()
 		}
 		if (index & FLAG_KILL)
 		{
-			go_to_state(STATE_GAMEOVER);
+			kill_player();
 		}
 
 		if ((player1.vel_y >> 8) < (signed int)0)
@@ -391,70 +400,91 @@ void update_gameplay()
 			i = ANIM_MOVE_RIGHT;
 		}
 
-		global_working_anim = &player1.sprite.anim;
-		queue_next_anim(i);
-		commit_next_anim();
-
-		update_anim();
-
-		if (player1.vel_x < 0)
-		{
-			in_oam_x = high_byte(player1.pos_x);
-			in_oam_y = high_byte(player1.pos_y);
-			in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
-			c_oam_meta_spr_flipped();
-		}
-		else
-		{
-			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
-		}
-
-		if (pads_new & PAD_A && grounded)
-		{
-			sfx_play(5, ++cur_sfx_chan);
-			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
-			is_jumping = 1;
-		}
-
-		if (pads_new & PAD_START)
-		{
-			music_play(0);
-		}
-		if (pads_new & PAD_SELECT)
-		{
-			music_stop();
-		}
-
-
 		// goblin test
+		//
+
 		enemy1.pos_x += enemy1.vel_x;
 		enemy1.pos_y += enemy1.vel_y;
+
+		in_obj_a = &player1;
+		in_obj_b = &enemy1;
+		if (intersects_box_box())
+		{
+			if ((enemy1.pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
+			{
+				// if downward, bounce
+				if (player1.vel_y > 0)
+				{
+					sfx_play(5, ++cur_sfx_chan);
+					player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
+					is_jumping = 1;
+					enemy1.vel_x = FP_0_25;
+				}
+			}
+			else
+			{
+				kill_player();
+			}
+		}
+
 		global_working_anim = &enemy1.sprite.anim;
 		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT);
 		commit_next_anim();
 		update_anim();
-		oam_meta_spr(
-			high_byte(enemy1.pos_x), 
-			high_byte(enemy1.pos_y), 
-			meta_player_list[sprite_anims[enemy1.sprite.anim.anim_current]->frames[enemy1.sprite.anim.anim_frame]]);
 
-
-#else
-	update_player();
-
-		if (player1.facing_left)
-		{
-			in_oam_x = high_byte(player1.pos_x);
-			in_oam_y = high_byte(player1.pos_y) - 1;
-			in_oam_data = meta_player_list[0];
-			c_oam_meta_spr_flipped();
-		}
-		else
-		{
-			oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y) - 1, meta_player_list[0]);
-		}	
-#endif		
+		//
+		// goblin test		
 	}
+	else
+	{
+		player1.vel_y += GRAVITY_LOW;
+		player1.pos_x += player1.vel_x;
+		player1.pos_y += player1.vel_y;
+
+		if (player1.pos_y > FP_WHOLE(240))
+		{
+			go_to_state(STATE_GAMEOVER);
+			return;
+		}
+	}
+
+	global_working_anim = &player1.sprite.anim;
+	queue_next_anim(i);
+	commit_next_anim();
+	update_anim();
+
+	if (player1.vel_x < 0)
+	{
+		in_oam_x = high_byte(player1.pos_x);
+		in_oam_y = high_byte(player1.pos_y);
+		in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
+		c_oam_meta_spr_flipped();
+	}
+	else
+	{
+		oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+	}
+
+	if (pads_new & PAD_START)
+	{
+		music_play(0);
+	}
+	if (pads_new & PAD_SELECT)
+	{
+		music_stop();
+	}
+
+
+	// goblin test
+	//
+
+	oam_meta_spr(
+		high_byte(enemy1.pos_x), 
+		high_byte(enemy1.pos_y), 
+		meta_player_list[sprite_anims[enemy1.sprite.anim.anim_current]->frames[enemy1.sprite.anim.anim_frame]]);
+
+	//
+	// goblin test
 }
 
 void vram_buffer_load_2x2_metatile()
@@ -1176,25 +1206,30 @@ void go_to_state(unsigned char next_state)
 			dy = 0;
 			is_jumping = 0;
 
-			player1.pos_x = FP_WHOLE(128);
-			player1.pos_y = FP_WHOLE(6 * 16);
+			player1.pos_x = FP_WHOLE(4 * 16);
+			player1.pos_y = FP_WHOLE(9 * 16);
 			player1.vel_x = P1_MOVE_SPEED;
 			player1.vel_y = 0;
+			player1.is_dead = 0;
 
 			enemy1.pos_x = FP_WHOLE(2 * 16);
 			enemy1.pos_y = FP_WHOLE(9 * 16);
 			enemy1.vel_x = P1_MOVE_SPEED;
 			enemy1.vel_y = 0;
+			enemy1.is_dead = 0;
 
 			break;
 		}
 
 		case STATE_GAMEOVER:
 		{
+			fade_to_black();
 			ppu_off();
+			oam_clear();
 			vram_adr(NTADR_A(0, 0));
 			vram_unrle(screen_gameover);
 			ppu_on_all();
+			fade_from_black();
 			break;
 		}
 
@@ -1203,4 +1238,60 @@ void go_to_state(unsigned char next_state)
 			break;
 		}
 	}
+}
+
+// box to box intersection
+
+unsigned char intersects_box_box()
+{
+	static signed int _pos_delta;
+	static signed int _dist_sum;
+	static signed int _width_half = 8;
+	static signed int _height_half = 8;
+
+	_pos_delta = (high_byte(in_obj_a->pos_x) + _width_half) - (high_byte(in_obj_b->pos_x) + _width_half);
+	_dist_sum = _width_half + _width_half;
+	if( abs(_pos_delta) >= _dist_sum ) return 0;
+
+	_pos_delta = (high_byte(in_obj_a->pos_y) + _height_half) - (high_byte(in_obj_b->pos_y) + _height_half);
+	_dist_sum = _height_half + _height_half;
+	if( abs(_pos_delta) >= _dist_sum ) return 0;
+	
+	return 1;
+}
+
+void kill_player()
+{
+	music_stop();
+	sfx_play(21, 0);
+
+	player1.vel_x = 0;
+	player1.vel_y = -FP_WHOLE(3);
+	player1.is_dead = 1;
+	//go_to_state(STATE_GAMEOVER);
+}
+
+#define FADE_DELAY 2
+void fade_to_black()
+{
+	pal_bright(3);
+	delay(FADE_DELAY);
+	pal_bright(2);
+	delay(FADE_DELAY);
+	pal_bright(1);
+	delay(FADE_DELAY);
+	pal_bright(0);
+//	delay(FADE_DELAY);
+}
+
+void fade_from_black()
+{
+	pal_bright(1);
+	delay(FADE_DELAY);
+	pal_bright(2);
+	delay(FADE_DELAY);
+	pal_bright(3);
+	delay(FADE_DELAY);
+	pal_bright(4);
+//	delay(FADE_DELAY);
 }

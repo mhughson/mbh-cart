@@ -97,6 +97,8 @@ typedef struct game_actor
 	signed int vel_y;
 
 	unsigned char facing_left;
+
+	unsigned char is_dead;
 } game_actor;
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -133,6 +135,9 @@ extern char in_y_tile;
 extern unsigned char char_state;
 extern unsigned char cur_state;
 
+extern game_actor* in_obj_a;
+extern game_actor* in_obj_b;
+
 // Counter used to ensure each sound effect ends up on a different
 // channel. (no regard to priority)
 extern unsigned char cur_sfx_chan;
@@ -157,6 +162,12 @@ void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
 void vram_buffer_load_2x2_metatile();
 void go_to_state(unsigned char next_state);
+// Params:	in_obj_a
+//			in_obj_b
+unsigned char intersects_box_box();
+void kill_player();
+void fade_to_black();
+void fade_from_black();
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
