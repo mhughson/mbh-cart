@@ -11,6 +11,7 @@
 #include "NES_ST/screen_boot.h"
 #include "NES_ST/screen_title.h"
 #include "NES_ST/screen_gameover.h"
+#include "NES_ST/screen_levelcomplete.h"
 
 #include "map_defs.h"
 #include "maps_a.h"
@@ -93,6 +94,16 @@ void load_screen_gameover()
     oam_clear();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_gameover);
+    ppu_on_all();
+    fade_from_black();
+}
+void load_screen_levelcomplete()
+{
+    fade_to_black();
+    ppu_off();
+    oam_clear();
+    vram_adr(NTADR_A(0, 0));
+    vram_unrle(screen_levelcomplete);
     ppu_on_all();
     fade_from_black();
 }

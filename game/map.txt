@@ -9,81 +9,81 @@ crt0.o:
     STARTUP           Offs=000000  Size=0000F3  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
 main.o:
-    CODE              Offs=00159B  Size=000588  Align=00001  Fill=0000
+    CODE              Offs=00159B  Size=000593  Align=00001  Fill=0000
     BSS               Offs=000040  Size=000151  Align=00001  Fill=0000
     DATA              Offs=000000  Size=000004  Align=00001  Fill=0000
 bank_helpers.o:
-    CODE              Offs=001B23  Size=000055  Align=00001  Fill=0000
+    CODE              Offs=001B2E  Size=000055  Align=00001  Fill=0000
     BSS               Offs=000191  Size=00000B  Align=00001  Fill=0000
 donut.o:
-    CODE              Offs=001B78  Size=0000F5  Align=00001  Fill=0000
+    CODE              Offs=001B83  Size=0000F5  Align=00001  Fill=0000
     ZEROPAGE          Offs=000034  Size=000052  Align=00001  Fill=0000
 unpack.o:
-    CODE              Offs=001C6D  Size=00036C  Align=00001  Fill=0000
+    CODE              Offs=001C78  Size=00036C  Align=00001  Fill=0000
     ZEROPAGE          Offs=000086  Size=000046  Align=00001  Fill=0000
     BANK1             Offs=000000  Size=000E61  Align=00001  Fill=0000
 PRG0.o:
     BSS               Offs=00019C  Size=00000B  Align=00001  Fill=0000
     DATA              Offs=000004  Size=00000C  Align=00001  Fill=0000
-    BANK0             Offs=000000  Size=001709  Align=00001  Fill=0000
+    BANK0             Offs=000000  Size=001747  Align=00001  Fill=0000
 PRG1.o:
 PRG2.o:
 ..\lib/nes.lib(add.o):
-    CODE              Offs=001FD9  Size=00001C  Align=00001  Fill=0000
+    CODE              Offs=001FE4  Size=00001C  Align=00001  Fill=0000
 ..\lib/nes.lib(addysp.o):
-    CODE              Offs=001FF5  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=002000  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax3.o):
-    CODE              Offs=002003  Size=00000E  Align=00001  Fill=0000
+    CODE              Offs=00200E  Size=00000E  Align=00001  Fill=0000
 ..\lib/nes.lib(aslax4.o):
-    CODE              Offs=002011  Size=000011  Align=00001  Fill=0000
+    CODE              Offs=00201C  Size=000011  Align=00001  Fill=0000
 ..\lib/nes.lib(asrax1.o):
-    CODE              Offs=002022  Size=00000A  Align=00001  Fill=0000
+    CODE              Offs=00202D  Size=00000A  Align=00001  Fill=0000
 ..\lib/nes.lib(asrax4.o):
-    CODE              Offs=00202C  Size=000019  Align=00001  Fill=0000
+    CODE              Offs=002037  Size=000019  Align=00001  Fill=0000
 ..\lib/nes.lib(call.o):
-    CODE              Offs=002045  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=002050  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(copydata.o):
-    CODE              Offs=00204C  Size=00002D  Align=00001  Fill=0000
+    CODE              Offs=002057  Size=00002D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp2.o):
-    CODE              Offs=002079  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=002084  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp3.o):
-    CODE              Offs=002086  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=002091  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(decsp4.o):
-    CODE              Offs=002093  Size=00000D  Align=00001  Fill=0000
+    CODE              Offs=00209E  Size=00000D  Align=00001  Fill=0000
 ..\lib/nes.lib(icmp.o):
-    CODE              Offs=0020A0  Size=00002E  Align=00001  Fill=0000
+    CODE              Offs=0020AB  Size=00002E  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp1.o):
-    CODE              Offs=0020CE  Size=000007  Align=00001  Fill=0000
+    CODE              Offs=0020D9  Size=000007  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp2.o):
-    CODE              Offs=0020D5  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=0020E0  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp3.o):
-    CODE              Offs=0020EB  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=0020F6  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(incsp4.o):
-    CODE              Offs=0020F0  Size=000005  Align=00001  Fill=0000
+    CODE              Offs=0020FB  Size=000005  Align=00001  Fill=0000
 ..\lib/nes.lib(lcmp.o):
-    CODE              Offs=0020F5  Size=00003B  Align=00001  Fill=0000
+    CODE              Offs=002100  Size=00003B  Align=00001  Fill=0000
 ..\lib/nes.lib(lne.o):
-    CODE              Offs=002130  Size=000006  Align=00001  Fill=0000
+    CODE              Offs=00213B  Size=000006  Align=00001  Fill=0000
 ..\lib/nes.lib(lpush.o):
-    CODE              Offs=002136  Size=000021  Align=00001  Fill=0000
+    CODE              Offs=002141  Size=000021  Align=00001  Fill=0000
 ..\lib/nes.lib(ludiv.o):
-    CODE              Offs=002157  Size=00007A  Align=00001  Fill=0000
+    CODE              Offs=002162  Size=00007A  Align=00001  Fill=0000
 ..\lib/nes.lib(lumod.o):
-    CODE              Offs=0021D1  Size=000019  Align=00001  Fill=0000
+    CODE              Offs=0021DC  Size=000019  Align=00001  Fill=0000
 ..\lib/nes.lib(makebool.o):
-    CODE              Offs=0021EA  Size=00002C  Align=00001  Fill=0000
+    CODE              Offs=0021F5  Size=00002C  Align=00001  Fill=0000
 ..\lib/nes.lib(negabs.o):
-    CODE              Offs=002216  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=002221  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(or.o):
-    CODE              Offs=002228  Size=000012  Align=00001  Fill=0000
+    CODE              Offs=002233  Size=000012  Align=00001  Fill=0000
 ..\lib/nes.lib(popa.o):
-    CODE              Offs=00223A  Size=00000C  Align=00001  Fill=0000
+    CODE              Offs=002245  Size=00000C  Align=00001  Fill=0000
 ..\lib/nes.lib(pusha.o):
-    CODE              Offs=002246  Size=000016  Align=00001  Fill=0000
+    CODE              Offs=002251  Size=000016  Align=00001  Fill=0000
 ..\lib/nes.lib(pushax.o):
-    CODE              Offs=00225C  Size=00001A  Align=00001  Fill=0000
+    CODE              Offs=002267  Size=00001A  Align=00001  Fill=0000
 ..\lib/nes.lib(sub.o):
-    CODE              Offs=002276  Size=000015  Align=00001  Fill=0000
+    CODE              Offs=002281  Size=000015  Align=00001  Fill=0000
 ..\lib/nes.lib(zeropage.o):
     ZEROPAGE          Offs=0000CC  Size=00001A  Align=00001  Fill=0000
 
@@ -96,11 +96,11 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  0000E5  0000E6  00001
 DATA                  000300  00030F  000010  00001
 BSS                   000310  0004B6  0001A7  00001
-BANK0                 008000  009708  001709  00001
+BANK0                 008000  009746  001747  00001
 BANK1                 008000  008E60  000E61  00001
 BANK2                 008000  009464  001465  00001
 STARTUP               00C000  00C0F2  0000F3  00001
-CODE                  00C0F3  00E37D  00228B  00001
+CODE                  00C0F3  00E388  002296  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 
@@ -108,17 +108,17 @@ Exports list by name:
 ---------------------
 NES_CHR_BANKS             000000 REA    NES_MAPPER                00001C REA    
 NES_MIRRORING             000001 REA    NES_PRG_BANKS             000004 REA    
-__DATA_LOAD__             00E37E RLA    __DATA_RUN__              000300 RLA    
+__DATA_LOAD__             00E389 RLA    __DATA_RUN__              000300 RLA    
 __DATA_SIZE__             000010 REA    __STACKSIZE__             000100 REA    
 __STACK_START__           000700 REA    __STARTUP__               000001 REA    
-_abs                      00E309 RLA    _bank_bg                  00C4E5 RLA    
-_bank_spr                 00C4D5 RLA    _banked_call              00DC16 RLA    
+_abs                      00E314 RLA    _bank_bg                  00C4E5 RLA    
+_bank_spr                 00C4D5 RLA    _banked_call              00DC21 RLA    
 _c_oam_meta_spr_flipped   00D6BC RLA    _char_state               00047E RLA    
 _clear_vram_buffer        00C87A RLA    _commit_next_anim         00D77E RLA    
 _cur_room_index           000482 RLA    _cur_sfx_chan             000489 RLA    
 _current_room             000388 RLA    _delay                    00C72F RLA    
-_display_score            00DA76 RLA    _enemy1                   000370 RLA    
-_fade_from_black          00DA53 RLA    _fade_to_black            00DA30 RLA    
+_display_score            00DA7E RLA    _enemy1                   000370 RLA    
+_fade_from_black          00DA5B RLA    _fade_to_black            00DA38 RLA    
 _gems_remaining           000480 RLA    _get_at_addr              00C9A4 RLA    
 _get_pad_new              00C884 RLA    _get_ppu_addr             00C97D RLA    
 _global_working_anim      000478 RLA    _go_to_state              00D7F8 RLA    
@@ -128,53 +128,54 @@ _in_oam_x                 00035D RLA    _in_oam_y                 00035E RLA
 _in_obj_a                 000483 RLA    _in_obj_b                 000485 RLA    
 _in_x_tile                00047C RLA    _in_y_tile                00047D RLA    
 _index                    000351 RLA    _index16                  000352 RLA    
-_intersects_box_box       00D917 RLA    _is_jumping               000386 RLA    
-_is_on_ramp               000387 RLA    _kill_player              00DA0D RLA    
-_load_current_map         0090FC RLA    _load_screen_boot         0089AE RLA    
-_load_screen_gameover     0089D6 RLA    _load_screen_title        0089C2 RLA    
-_main                     00DB5A RLA    _memcpy                   00C6CD RLA    
-_multi_vram_buffer_horz   00C816 RLA    _music_play               00C547 RLA    
-_music_stop               00C55A RLA    _oam_clear                00C31D RLA    
-_oam_meta_spr             00C373 RLA    _oam_spr                  00C349 RLA    
-_one_vram_buffer          00C85C RLA    _pad_poll                 00C5B0 RLA    
-_pads                     000357 RLA    _pads_new                 000358 RLA    
-_pal_bg                   00C2A2 RLA    _pal_bright               00C2F0 RLA    
-_pal_spr                  00C2AC RLA    _player1                  000361 RLA    
-_ppu_off                  00C2F7 RLA    _ppu_on_all               00C300 RLA    
-_ppu_wait_nmi             00C437 RLA    _px_old                   000359 RLA    
-_py_old                   00035B RLA    _queue_next_anim          00D767 RLA    
-_score                    00047A RLA    _set_chr_bank_0           00C105 RLA    
-_set_prg_bank             00C0F3 RLA    _set_vram_buffer          00C80A RLA    
-_sfx_play                 00C57E RLA    _temp_on_ramp             000385 RLA    
-_tick_count               000356 RLA    _update_gameplay          0089F3 RLA    
-_vram_adr                 00C68C RLA    _vram_unrle               00C442 RLA    
-_vram_write               00C520 RLA    _x                        000354 RLA    
-_y                        000355 RLA    addysp                    00E0E9 RLA    
-addysp1                   00E0E8 RLA    aslax3                    00E0F6 RLA    
-aslax4                    00E104 RLA    asrax1                    00E115 RLA    
-asrax4                    00E11F RLA    boolne                    00E2DD RLA    
-boolult                   00E2FC RLA    callax                    00E138 RLA    
-copydata                  00E13F RLA    decsp2                    00E16C RLA    
-decsp3                    00E179 RLA    decsp4                    00E186 RLA    
-donut_block_buffer        000046 RLZ    donut_block_count         000036 RLZ    
-donut_decompress_block    00DC6B RLA    donut_stream_ptr          000034 RLZ    
-getlop                    00E25B RLA    incsp1                    00E1C1 RLA    
-incsp3                    00E1DE RLA    incsp4                    00E1E3 RLA    
-negax                     00E30D RLA    popa                      00E32D RLA    
-popax                     00E1C8 RLA    ptr1                      0000D4 RLZ    
-ptr2                      0000D6 RLZ    ptr3                      0000D8 RLZ    
-ptr4                      0000DA RLZ    pusha                     00E33D RLA    
-pusha0                    00E351 RLA    pushax                    00E353 RLA    
-pusheax                   00E232 RLA    regsave                   0000D0 RLZ    
-shlax3                    00E0F6 RLA    shlax4                    00E104 RLA    
-sp                        0000CC RLZ    sreg                      0000CE RLZ    
-tmp1                      0000DC RLZ    tmp3                      0000DE RLZ    
-tmp4                      0000DF RLZ    tosaddax                  00E0CE RLA    
-tosicmp                   00E195 RLA    toslcmp                   00E1E8 RLA    
-tosneeax                  00E223 RLA    tosorax                   00E31D RLA    
-tossubax                  00E36B RLA    tosudiv0ax                00E24A RLA    
-tosumod0ax                00E2C4 RLA    udiv32                    00E27F RLA    
-upload_chars              00DD60 RLA    
+_intersects_box_box       00D91F RLA    _is_jumping               000386 RLA    
+_is_on_ramp               000387 RLA    _kill_player              00DA15 RLA    
+_load_current_map         00913A RLA    _load_screen_boot         0089CF RLA    
+_load_screen_gameover     0089F7 RLA    _load_screen_levelcomplete 008A14 RLA    
+_load_screen_title        0089E3 RLA    _main                     00DB65 RLA    
+_memcpy                   00C6CD RLA    _multi_vram_buffer_horz   00C816 RLA    
+_music_play               00C547 RLA    _music_stop               00C55A RLA    
+_oam_clear                00C31D RLA    _oam_meta_spr             00C373 RLA    
+_oam_spr                  00C349 RLA    _one_vram_buffer          00C85C RLA    
+_pad_poll                 00C5B0 RLA    _pads                     000357 RLA    
+_pads_new                 000358 RLA    _pal_bg                   00C2A2 RLA    
+_pal_bright               00C2F0 RLA    _pal_spr                  00C2AC RLA    
+_player1                  000361 RLA    _ppu_off                  00C2F7 RLA    
+_ppu_on_all               00C300 RLA    _ppu_wait_nmi             00C437 RLA    
+_px_old                   000359 RLA    _py_old                   00035B RLA    
+_queue_next_anim          00D767 RLA    _score                    00047A RLA    
+_set_chr_bank_0           00C105 RLA    _set_prg_bank             00C0F3 RLA    
+_set_vram_buffer          00C80A RLA    _sfx_play                 00C57E RLA    
+_temp_on_ramp             000385 RLA    _tick_count               000356 RLA    
+_update_gameplay          008A31 RLA    _vram_adr                 00C68C RLA    
+_vram_unrle               00C442 RLA    _vram_write               00C520 RLA    
+_x                        000354 RLA    _y                        000355 RLA    
+addysp                    00E0F4 RLA    addysp1                   00E0F3 RLA    
+aslax3                    00E101 RLA    aslax4                    00E10F RLA    
+asrax1                    00E120 RLA    asrax4                    00E12A RLA    
+boolne                    00E2E8 RLA    boolult                   00E307 RLA    
+callax                    00E143 RLA    copydata                  00E14A RLA    
+decsp2                    00E177 RLA    decsp3                    00E184 RLA    
+decsp4                    00E191 RLA    donut_block_buffer        000046 RLZ    
+donut_block_count         000036 RLZ    donut_decompress_block    00DC76 RLA    
+donut_stream_ptr          000034 RLZ    getlop                    00E266 RLA    
+incsp1                    00E1CC RLA    incsp3                    00E1E9 RLA    
+incsp4                    00E1EE RLA    negax                     00E318 RLA    
+popa                      00E338 RLA    popax                     00E1D3 RLA    
+ptr1                      0000D4 RLZ    ptr2                      0000D6 RLZ    
+ptr3                      0000D8 RLZ    ptr4                      0000DA RLZ    
+pusha                     00E348 RLA    pusha0                    00E35C RLA    
+pushax                    00E35E RLA    pusheax                   00E23D RLA    
+regsave                   0000D0 RLZ    shlax3                    00E101 RLA    
+shlax4                    00E10F RLA    sp                        0000CC RLZ    
+sreg                      0000CE RLZ    tmp1                      0000DC RLZ    
+tmp3                      0000DE RLZ    tmp4                      0000DF RLZ    
+tosaddax                  00E0D9 RLA    tosicmp                   00E1A0 RLA    
+toslcmp                   00E1F3 RLA    tosneeax                  00E22E RLA    
+tosorax                   00E328 RLA    tossubax                  00E376 RLA    
+tosudiv0ax                00E255 RLA    tosumod0ax                00E2CF RLA    
+udiv32                    00E28A RLA    upload_chars              00DD6B RLA    
+
 
 
 Exports list by value:
@@ -205,49 +206,50 @@ _char_state               00047E RLA    _gems_remaining           000480 RLA
 _grounded                 000481 RLA    _cur_room_index           000482 RLA    
 _in_obj_a                 000483 RLA    _in_obj_b                 000485 RLA    
 _in_nametable             000487 RLA    _cur_sfx_chan             000489 RLA    
-__STACK_START__           000700 REA    _load_screen_boot         0089AE RLA    
-_load_screen_title        0089C2 RLA    _load_screen_gameover     0089D6 RLA    
-_update_gameplay          0089F3 RLA    _load_current_map         0090FC RLA    
-_set_prg_bank             00C0F3 RLA    _set_chr_bank_0           00C105 RLA    
-_pal_bg                   00C2A2 RLA    _pal_spr                  00C2AC RLA    
-_pal_bright               00C2F0 RLA    _ppu_off                  00C2F7 RLA    
-_ppu_on_all               00C300 RLA    _oam_clear                00C31D RLA    
-_oam_spr                  00C349 RLA    _oam_meta_spr             00C373 RLA    
-_ppu_wait_nmi             00C437 RLA    _vram_unrle               00C442 RLA    
-_bank_spr                 00C4D5 RLA    _bank_bg                  00C4E5 RLA    
-_vram_write               00C520 RLA    _music_play               00C547 RLA    
-_music_stop               00C55A RLA    _sfx_play                 00C57E RLA    
-_pad_poll                 00C5B0 RLA    _vram_adr                 00C68C RLA    
-_memcpy                   00C6CD RLA    _delay                    00C72F RLA    
-_set_vram_buffer          00C80A RLA    _multi_vram_buffer_horz   00C816 RLA    
-_one_vram_buffer          00C85C RLA    _clear_vram_buffer        00C87A RLA    
-_get_pad_new              00C884 RLA    _get_ppu_addr             00C97D RLA    
-_get_at_addr              00C9A4 RLA    _c_oam_meta_spr_flipped   00D6BC RLA    
-_queue_next_anim          00D767 RLA    _commit_next_anim         00D77E RLA    
-_go_to_state              00D7F8 RLA    _intersects_box_box       00D917 RLA    
-_kill_player              00DA0D RLA    _fade_to_black            00DA30 RLA    
-_fade_from_black          00DA53 RLA    _display_score            00DA76 RLA    
-_main                     00DB5A RLA    _banked_call              00DC16 RLA    
-donut_decompress_block    00DC6B RLA    upload_chars              00DD60 RLA    
-tosaddax                  00E0CE RLA    addysp1                   00E0E8 RLA    
-addysp                    00E0E9 RLA    aslax3                    00E0F6 RLA    
-shlax3                    00E0F6 RLA    aslax4                    00E104 RLA    
-shlax4                    00E104 RLA    asrax1                    00E115 RLA    
-asrax4                    00E11F RLA    callax                    00E138 RLA    
-copydata                  00E13F RLA    decsp2                    00E16C RLA    
-decsp3                    00E179 RLA    decsp4                    00E186 RLA    
-tosicmp                   00E195 RLA    incsp1                    00E1C1 RLA    
-popax                     00E1C8 RLA    incsp3                    00E1DE RLA    
-incsp4                    00E1E3 RLA    toslcmp                   00E1E8 RLA    
-tosneeax                  00E223 RLA    pusheax                   00E232 RLA    
-tosudiv0ax                00E24A RLA    getlop                    00E25B RLA    
-udiv32                    00E27F RLA    tosumod0ax                00E2C4 RLA    
-boolne                    00E2DD RLA    boolult                   00E2FC RLA    
-_abs                      00E309 RLA    negax                     00E30D RLA    
-tosorax                   00E31D RLA    popa                      00E32D RLA    
-pusha                     00E33D RLA    pusha0                    00E351 RLA    
-pushax                    00E353 RLA    tossubax                  00E36B RLA    
-__DATA_LOAD__             00E37E RLA    
+__STACK_START__           000700 REA    _load_screen_boot         0089CF RLA    
+_load_screen_title        0089E3 RLA    _load_screen_gameover     0089F7 RLA    
+_load_screen_levelcomplete 008A14 RLA    _update_gameplay          008A31 RLA    
+_load_current_map         00913A RLA    _set_prg_bank             00C0F3 RLA    
+_set_chr_bank_0           00C105 RLA    _pal_bg                   00C2A2 RLA    
+_pal_spr                  00C2AC RLA    _pal_bright               00C2F0 RLA    
+_ppu_off                  00C2F7 RLA    _ppu_on_all               00C300 RLA    
+_oam_clear                00C31D RLA    _oam_spr                  00C349 RLA    
+_oam_meta_spr             00C373 RLA    _ppu_wait_nmi             00C437 RLA    
+_vram_unrle               00C442 RLA    _bank_spr                 00C4D5 RLA    
+_bank_bg                  00C4E5 RLA    _vram_write               00C520 RLA    
+_music_play               00C547 RLA    _music_stop               00C55A RLA    
+_sfx_play                 00C57E RLA    _pad_poll                 00C5B0 RLA    
+_vram_adr                 00C68C RLA    _memcpy                   00C6CD RLA    
+_delay                    00C72F RLA    _set_vram_buffer          00C80A RLA    
+_multi_vram_buffer_horz   00C816 RLA    _one_vram_buffer          00C85C RLA    
+_clear_vram_buffer        00C87A RLA    _get_pad_new              00C884 RLA    
+_get_ppu_addr             00C97D RLA    _get_at_addr              00C9A4 RLA    
+_c_oam_meta_spr_flipped   00D6BC RLA    _queue_next_anim          00D767 RLA    
+_commit_next_anim         00D77E RLA    _go_to_state              00D7F8 RLA    
+_intersects_box_box       00D91F RLA    _kill_player              00DA15 RLA    
+_fade_to_black            00DA38 RLA    _fade_from_black          00DA5B RLA    
+_display_score            00DA7E RLA    _main                     00DB65 RLA    
+_banked_call              00DC21 RLA    donut_decompress_block    00DC76 RLA    
+upload_chars              00DD6B RLA    tosaddax                  00E0D9 RLA    
+addysp1                   00E0F3 RLA    addysp                    00E0F4 RLA    
+aslax3                    00E101 RLA    shlax3                    00E101 RLA    
+aslax4                    00E10F RLA    shlax4                    00E10F RLA    
+asrax1                    00E120 RLA    asrax4                    00E12A RLA    
+callax                    00E143 RLA    copydata                  00E14A RLA    
+decsp2                    00E177 RLA    decsp3                    00E184 RLA    
+decsp4                    00E191 RLA    tosicmp                   00E1A0 RLA    
+incsp1                    00E1CC RLA    popax                     00E1D3 RLA    
+incsp3                    00E1E9 RLA    incsp4                    00E1EE RLA    
+toslcmp                   00E1F3 RLA    tosneeax                  00E22E RLA    
+pusheax                   00E23D RLA    tosudiv0ax                00E255 RLA    
+getlop                    00E266 RLA    udiv32                    00E28A RLA    
+tosumod0ax                00E2CF RLA    boolne                    00E2E8 RLA    
+boolult                   00E307 RLA    _abs                      00E314 RLA    
+negax                     00E318 RLA    tosorax                   00E328 RLA    
+popa                      00E338 RLA    pusha                     00E348 RLA    
+pusha0                    00E35C RLA    pushax                    00E35E RLA    
+tossubax                  00E376 RLA    __DATA_LOAD__             00E389 RLA    
+
 
 
 Imports list:
@@ -273,170 +275,172 @@ __STACK_START__ ([linker generated]):
 __STARTUP__ (crt0.o):
     main.o                    main.s(20)
 _abs (negabs.o):
-    main.o                    main.s(77)
+    main.o                    main.s(78)
 _bank_bg (crt0.o):
-    main.o                    main.s(65)
+    main.o                    main.s(66)
 _bank_spr (crt0.o):
-    main.o                    main.s(64)
+    main.o                    main.s(65)
 _banked_call (bank_helpers.o):
-    main.o                    main.s(75)
+    main.o                    main.s(76)
 _c_oam_meta_spr_flipped (main.o):
-    PRG0.o                    PRG0.s(117)
+    PRG0.o                    PRG0.s(119)
 _char_state (main.o):
-    PRG0.o                    PRG0.s(109)
-_clear_vram_buffer (crt0.o):
-    main.o                    main.s(72)
-_commit_next_anim (main.o):
-    PRG0.o                    PRG0.s(120)
-_cur_room_index (main.o):
-    PRG0.o                    PRG0.s(112)
-_cur_sfx_chan (main.o):
-    PRG0.o                    PRG0.s(116)
-_current_room (main.o):
-    PRG0.o                    PRG0.s(104)
-_delay (crt0.o):
-    main.o                    main.s(68)
-_display_score (main.o):
-    PRG0.o                    PRG0.s(127)
-_enemy1 (main.o):
-    PRG0.o                    PRG0.s(100)
-_fade_from_black (main.o):
-    PRG0.o                    PRG0.s(126)
-_fade_to_black (main.o):
-    PRG0.o                    PRG0.s(125)
-_gems_remaining (main.o):
-    PRG0.o                    PRG0.s(110)
-_get_at_addr (crt0.o):
-    PRG0.o                    PRG0.s(140)
-_get_pad_new (crt0.o):
-    main.o                    main.s(73)
-_get_ppu_addr (crt0.o):
-    PRG0.o                    PRG0.s(139)
-    main.o                    main.s(74)
-_global_working_anim (main.o):
-    PRG0.o                    PRG0.s(105)
-_go_to_state (main.o):
-    PRG0.o                    PRG0.s(122)
-_grounded (main.o):
     PRG0.o                    PRG0.s(111)
-_i (main.o):
-    PRG0.o                    PRG0.s(86)
-_in_nametable (main.o):
-    PRG0.o                    PRG0.s(115)
-_in_oam_data (main.o):
-    PRG0.o                    PRG0.s(98)
-_in_oam_x (main.o):
-    PRG0.o                    PRG0.s(96)
-_in_oam_y (main.o):
-    PRG0.o                    PRG0.s(97)
-_in_obj_a (main.o):
-    PRG0.o                    PRG0.s(113)
-_in_obj_b (main.o):
+_clear_vram_buffer (crt0.o):
+    main.o                    main.s(73)
+_commit_next_anim (main.o):
+    PRG0.o                    PRG0.s(122)
+_cur_room_index (main.o):
     PRG0.o                    PRG0.s(114)
-_in_x_tile (main.o):
-    PRG0.o                    PRG0.s(107)
-_in_y_tile (main.o):
-    PRG0.o                    PRG0.s(108)
-_index (main.o):
-    PRG0.o                    PRG0.s(87)
-_index16 (main.o):
-    PRG0.o                    PRG0.s(88)
-_intersects_box_box (main.o):
-    PRG0.o                    PRG0.s(123)
-_is_jumping (main.o):
+_cur_sfx_chan (main.o):
+    PRG0.o                    PRG0.s(118)
+_current_room (main.o):
+    PRG0.o                    PRG0.s(106)
+_delay (crt0.o):
+    main.o                    main.s(69)
+_display_score (main.o):
+    PRG0.o                    PRG0.s(129)
+_enemy1 (main.o):
     PRG0.o                    PRG0.s(102)
-_is_on_ramp (main.o):
-    PRG0.o                    PRG0.s(103)
-_kill_player (main.o):
+_fade_from_black (main.o):
+    PRG0.o                    PRG0.s(128)
+_fade_to_black (main.o):
+    PRG0.o                    PRG0.s(127)
+_gems_remaining (main.o):
+    PRG0.o                    PRG0.s(112)
+_get_at_addr (crt0.o):
+    PRG0.o                    PRG0.s(142)
+_get_pad_new (crt0.o):
+    main.o                    main.s(74)
+_get_ppu_addr (crt0.o):
+    PRG0.o                    PRG0.s(141)
+    main.o                    main.s(75)
+_global_working_anim (main.o):
+    PRG0.o                    PRG0.s(107)
+_go_to_state (main.o):
     PRG0.o                    PRG0.s(124)
+_grounded (main.o):
+    PRG0.o                    PRG0.s(113)
+_i (main.o):
+    PRG0.o                    PRG0.s(88)
+_in_nametable (main.o):
+    PRG0.o                    PRG0.s(117)
+_in_oam_data (main.o):
+    PRG0.o                    PRG0.s(100)
+_in_oam_x (main.o):
+    PRG0.o                    PRG0.s(98)
+_in_oam_y (main.o):
+    PRG0.o                    PRG0.s(99)
+_in_obj_a (main.o):
+    PRG0.o                    PRG0.s(115)
+_in_obj_b (main.o):
+    PRG0.o                    PRG0.s(116)
+_in_x_tile (main.o):
+    PRG0.o                    PRG0.s(109)
+_in_y_tile (main.o):
+    PRG0.o                    PRG0.s(110)
+_index (main.o):
+    PRG0.o                    PRG0.s(89)
+_index16 (main.o):
+    PRG0.o                    PRG0.s(90)
+_intersects_box_box (main.o):
+    PRG0.o                    PRG0.s(125)
+_is_jumping (main.o):
+    PRG0.o                    PRG0.s(104)
+_is_on_ramp (main.o):
+    PRG0.o                    PRG0.s(105)
+_kill_player (main.o):
+    PRG0.o                    PRG0.s(126)
 _load_current_map (PRG0.o):
-    main.o                    main.s(128)
+    main.o                    main.s(130)
 _load_screen_boot (PRG0.o):
-    main.o                    main.s(124)
-_load_screen_gameover (PRG0.o):
-    main.o                    main.s(126)
-_load_screen_title (PRG0.o):
     main.o                    main.s(125)
+_load_screen_gameover (PRG0.o):
+    main.o                    main.s(127)
+_load_screen_levelcomplete (PRG0.o):
+    main.o                    main.s(128)
+_load_screen_title (PRG0.o):
+    main.o                    main.s(126)
 _main (main.o):
     crt0.o                    crt0.s(29)
 _memcpy (crt0.o):
-    PRG0.o                    PRG0.s(136)
-_multi_vram_buffer_horz (crt0.o):
     PRG0.o                    PRG0.s(138)
-    main.o                    main.s(71)
+_multi_vram_buffer_horz (crt0.o):
+    PRG0.o                    PRG0.s(140)
+    main.o                    main.s(72)
 _music_play (crt0.o):
-    main.o                    main.s(60)
-_music_stop (crt0.o):
     main.o                    main.s(61)
+_music_stop (crt0.o):
+    main.o                    main.s(62)
 _oam_clear (crt0.o):
-    PRG0.o                    PRG0.s(130)
-    main.o                    main.s(58)
-_oam_meta_spr (crt0.o):
-    PRG0.o                    PRG0.s(131)
-_oam_spr (crt0.o):
+    PRG0.o                    PRG0.s(132)
     main.o                    main.s(59)
+_oam_meta_spr (crt0.o):
+    PRG0.o                    PRG0.s(133)
+_oam_spr (crt0.o):
+    main.o                    main.s(60)
 _one_vram_buffer (crt0.o):
-    PRG0.o                    PRG0.s(137)
-    main.o                    main.s(70)
+    PRG0.o                    PRG0.s(139)
+    main.o                    main.s(71)
 _pad_poll (crt0.o):
-    main.o                    main.s(63)
+    main.o                    main.s(64)
 _pads (main.o):
-    PRG0.o                    PRG0.s(92)
-_pads_new (main.o):
-    PRG0.o                    PRG0.s(93)
-_pal_bg (crt0.o):
-    main.o                    main.s(52)
-_pal_bright (crt0.o):
-    main.o                    main.s(54)
-_pal_spr (crt0.o):
-    main.o                    main.s(53)
-_player1 (main.o):
-    PRG0.o                    PRG0.s(99)
-_ppu_off (crt0.o):
-    PRG0.o                    PRG0.s(128)
-    main.o                    main.s(56)
-_ppu_on_all (crt0.o):
-    PRG0.o                    PRG0.s(129)
-    main.o                    main.s(57)
-_ppu_wait_nmi (crt0.o):
-    main.o                    main.s(55)
-_px_old (main.o):
     PRG0.o                    PRG0.s(94)
-_py_old (main.o):
+_pads_new (main.o):
     PRG0.o                    PRG0.s(95)
+_pal_bg (crt0.o):
+    main.o                    main.s(53)
+_pal_bright (crt0.o):
+    main.o                    main.s(55)
+_pal_spr (crt0.o):
+    main.o                    main.s(54)
+_player1 (main.o):
+    PRG0.o                    PRG0.s(101)
+_ppu_off (crt0.o):
+    PRG0.o                    PRG0.s(130)
+    main.o                    main.s(57)
+_ppu_on_all (crt0.o):
+    PRG0.o                    PRG0.s(131)
+    main.o                    main.s(58)
+_ppu_wait_nmi (crt0.o):
+    main.o                    main.s(56)
+_px_old (main.o):
+    PRG0.o                    PRG0.s(96)
+_py_old (main.o):
+    PRG0.o                    PRG0.s(97)
 _queue_next_anim (main.o):
-    PRG0.o                    PRG0.s(119)
+    PRG0.o                    PRG0.s(121)
 _score (main.o):
-    PRG0.o                    PRG0.s(106)
+    PRG0.o                    PRG0.s(108)
 _set_chr_bank_0 (crt0.o):
-    PRG0.o                    PRG0.s(141)
+    PRG0.o                    PRG0.s(143)
     unpack.o                  unpack.s(2)
-    main.o                    main.s(76)
+    main.o                    main.s(77)
 _set_prg_bank (crt0.o):
     bank_helpers.o            A53\bank_helpers.s(21)
 _set_vram_buffer (crt0.o):
-    main.o                    main.s(69)
+    main.o                    main.s(70)
 _sfx_play (crt0.o):
-    PRG0.o                    PRG0.s(132)
-    main.o                    main.s(62)
-_temp_on_ramp (main.o):
-    PRG0.o                    PRG0.s(101)
-_tick_count (main.o):
-    PRG0.o                    PRG0.s(91)
-_update_gameplay (PRG0.o):
-    main.o                    main.s(127)
-_vram_adr (crt0.o):
-    PRG0.o                    PRG0.s(133)
-    main.o                    main.s(66)
-_vram_unrle (crt0.o):
-    PRG0.o                    PRG0.s(135)
-_vram_write (crt0.o):
     PRG0.o                    PRG0.s(134)
+    main.o                    main.s(63)
+_temp_on_ramp (main.o):
+    PRG0.o                    PRG0.s(103)
+_tick_count (main.o):
+    PRG0.o                    PRG0.s(93)
+_update_gameplay (PRG0.o):
+    main.o                    main.s(129)
+_vram_adr (crt0.o):
+    PRG0.o                    PRG0.s(135)
     main.o                    main.s(67)
+_vram_unrle (crt0.o):
+    PRG0.o                    PRG0.s(137)
+_vram_write (crt0.o):
+    PRG0.o                    PRG0.s(136)
+    main.o                    main.s(68)
 _x (main.o):
-    PRG0.o                    PRG0.s(89)
+    PRG0.o                    PRG0.s(91)
 _y (main.o):
-    PRG0.o                    PRG0.s(90)
+    PRG0.o                    PRG0.s(92)
 addysp (addysp.o):
     incsp4.o                  runtime/incsp4.s(8)
     incsp3.o                  runtime/incsp3.s(8)
@@ -445,30 +449,30 @@ addysp1 (addysp.o):
     or.o                      runtime/or.s(9)
     ludiv.o                   runtime/ludiv.s(9)
 aslax3 (aslax3.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 aslax4 (aslax4.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
 asrax1 (asrax1.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 asrax4 (asrax4.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 boolne (makebool.o):
     lne.o                     runtime/lne.s(8)
 boolult (makebool.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 callax (call.o):
     bank_helpers.o            A53\bank_helpers.s(175)
 copydata (copydata.o):
     crt0.o                    crt0.s(29)
 decsp2 (decsp2.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
-    main.o                    main.s(1586)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
+    main.o                    main.s(1597)
 decsp3 (decsp3.o):
-    PRG0.o                    PRG0.s(5085)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
+    PRG0.o                    PRG0.s(5177)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
 decsp4 (decsp4.o):
     lpush.o                   runtime/lpush.s(12)
 donut_block_buffer (donut.o):
@@ -483,15 +487,15 @@ getlop (ludiv.o):
     lumod.o                   runtime/lumod.s(9)
 incsp1 (incsp1.o):
     bank_helpers.o            A53\bank_helpers.s(175)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
 incsp3 (incsp3.o):
     bank_helpers.o            A53\bank_helpers.s(175)
 incsp4 (incsp4.o):
     lcmp.o                    runtime/lcmp.s(9)
 negax (negabs.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 popa (popa.o):
     crt0.o                    crt0.s(29)
 popax (incsp2.o):
@@ -513,36 +517,36 @@ ptr3 (zeropage.o):
 ptr4 (zeropage.o):
     ludiv.o                   runtime/ludiv.s(10)
 pusha (pusha.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
     bank_helpers.o            A53\bank_helpers.s(175)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
 pusha0 (pushax.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 pushax (pushax.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
     bank_helpers.o            A53\bank_helpers.s(175)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
 pusheax (lpush.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 regsave (zeropage.o):
     PRG0.o                    PRG0.s(10)
 shlax3 (aslax3.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
 shlax4 (aslax4.o):
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
+    PRG0.o                    PRG0.s(5177)
 sp (zeropage.o):
     lcmp.o                    runtime/lcmp.s(10)
     decsp4.o                  runtime/decsp4.s(8)
@@ -588,23 +592,23 @@ tmp4 (zeropage.o):
     lumod.o                   runtime/lumod.s(10)
     ludiv.o                   runtime/ludiv.s(10)
 tosaddax (add.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 tosicmp (icmp.o):
-    PRG0.o                    PRG0.s(5085)
+    PRG0.o                    PRG0.s(5177)
 toslcmp (lcmp.o):
     lne.o                     runtime/lne.s(8)
 tosneeax (lne.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 tosorax (or.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 tossubax (sub.o):
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
+    main.o                    main.s(1597)
 tosudiv0ax (ludiv.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 tosumod0ax (lumod.o):
-    main.o                    main.s(1586)
+    main.o                    main.s(1597)
 udiv32 (ludiv.o):
     lumod.o                   runtime/lumod.s(9)
 upload_chars (unpack.o):
