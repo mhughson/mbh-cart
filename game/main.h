@@ -175,3 +175,43 @@ void display_score();
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
 #endif // ONCE_MAIN_H
+
+
+
+/*
+/// TODO
+
+// Core Loop
+* Advance to next level after collecting all gems.
+* Level complete screen.
+* Difficulty advancement or Kill Screen
+
+
+// Must Have
+* Title screen graphics.
+* Roof collision.
+* Handle case when landing on Blocks (treat as rails I think?)
+
+
+// Should Have
+* Lives
+* Countdown Timer (with score associated)
+* Additional enemies
+* [Bug] Tile lookup on edges is broken.
+* [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
+* [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
+
+
+// Nice to Have
+* Timed collectibles (cherries, etc)
+* Score tally on Level complete screen.
+* Score tally on Game Over screen.
+* Point kickers
+* Stunned animation for Goblin
+* Brake sparks.
+* Death animation.
+* Lives icon
+
+
+///
+*/

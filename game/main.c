@@ -544,7 +544,7 @@ void load_current_map(unsigned int nt)
 	// "const_cast"
 	
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
-	memcpy(current_room, &rooms_maps_a[1/*cur_room_index*/][NUM_CUSTOM_PROPS], 240);	
+	memcpy(current_room, &rooms_maps_a[0/*cur_room_index*/][NUM_CUSTOM_PROPS], 240);	
 	//_current_room = (unsigned char*)(current_room);
 
 	// Load all the of the tiles data into the specified nametable.
