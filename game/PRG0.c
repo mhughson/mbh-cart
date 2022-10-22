@@ -157,8 +157,10 @@ void load_current_map()
 	// "const_cast"
 	
 	// NUM_CUSTOM_PROPS because the level data starts after the custom props
-	memcpy(current_room, &rooms_maps_a[0/*cur_room_index*/][NUM_CUSTOM_PROPS], 240);	
+	memcpy(current_room, &rooms_maps_a[cur_room_index][NUM_CUSTOM_PROPS], 240);	
 	//_current_room = (unsigned char*)(current_room);
+
+    gems_remaining = 0;
 
 	// Load all the of the tiles data into the specified nametable.
 	for (y = 0; y < 15; ++y)
@@ -166,6 +168,10 @@ void load_current_map()
 		for (x = 0; x < 16; ++x)
 		{
 			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
+		    if (GET_META_TILE_FLAGS(index16) & FLAG_COLLECTIBLE)
+            {
+                ++gems_remaining;
+            }
 			index16 = current_room[index16] * META_TILE_NUM_BYTES;
 			vram_adr(NTADR(in_nametable,x*2,y*2));	
 			vram_write(&metatiles_default[index16], 2);
@@ -344,6 +350,7 @@ void update_gameplay()
 		if (index & FLAG_COLLECTIBLE)
 		{
 			++score;
+            --gems_remaining;
 			display_score();
 			//one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
 			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
@@ -352,6 +359,12 @@ void update_gameplay()
 			vram_buffer_load_2x2_metatile();
 			sfx_play(2, ++cur_sfx_chan);
 			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
+
+            if (gems_remaining == 0)
+            {
+                go_to_state(STATE_LEVEL_COMPLETE);
+                return;
+            }
 		}
 		if (index & FLAG_KILL)
 		{

@@ -70,7 +70,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 
 enum STATES 
 {
-	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER
+	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER, STATE_LEVEL_COMPLETE
 };
 
 typedef struct anim_info
@@ -147,6 +147,7 @@ extern unsigned char char_state;
 extern unsigned char cur_state;
 extern unsigned char gems_remaining;
 extern unsigned char grounded;
+extern unsigned char cur_room_index;
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
@@ -184,7 +185,6 @@ void display_score();
 /// TODO
 
 // Core Loop
-* Advance to next level after collecting all gems.
 * Level complete screen.
 * Difficulty advancement or Kill Screen
 

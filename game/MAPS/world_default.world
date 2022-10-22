@@ -13,6 +13,13 @@
             "width": 256,
             "x": 256,
             "y": 0
+        },
+        {
+            "fileName": "test_map_03.json",
+            "height": 240,
+            "width": 256,
+            "x": -256,
+            "y": 0
         }
     ],
     "onlyShowAdjacentMaps": false,

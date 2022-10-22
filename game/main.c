@@ -55,6 +55,7 @@ unsigned char cur_sfx_chan;
 unsigned char char_state;
 unsigned char cur_state;
 unsigned char gems_remaining;
+unsigned char cur_room_index;
 
 game_actor* in_obj_a;
 game_actor* in_obj_b;
@@ -147,6 +148,15 @@ void main (void)
 				}				
 				break;
 			}
+
+			case STATE_LEVEL_COMPLETE:
+			{
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				{
+					go_to_state(STATE_GAMEPLAY);
+				}				
+				break;
+			}
 		}
 	}
 }
@@ -205,6 +215,15 @@ void go_to_state(unsigned char next_state)
 
 	switch (next_state)
 	{	
+		case STATE_TITLE:
+		{
+			// reset the score as we leave the title screen, rather than entering
+			// gameplay, since that would reset the score when reaching next level
+			// as well.
+			score = 0;
+
+			cur_room_index = 0;
+		}
 		default:
 		{
 			break;
@@ -269,6 +288,12 @@ void go_to_state(unsigned char next_state)
 			fade_from_black();
 			music_play(0);
 
+			break;
+		}
+
+		case STATE_LEVEL_COMPLETE:
+		{
+			++cur_room_index;
 			break;
 		}
 
@@ -356,7 +381,7 @@ void display_score()
 	while(temp_score != 0)
     {
         unsigned char digit = temp_score % 10;
-        one_vram_buffer('0' + digit, get_ppu_addr(0, (9<<3) - (i << 3), 2<<3 ));
+        one_vram_buffer('0' + digit, get_ppu_addr(0, (8<<3) - (i << 3), 2<<3 ));
 
         temp_score = temp_score / 10;
 		++i;
