@@ -462,14 +462,14 @@ void update_gameplay()
 		oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
 	}
 
-	if (pads_new & PAD_START)
-	{
-		music_play(0);
-	}
-	if (pads_new & PAD_SELECT)
-	{
-		music_stop();
-	}
+	// if (pads_new & PAD_START)
+	// {
+	// 	music_play(0);
+	// }
+	// if (pads_new & PAD_SELECT)
+	// {
+	// 	music_stop();
+	// }
 
 
 	// goblin test
@@ -1180,6 +1180,8 @@ void go_to_state(unsigned char next_state)
 
 		case STATE_GAMEPLAY:
 		{
+			fade_to_black();
+
 			ppu_off();
 
 			load_current_map(NAMETABLE_A);
@@ -1195,8 +1197,6 @@ void go_to_state(unsigned char next_state)
 			// todo: non-vram version!
 			score = 0;
 			display_score();
-
-			pal_bright(4);
 
 			px = 128 << 8;
 			py = (6 * 16) << 8;
@@ -1216,12 +1216,16 @@ void go_to_state(unsigned char next_state)
 			enemy1.vel_y = 0;
 			enemy1.is_dead = 0;
 
+			fade_from_black();
+			music_play(0);
+
 			break;
 		}
 
 		case STATE_GAMEOVER:
 		{
 			banked_call(BANK_0, load_screen_gameover);
+			music_stop();
 			break;
 		}
 
