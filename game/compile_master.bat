@@ -32,7 +32,7 @@ IF DEFINED gfx (
 )
 
 IF DEFINED maps (
-	python NES_ST/meta.py test_meta_tiles.nam ..\maps\nametable.json
+	python NES_ST/meta.py test_meta_tiles.nam ..\maps\nametable.json default
 	python MAPS\generate_maps_header.py
 )
 

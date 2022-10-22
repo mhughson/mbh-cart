@@ -40,9 +40,17 @@ except (IndexError, NameError):
 else:	
 	tilesetfilename = sys.argv[2]
 
+try:
+    sys.argv[3]
+except (IndexError, NameError):
+	print ("\n!!ERROR: expected name to output metatiles as an argument!!")
+	metatilesetname = input("Enter name of metatile set name now: ")
+else:	
+	metatilesetname = sys.argv[3]
+
 oldfile = open(filename, 'rb')
 tilesetfile = open(tilesetfilename, 'r')
-newfile = open('../meta_tiles.h', 'w')  # warning, this will overwrite old file !!!!!!!!!!!!!!!!!!!!!
+newfile = open('../meta_tiles_' + metatilesetname + '.h', 'w')  # warning, this will overwrite old file !!!!!!!!!!!!!!!!!!!!!
 
 tilesetjson = json.load(tilesetfile)
 #print(tilesetjson["tiles"][0]["properties"][0]["value"])
@@ -61,10 +69,13 @@ if(file_size != 1024):
 	exit()
 
 	
-newfile.write("const unsigned char metatiles[]={\n")
+newfile.write("const unsigned char metatiles_" + metatilesetname + "[]={\n")
 
+num_rows = 8 # change this to adjust how many rows of the nametable are parsed. This will increase the size of the array in code.
+num_cols = 16 # this should not change.
 
-a = [0] * 128 # array of 64 ints
+#16x15 tiles
+a = [0] * ((num_rows * num_cols)*6) # array of 64 ints
 b = 0
 
 def CombineFlags(props):
@@ -93,7 +104,8 @@ def ParseBits(b):
 # load all the attribute bits into an array, separated
 oldfile.seek(960)
 j = 0
-for i in range (0, 32):
+#240/num sprites
+for i in range (0, int((num_rows * num_cols)/4)):
 	b = ord(oldfile.read(1))
 	ParseBits(b)
 	a[(i*2)+j] = d1
@@ -118,11 +130,11 @@ def metatile_print(e1,e2,e3,e4,e5,e6):
 	newfile.write(str(e3) + ", ")
 	newfile.write(str(e4) + ",  ")
 	newfile.write(str(e5) + ", ")
-	newfile.write(str(e6) + ",\n")
+	newfile.write(str(e6) + ",0,0,\n") # padding to round up to 8bits
 	
 
 j = 0
-for i in range (0, 128):
+for i in range (0, (num_rows * num_cols)):
 	oldfile.seek(j)
 	e1 = ord(oldfile.read(1))
 	e2 = ord(oldfile.read(1))
@@ -152,5 +164,4 @@ newfile.write("\n};\n\n")
 print("done")
 oldfile.close
 newfile.close
-
 

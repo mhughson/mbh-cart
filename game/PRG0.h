@@ -9,4 +9,9 @@ void load_screen_boot();
 void load_screen_title();
 void load_screen_gameover();
 
+void update_gameplay();
+
+// params: in_nametable
+void load_current_map();
+
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */

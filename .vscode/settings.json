@@ -15,6 +15,7 @@
         "maps_a.h": "c",
         "map_defs.h": "c",
         "screen_title.h": "c",
-        "screen_boot.h": "c"
+        "screen_boot.h": "c",
+        "meta_tiles_default.h": "c"
     }
 }

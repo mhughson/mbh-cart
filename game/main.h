@@ -32,10 +32,19 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define CELL_SIZE (16)
 
 #define META_TILE_FLAGS_OFFSET (5)
-#define META_TILE_NUM_BYTES (6)
+#define META_TILE_NUM_BYTES (8)
 #define END_OF_META (128)
-#define GET_META_TILE_FLAGS(room_table_index) metatiles[current_room[(room_table_index)] * META_TILE_NUM_BYTES + META_TILE_FLAGS_OFFSET]
+#define META_TILE_SET_NUM_BYTES (128*META_TILE_NUM_BYTES)
 
+#define FLAG_WALL 			(1 << 0)
+#define FLAG_FLOOR			(1 << 1)
+#define FLAG_COLLECTIBLE	(1 << 2)
+#define FLAG_KILL			(1 << 3)
+#define FLAG_DOWN_LEFT		(1 << 4)
+#define FLAG_DOWN_RIGHT		(1 << 5)
+#define FLAG_ENTRY			(1 << 7)
+
+#define P1_MOVE_SPEED (FP_WHOLE(1))
 
 // Fixed Point Math Helpers
 #define FP_0_05 (13)
@@ -136,25 +145,18 @@ extern char in_x_tile;
 extern char in_y_tile;
 extern unsigned char char_state;
 extern unsigned char cur_state;
+extern unsigned char gems_remaining;
+extern unsigned char grounded;
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
+// load_current_map
+extern unsigned int in_nametable;
 
 // Counter used to ensure each sound effect ends up on a different
 // channel. (no regard to priority)
 extern unsigned char cur_sfx_chan;
 
-// batch add
-extern unsigned char anim_index;
-extern unsigned char grounded;
-extern unsigned char jump_held_count;
-extern unsigned char can_jump;
-extern unsigned char airtime;
-extern unsigned char ticks_down;
-extern unsigned char jump_count;
-extern unsigned char on_ground;
-extern unsigned char new_jump_btn;
-extern unsigned int scroll_y;
 
 #pragma bss-name(pop)
 
@@ -197,6 +199,8 @@ void display_score();
 * Lives
 * Countdown Timer (with score associated)
 * Additional enemies
+* Pause
+* Settings (Music/Sound disable)
 * [Bug] Tile lookup on edges is broken.
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
 * [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
@@ -211,6 +215,7 @@ void display_score();
 * Brake sparks.
 * Death animation.
 * Lives icon
+* Difficulty.
 
 
 ///
