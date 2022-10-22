@@ -23,6 +23,8 @@
 #define PROF_B 0x9f // blue + grey
 #define PROF_W 0x1f // white + grey
 
+enum { BANK_0, BANK_1, BANK_2 };
+
 #define ROOM_WIDTH_PAGES (1)
 #define ROOM_WIDTH_PIXELS (256*ROOM_WIDTH_PAGES)
 #define ROOM_WIDTH_TILES (16*ROOM_WIDTH_PAGES)
@@ -129,7 +131,7 @@ extern unsigned char is_on_ramp;
 extern unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
-extern unsigned char score;
+extern unsigned int score;
 extern char in_x_tile; 
 extern char in_y_tile;
 extern unsigned char char_state;
@@ -168,6 +170,7 @@ unsigned char intersects_box_box();
 void kill_player();
 void fade_to_black();
 void fade_from_black();
+void display_score();
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 

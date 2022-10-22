@@ -16,10 +16,6 @@
 #include "map_defs.h"
 #include "maps_a.h"
 
-#include "NES_ST/screen_boot.h"
-#include "NES_ST/screen_title.h"
-#include "NES_ST/screen_gameover.h"
-
 const unsigned char palette[16]={ 0x0f,0x0f,0x13,0x37,0x0f,0x17,0x29,0x20,0x0f,0x13,0x23,0x33,0x0f,0x14,0x24,0x34 };
 const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0f,0x07,0x16,0x38,0x0f,0x09,0x19,0x29 };
 
@@ -102,7 +98,7 @@ unsigned char is_on_ramp;
 unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 anim_info* global_working_anim;
-unsigned char score;
+unsigned int score;
 char in_x_tile; 
 char in_y_tile;
 unsigned char cur_sfx_chan;
@@ -374,7 +370,8 @@ void update_gameplay()
 		if (index & FLAG_COLLECTIBLE)
 		{
 			++score;
-			one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
+			display_score();
+			//one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
 			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
 			in_y_tile = (high_byte(player1.pos_y) + 8)/16;
 			current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
@@ -1171,19 +1168,13 @@ void go_to_state(unsigned char next_state)
 	{
 		case STATE_BOOT:
 		{
-			ppu_off();
-			vram_adr(NTADR_A(0, 0));
-			vram_unrle(screen_boot);
-			ppu_on_all();
+			banked_call(BANK_0, load_screen_boot);
 			break;
 		}
 
 		case STATE_TITLE:
 		{
-			ppu_off();
-			vram_adr(NTADR_A(0, 0));
-			vram_unrle(screen_title);
-			ppu_on_all();
+			banked_call(BANK_0, load_screen_title);
 			break;
 		}
 
@@ -1193,10 +1184,17 @@ void go_to_state(unsigned char next_state)
 
 			load_current_map(NAMETABLE_A);
 
-			vram_adr(NTADR_A(7, 2));
-			vram_write("NESDEV COMPO 2022", 17);
+			// vram_adr(NTADR_A(7, 2));
+			// vram_write("NESDEV COMPO 2022", 17);
+
+			vram_adr(NTADR_A(2, 1));
+			vram_write("SCORE", 5);
 
 			ppu_on_all(); // turn on screen
+
+			// todo: non-vram version!
+			score = 0;
+			display_score();
 
 			pal_bright(4);
 
@@ -1223,13 +1221,7 @@ void go_to_state(unsigned char next_state)
 
 		case STATE_GAMEOVER:
 		{
-			fade_to_black();
-			ppu_off();
-			oam_clear();
-			vram_adr(NTADR_A(0, 0));
-			vram_unrle(screen_gameover);
-			ppu_on_all();
-			fade_from_black();
+			banked_call(BANK_0, load_screen_gameover);
 			break;
 		}
 
@@ -1294,4 +1286,25 @@ void fade_from_black()
 	delay(FADE_DELAY);
 	pal_bright(4);
 //	delay(FADE_DELAY);
+}
+
+void display_score()
+{
+	static unsigned long temp_score;
+	static unsigned char i;
+
+	temp_score = score;
+
+	// clear out any old score.
+	multi_vram_buffer_horz("0000000", 7, get_ppu_addr(0, 2<<3, 2<<3));
+
+	i = 0;
+	while(temp_score != 0)
+    {
+        unsigned char digit = temp_score % 10;
+        one_vram_buffer('0' + digit, get_ppu_addr(0, (9<<3) - (i << 3), 2<<3 ));
+
+        temp_score = temp_score / 10;
+		++i;
+    }
 }

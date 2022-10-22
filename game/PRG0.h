@@ -5,4 +5,8 @@
 // Non constant (RAM) variables go in common header.
 // Constant (ROM) variables go in this c file, so that they are no accessed by accident by other files.
 
+void load_screen_boot();
+void load_screen_title();
+void load_screen_gameover();
+
 #endif /* D12B32D3_39DD_4865_9236_3AEDEF9ACEDE */
