@@ -294,8 +294,9 @@ void go_to_state(unsigned char next_state)
 		case STATE_LEVEL_COMPLETE:
 		{
 			++cur_room_index;
+			music_play(2);
+			delay(120);
 			banked_call(BANK_0, load_screen_levelcomplete);
-			music_stop();
 			break;
 		}
 
