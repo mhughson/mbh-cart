@@ -243,6 +243,7 @@ void go_to_state(unsigned char next_state)
 		case STATE_TITLE:
 		{
 			banked_call(BANK_0, load_screen_title);
+			music_play(1);
 			break;
 		}
 
@@ -264,7 +265,6 @@ void go_to_state(unsigned char next_state)
 			ppu_on_all(); // turn on screen
 
 			// todo: non-vram version!
-			score = 0;
 			display_score();
 
 			px = 128 << 8;
