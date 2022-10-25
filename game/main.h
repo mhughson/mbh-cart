@@ -8,7 +8,7 @@
 #define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
-#define PROFILE_POKE(val) //POKE((0x2001),(val));
+#define PROFILE_POKE(val) POKE((0x2001),(val));
 #else
 #define PROFILE_POKE(val)
 #endif
@@ -67,6 +67,8 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define ATTACK_LEN (5)
 
 #define NUM_BG_BANKS 2 // MUST BE POWER OF 2
+
+#define NUM_SCORE_DIGITS (5)
 
 enum STATES 
 {
@@ -140,7 +142,7 @@ extern unsigned char is_on_ramp;
 extern unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
-extern unsigned int score;
+extern unsigned char score_bcd[NUM_SCORE_DIGITS];
 extern char in_x_tile; 
 extern char in_y_tile;
 extern unsigned char char_state;
@@ -153,7 +155,8 @@ extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
 // load_current_map
 extern unsigned int in_nametable;
-
+// add_bcd_score
+extern const unsigned char * in_points;
 // Counter used to ensure each sound effect ends up on a different
 // channel. (no regard to priority)
 extern unsigned char cur_sfx_chan;
@@ -167,6 +170,7 @@ void queue_next_anim(unsigned char next_anim_index);
 void commit_next_anim();
 void vram_buffer_load_2x2_metatile();
 void go_to_state(unsigned char next_state);
+void add_bcd_score();
 // Params:	in_obj_a
 //			in_obj_b
 unsigned char intersects_box_box();

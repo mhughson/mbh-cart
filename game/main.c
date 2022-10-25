@@ -48,7 +48,7 @@ unsigned char is_on_ramp;
 unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 anim_info* global_working_anim;
-unsigned int score;
+unsigned char score_bcd[NUM_SCORE_DIGITS];
 char in_x_tile; 
 char in_y_tile;
 unsigned char cur_sfx_chan;
@@ -60,6 +60,7 @@ unsigned char cur_room_index;
 game_actor* in_obj_a;
 game_actor* in_obj_b;
 unsigned int in_nametable;
+const unsigned char * in_points;
 
 
 // batch add
@@ -220,7 +221,7 @@ void go_to_state(unsigned char next_state)
 			// reset the score as we leave the title screen, rather than entering
 			// gameplay, since that would reset the score when reaching next level
 			// as well.
-			score = 0;
+			memfill(score_bcd, 0, NUM_SCORE_DIGITS);
 
 			cur_room_index = 0;
 		}
@@ -370,23 +371,120 @@ void fade_from_black()
 //	delay(FADE_DELAY);
 }
 
+void add_bcd_score()
+{
+	static unsigned char _carry;
+	static signed char _i;
+
+	for (_i = (NUM_SCORE_DIGITS - 1); _i >= 0; --_i)
+	{
+		unsigned char _sum = in_points[_i] + score_bcd[_i] + _carry;
+		_carry = 0;
+		if (_sum >= 10)
+		{
+			_sum -= 10;
+			_carry = 1;
+		}
+		
+		score_bcd[_i] = _sum;
+	}
+}
+
 void display_score()
 {
-	static unsigned long temp_score;
-	static unsigned char i;
+	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
 
-	temp_score = score;
 
-	// clear out any old score.
-	multi_vram_buffer_horz("0000000", 7, get_ppu_addr(0, 2<<3, 2<<3));
-
-	i = 0;
-	while(temp_score != 0)
-    {
-        unsigned char digit = temp_score % 10;
-        one_vram_buffer('0' + digit, get_ppu_addr(0, (8<<3) - (i << 3), 2<<3 ));
-
-        temp_score = temp_score / 10;
-		++i;
-    }
+	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
+	{
+		_display_score[i] = score_bcd[i] + '0';
+		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+	}
+	_display_score[NUM_SCORE_DIGITS] = '0';
+	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 2<<3));
 }
+
+// const unsigned int _digit_shift_table[NUM_SCORE_DIGITS] =
+// {
+// 		  1,
+// 		 10,
+// 	    100,
+// 	   1000,
+// 	  10000,
+//     //  100000,
+// 	// 1000000,
+// };
+
+// void __display_score()
+// {
+
+// 	static unsigned int _temp_score;
+// 	static signed char _i;
+// 	static unsigned _digit;
+// 	static unsigned char _score_display[NUM_SCORE_DIGITS];
+// 	static unsigned int _digit_shift;
+
+// 	PROFILE_POKE(PROF_R);
+	
+// 	_temp_score = score;
+
+// 	i = 0;
+// 	for (_i = (NUM_SCORE_DIGITS - 1); _i >= 0; --_i)
+// 	{
+// 		_digit = 0;
+// 		_digit_shift = _digit_shift_table[_i];
+
+// 		if (_temp_score >= (8 * _digit_shift)) 
+// 		{
+// 			_digit |= 8;
+// 			_temp_score -= (8 * _digit_shift);
+// 		}
+// 		if (_temp_score >= (4 * _digit_shift)) 
+// 		{
+// 			_digit |= 4;
+// 			_temp_score -= (4 * _digit_shift);
+// 		}
+// 		if (_temp_score >= (2 * _digit_shift)) 
+// 		{
+// 			_digit |= 2;
+// 			_temp_score -= (2 * _digit_shift);
+// 		}
+// 		if (_temp_score >= (1 * _digit_shift)) 
+// 		{
+// 			_digit |= 1;
+// 			_temp_score -= (1 * _digit_shift);
+// 		}
+// 		_score_display[i++] = '0' + _digit;		
+// 	}
+
+// 	multi_vram_buffer_horz(_score_display, NUM_SCORE_DIGITS, get_ppu_addr(0, 2<<3, 2<<3));
+// 	multi_vram_buffer_horz("00", 2, get_ppu_addr(0, 7<<3, 2<<3));
+// 	PROFILE_POKE(PROF_CLEAR);
+// }
+
+// void ___display_score()
+// {
+// 	static unsigned long temp_score;
+// 	static unsigned char i;
+// 	static unsigned char digit;
+
+// 	PROFILE_POKE(PROF_R);
+
+// 	temp_score = score;
+
+// 	// clear out any old score.
+// 	multi_vram_buffer_horz("0000000", 7, get_ppu_addr(0, 2<<3, 2<<3));
+
+// 	i = 0;
+// 	while(temp_score != 0)
+// 	{
+// 		digit = temp_score % 10;
+// 		one_vram_buffer('0' + digit, get_ppu_addr(0, (8<<3) - (i << 3), 2<<3 ));
+
+// 		temp_score = temp_score / 10;
+// 		++i;
+// 	}
+
+// 	PROFILE_POKE(PROF_CLEAR);
+// }

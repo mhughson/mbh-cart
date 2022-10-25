@@ -27,6 +27,9 @@ const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
 
 const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 
+// BCD encoded score values:
+const unsigned char SCORE_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 0, 5 };
+
 typedef struct anim_def
 {
 	// how many frames to hold on each frame of animation.
@@ -360,7 +363,8 @@ void update_gameplay()
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16));
 		if (index & FLAG_COLLECTIBLE)
 		{
-			++score;
+			in_points = SCORE_GEM_BCD;
+			add_bcd_score();
             --gems_remaining;
 			display_score();
 			//one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
