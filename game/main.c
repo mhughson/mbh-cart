@@ -14,6 +14,45 @@
 const unsigned char palette[16]={ 0x0f,0x0f,0x13,0x37,0x0f,0x17,0x29,0x20,0x0f,0x13,0x23,0x33,0x0f,0x14,0x24,0x34 };
 const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0f,0x07,0x16,0x38,0x0f,0x09,0x19,0x29 };
 
+const unsigned char palette_title_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x16,0x00,0x37,0x0f,0x19,0x17,0x38,0x0f,0x17,0x13,0x37 };
+
+// face
+const unsigned char title_screen_Metasprite0_data[]={
+
+	- 8,-12,0x01,2,
+	  0,-12,0x02,2,
+	- 8,- 4,0x11,2,
+	  0,- 4,0x12,2,
+
+	- 8,  4,0x21,2,
+	  0,  4,0x22,2,
+	0x80
+
+};
+
+// diamond
+const unsigned char title_screen_Metasprite1_data[]={
+
+	-12,- 8,0x03,1,
+	- 4,- 8,0x04,1,
+	  4,- 8,0x05,1,
+	-12,  0,0x13,1,
+
+	- 4,  0,0x14,1,
+	  4,  0,0x15,1,
+	0x80
+
+};
+
+const unsigned char* const title_screen_list[]={
+
+	title_screen_Metasprite0_data,
+	title_screen_Metasprite1_data
+
+};
+
+const char ease_pulse[4] = {-1, 0, 1, 0};
+
 
 // Initalized RAM variables
 //
@@ -131,7 +170,9 @@ void main (void)
 				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
 				{
 					go_to_state(STATE_GAMEPLAY);
-				}				
+				}
+
+				oam_meta_spr(140, 128 + (ease_pulse[(tick_count / 16) % 4]), title_screen_Metasprite1_data);
 				break;
 			}
 
@@ -243,6 +284,13 @@ void go_to_state(unsigned char next_state)
 
 		case STATE_TITLE:
 		{
+			set_chr_bank_0(2);
+			bank_bg(0);
+			bank_spr(1);
+
+			pal_bg(palette_title_bg);
+			pal_spr(palette_bg);			
+
 			banked_call(BANK_0, load_screen_title);
 			music_play(1);
 			break;
@@ -253,6 +301,13 @@ void go_to_state(unsigned char next_state)
 			fade_to_black();
 
 			ppu_off();
+
+			set_chr_bank_0(0);
+			bank_bg(0);
+			bank_spr(1);
+
+			pal_bg(palette_bg);
+			pal_spr(palette);			
 
 			in_nametable = NAMETABLE_A;
 			banked_call(BANK_0, load_current_map);
