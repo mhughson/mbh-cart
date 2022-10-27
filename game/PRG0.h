@@ -11,6 +11,7 @@ void load_screen_gameover();
 void load_screen_levelcomplete();
 
 void update_gameplay();
+void draw_player();
 
 // params: in_nametable
 void load_current_map();

@@ -5,7 +5,7 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 0
+#define DEBUG_ENABLED 1
 
 #if DEBUG_ENABLED
 #define PROFILE_POKE(val) POKE((0x2001),(val));
@@ -150,6 +150,7 @@ extern unsigned char cur_state;
 extern unsigned char gems_remaining;
 extern unsigned char grounded;
 extern unsigned char cur_room_index;
+extern signed char cur_time_digits[6];
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
@@ -178,6 +179,8 @@ void kill_player();
 void fade_to_black();
 void fade_from_black();
 void display_score();
+void draw_cur_time();
+void draw_cur_time_ppu_off();
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
@@ -189,17 +192,17 @@ void display_score();
 /// TODO
 
 // Core Loop
-* Level complete screen.
-* Difficulty advancement or Kill Screen
+* Don't go to game over on death (only on time up)
 
 
 // Must Have
-* Title screen graphics.
+* Actual level design.
 * Roof collision.
 * Handle case when landing on Blocks (treat as rails I think?)
-
+* Add credits to the boot screen
 
 // Should Have
+* Level complete screen++
 * Lives
 * Countdown Timer (with score associated)
 * Additional enemies
@@ -208,9 +211,11 @@ void display_score();
 * [Bug] Tile lookup on edges is broken.
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
 * [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
+* [Bug] Title sprites are seen on just after fade in to first level.
 
 
 // Nice to Have
+* Title screen nose/mouth overlay.
 * Timed collectibles (cherries, etc)
 * Score tally on Level complete screen.
 * Score tally on Game Over screen.
@@ -220,6 +225,8 @@ void display_score();
 * Death animation.
 * Lives icon
 * Difficulty.
+* Custom header tiles for HUD.
+* Time sound effect on low time.
 
 
 ///

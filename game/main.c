@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "PRG0.h"
+#include "map_defs.h"
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
@@ -53,6 +54,8 @@ const unsigned char* const title_screen_list[]={
 
 const char ease_pulse[4] = {-1, 0, 1, 0};
 
+const unsigned char TEXT_EmptyTime[] = "00:00:00";
+
 
 // Initalized RAM variables
 //
@@ -95,6 +98,7 @@ unsigned char char_state;
 unsigned char cur_state;
 unsigned char gems_remaining;
 unsigned char cur_room_index;
+signed char cur_time_digits[6];
 
 game_actor* in_obj_a;
 game_actor* in_obj_b;
@@ -255,7 +259,7 @@ void go_to_state(unsigned char next_state)
 		return;
 	}
 
-	switch (next_state)
+	switch (cur_state)
 	{	
 		case STATE_TITLE:
 		{
@@ -263,6 +267,20 @@ void go_to_state(unsigned char next_state)
 			// gameplay, since that would reset the score when reaching next level
 			// as well.
 			memfill(score_bcd, 0, NUM_SCORE_DIGITS);
+
+			memfill(cur_time_digits, 0, 6);
+
+#if DEBUG_ENABLED
+			if (pads & PAD_SELECT)
+			{
+				cur_time_digits[3] = 3;
+			}
+			else
+#endif // DEBUG_ENABLED			
+			{
+				cur_time_digits[1] = 2;
+				cur_time_digits[2] = 3;
+			}
 
 			cur_room_index = 0;
 		}
@@ -284,6 +302,8 @@ void go_to_state(unsigned char next_state)
 
 		case STATE_TITLE:
 		{
+			fade_to_black();
+
 			set_chr_bank_0(2);
 			bank_bg(0);
 			bank_spr(1);
@@ -293,6 +313,8 @@ void go_to_state(unsigned char next_state)
 
 			banked_call(BANK_0, load_screen_title);
 			music_play(1);
+
+			fade_from_black();
 			break;
 		}
 
@@ -315,8 +337,15 @@ void go_to_state(unsigned char next_state)
 			// vram_adr(NTADR_A(7, 2));
 			// vram_write("NESDEV COMPO 2022", 17);
 
-			vram_adr(NTADR_A(2, 1));
+			vram_adr(NTADR_A(3, 2));
 			vram_write("SCORE", 5);
+
+
+			vram_adr(NTADR_A(24, 2));	
+			vram_write("TIME", 4);
+			vram_adr(NTADR_A(22, 3));	
+			vram_write(TEXT_EmptyTime, 8);
+			draw_cur_time_ppu_off();
 
 			ppu_on_all(); // turn on screen
 
@@ -350,6 +379,10 @@ void go_to_state(unsigned char next_state)
 		case STATE_LEVEL_COMPLETE:
 		{
 			++cur_room_index;
+			if (cur_room_index >= NUM_ROOMS)
+			{
+				cur_room_index = 0;
+			}
 			music_play(2);
 			delay(120);
 			banked_call(BANK_0, load_screen_levelcomplete);
@@ -360,6 +393,9 @@ void go_to_state(unsigned char next_state)
 		{
 			banked_call(BANK_0, load_screen_gameover);
 			music_stop();
+			// music_play(3);
+			// delay(240);
+			// music_stop();
 			break;
 		}
 
@@ -457,7 +493,7 @@ void display_score()
 	}
 	_display_score[NUM_SCORE_DIGITS] = '0';
 	_display_score[NUM_SCORE_DIGITS + 1] = '0';
-	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 2<<3));
+	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
 }
 
 // const unsigned int _digit_shift_table[NUM_SCORE_DIGITS] =
@@ -543,3 +579,91 @@ void display_score()
 
 // 	PROFILE_POKE(PROF_CLEAR);
 // }
+
+void draw_cur_time()
+{
+	static signed char counter_signed;
+
+	// The number of digits to display (00 00 00)
+	i = 5;
+	// The total number of characters including spacers (00:00:00)
+	counter_signed = 7;
+
+	// Loop through from the right most digit to the left most. Increment the "frames" digit, and 
+	// handle if it overflows into double digits. Then do the same on the next digit. Once a digit
+	// doesn't overflow, the function can exit. So worst case scenario is "59:59:59".
+	// NOTE: The right most 2 digits are FRAMES not MILLISECONDS, and thus rolls over at 60 (60 fps), not 100.
+	for (; counter_signed >= 0; --counter_signed, --i)
+	{
+		// Increment this digit...
+		if (cur_state == STATE_GAMEPLAY)
+		{
+			--cur_time_digits[i];
+		}
+		
+		// ... and check for overflow. Depending on if it is the left or right digit
+		// we check for 6 or 10 (since the max value is 59 in each section).
+		if (cur_time_digits[i] == -1)
+		{
+			// A roll over has occured. Reset this digit back to 0. The incrementing of the next
+			// widget will happen in the next iteration of the loop.
+			// Special case for the left most digit. If that rolls over, we don't want the timer
+			// to reset to 0, as that could be an exploit (waiting for 60 minutes and then finishing).
+			// In that case we keep the timer at 50 minutes.
+			cur_time_digits[i] = ((i % 2) == 0 ? 5 : 9);
+			//if ((cur_room_flags & ROOM_FLAG_ENABLE_SEAMLESS_TRAVEL) == 0)
+			{
+				one_vram_buffer('0' + cur_time_digits[i], get_ppu_addr(0, (22 << 3) + (counter_signed * 8), 24));
+			}
+
+			// Special case for ':' character.
+			if ((i % 2) == 0)
+			{
+				--counter_signed;
+			}
+
+			// every digit looped, which means we hit 00:00:00
+			if (i == 0)
+			{
+				// Cancel all the digit changes we just queued up.
+				// This cancels ALL vram buffer, and will likely be too heavy handed
+				// in the end, but it works for now (TM).
+				clear_vram_buffer();
+				kill_player();
+			}
+		}
+		else
+		{
+			//if ((cur_room_flags & ROOM_FLAG_ENABLE_SEAMLESS_TRAVEL) == 0)
+			{
+				// This digit changed, but it didn't overflow, so we can just draw and then exit the loop now.
+				one_vram_buffer('0' + cur_time_digits[i], get_ppu_addr(0, (22 << 3) + (counter_signed * 8), 24));
+			}
+			break;
+		}
+	}
+}
+
+void draw_cur_time_ppu_off()
+{
+	static unsigned char counter;
+	static char best_time[8];
+
+	// Draw the current time for the case where the player reset the
+	// whole nametable in the middle of gameplay. The standard draw time
+	// function only draws numbers that change.
+	counter = 0;
+	for (i = 0; i < 6; ++i, ++counter)
+	{
+
+		best_time[counter] = '0' + cur_time_digits[i];
+		if (i == 1 || i == 3)
+		{
+			++counter;
+			best_time[counter] = ':';
+		}
+	}
+
+ 	vram_adr(NTADR_A(22, 3));	
+	vram_write(best_time, 8);
+}

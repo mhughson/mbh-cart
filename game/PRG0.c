@@ -107,6 +107,8 @@ void load_screen_levelcomplete()
     oam_clear();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_levelcomplete);
+	vram_adr(NTADR_A(2, 2));
+	vram_write("SCORE", 5);	
     ppu_on_all();
     fade_from_black();
 }
@@ -375,7 +377,11 @@ void update_gameplay()
 			sfx_play(2, ++cur_sfx_chan);
 			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
 
-            if (gems_remaining == 0)
+            if (gems_remaining == 0 
+#if DEBUG_ENABLED			
+			|| (pads & PAD_SELECT)
+#endif // DEBUG_ENABLED		
+			)
             {
                 go_to_state(STATE_LEVEL_COMPLETE);
                 return;
@@ -452,16 +458,11 @@ void update_gameplay()
 	commit_next_anim();
 	update_anim();
 
-	if (player1.vel_x < 0)
+	draw_player();
+
+	if (!player1.is_dead)
 	{
-		in_oam_x = high_byte(player1.pos_x);
-		in_oam_y = high_byte(player1.pos_y);
-		in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
-		c_oam_meta_spr_flipped();
-	}
-	else
-	{
-		oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+		draw_cur_time();
 	}
 
 	// if (pads_new & PAD_START)
@@ -484,6 +485,21 @@ void update_gameplay()
 
 	//
 	// goblin test
+}
+
+void draw_player()
+{
+	if (player1.vel_x < 0)
+	{
+		in_oam_x = high_byte(player1.pos_x);
+		in_oam_y = high_byte(player1.pos_y);
+		in_oam_data = meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]];
+		c_oam_meta_spr_flipped();
+	}
+	else
+	{
+		oam_meta_spr(high_byte(player1.pos_x), high_byte(player1.pos_y), meta_player_list[sprite_anims[player1.sprite.anim.anim_current]->frames[player1.sprite.anim.anim_frame]]);
+	}
 }
 
 unsigned char update_anim()
