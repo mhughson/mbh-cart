@@ -198,10 +198,8 @@ void draw_cur_time_ppu_off();
 
 
 // Must Have
-* Actual level design.
-* Roof collision.
-* Handle case when landing on Blocks (treat as rails I think?)
 * Track and display hi-score
+* [later] Actual level design.
 
 // Should Have
 * Level complete screen++

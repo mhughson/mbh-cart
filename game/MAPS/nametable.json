@@ -2150,7 +2150,7 @@
                 {
                  "name":"flag1",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag2",

@@ -356,7 +356,15 @@ void update_gameplay()
 			}
 		}
 
-		if (pads_new & PAD_A && grounded)
+		if (index & FLAG_WALL && player1.vel_y < 0)
+		{
+			player1.vel_y = 0;
+			player1.pos_y = py_old;
+		}
+
+		// check for blocks above before allowing a jump. Can be remove if needed for perf or something. Just avoids weird spammy jumps.
+		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y)-1)/16));
+		if (pads_new & PAD_A && grounded && (index & FLAG_WALL) == 0)
 		{
 			sfx_play(5, ++cur_sfx_chan);
 			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
