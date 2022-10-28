@@ -93,9 +93,6 @@ void load_screen_title()
     ppu_off();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_title);
-
-	vram_adr(NTADR_A(3, 2));
-	vram_write("SCORE", 5);	
     ppu_on_all();
 }
 void load_screen_gameover()

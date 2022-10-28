@@ -210,7 +210,7 @@ void main (void)
 			}
 		}
 
-		PROFILE_POKE(PROF_CLEAR);
+//		PROFILE_POKE(PROF_CLEAR);
 	}
 }
 
