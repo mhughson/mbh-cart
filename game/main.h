@@ -143,6 +143,7 @@ extern unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 extern anim_info* global_working_anim;
 extern unsigned char score_bcd[NUM_SCORE_DIGITS];
+extern unsigned char score_best_bcd[NUM_SCORE_DIGITS];
 extern char in_x_tile; 
 extern char in_y_tile;
 extern unsigned char char_state;
@@ -181,8 +182,11 @@ void fade_to_black();
 void fade_from_black();
 void display_score();
 void display_score_ppu_off();
+void display_score_best_ppu_off();
 void draw_cur_time();
 void draw_cur_time_ppu_off();
+void draw_statusbar_ppu_off();
+
 
 // TODO: Where is non-zero page? Is this just starting at zero page?
 
@@ -198,7 +202,6 @@ void draw_cur_time_ppu_off();
 
 
 // Must Have
-* Track and display hi-score
 * [later] Actual level design.
 
 // Should Have
@@ -215,6 +218,7 @@ void draw_cur_time_ppu_off();
 
 
 // Nice to Have
+* Big countdown text for final seconds.
 * Title screen nose/mouth overlay.
 * Timed collectibles (cherries, etc)
 * Score tally on Level complete screen.
@@ -223,7 +227,6 @@ void draw_cur_time_ppu_off();
 * Stunned animation for Goblin
 * Brake sparks.
 * Death animation.
-* Lives icon
 * Difficulty.
 * Custom header tiles for HUD.
 * Time sound effect on low time.

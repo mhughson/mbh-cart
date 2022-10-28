@@ -12,6 +12,7 @@
 #include "NES_ST/screen_title.h"
 #include "NES_ST/screen_gameover.h"
 #include "NES_ST/screen_levelcomplete.h"
+#include "NES_ST/screen_empty.h"
 
 #include "map_defs.h"
 #include "maps_a.h"
@@ -96,7 +97,10 @@ void load_screen_gameover()
     ppu_off();
     oam_clear();
     vram_adr(NTADR_A(0, 0));
-    vram_unrle(screen_gameover);
+    vram_unrle(screen_empty);
+	
+	vram_adr(NTADR_A(12, 15));
+	vram_write("FINISH!", 7);	
 	display_score_ppu_off();
     ppu_on_all();
     fade_from_black();
@@ -108,8 +112,7 @@ void load_screen_levelcomplete()
     oam_clear();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_levelcomplete);
-	vram_adr(NTADR_A(3, 2));
-	vram_write("SCORE", 5);	
+	draw_statusbar_ppu_off();
     ppu_on_all();
     fade_from_black();
 }

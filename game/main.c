@@ -91,6 +91,7 @@ unsigned char current_room[240];
 // Used by the anim functions to avoid passing in a parameter.
 anim_info* global_working_anim;
 unsigned char score_bcd[NUM_SCORE_DIGITS];
+unsigned char score_best_bcd[NUM_SCORE_DIGITS];
 char in_x_tile; 
 char in_y_tile;
 unsigned char cur_sfx_chan;
@@ -342,15 +343,7 @@ void go_to_state(unsigned char next_state)
 			// vram_adr(NTADR_A(7, 2));
 			// vram_write("NESDEV COMPO 2022", 17);
 
-			vram_adr(NTADR_A(3, 2));
-			vram_write("SCORE", 5);
-
-
-			vram_adr(NTADR_A(24, 2));	
-			vram_write("TIME", 4);
-			vram_adr(NTADR_A(22, 3));	
-			vram_write(TEXT_EmptyTime, 8);
-			draw_cur_time_ppu_off();
+			draw_statusbar_ppu_off();
 
 			ppu_on_all(); // turn on screen
 
@@ -402,7 +395,7 @@ void go_to_state(unsigned char next_state)
 
 			// will be checked going into STATE_GAMEPLAY
 			player1.is_dead = 0;
-			
+
 			// music_play(3);
 			// delay(240);
 			// music_stop();
@@ -493,6 +486,19 @@ void add_bcd_score()
 		
 		score_bcd[_i] = _sum;
 	}
+
+	for (_i = 0; _i < NUM_SCORE_DIGITS; ++_i)
+	{
+		if (score_bcd[_i] > score_best_bcd[_i])
+		{
+			memcpy(score_best_bcd, score_bcd, NUM_SCORE_DIGITS);
+			break;
+		}
+		else if (score_bcd[_i] < score_best_bcd[_i])
+		{
+			break;
+		}
+	}
 }
 
 void display_score()
@@ -507,6 +513,15 @@ void display_score()
 	_display_score[NUM_SCORE_DIGITS] = '0';
 	_display_score[NUM_SCORE_DIGITS + 1] = '0';
 	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
+
+	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
+	{
+		_display_score[i] = score_best_bcd[i] + '0';
+		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+	}
+	_display_score[NUM_SCORE_DIGITS] = '0';
+	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 12<<3, 3<<3));	
 }
 
 void display_score_ppu_off()
@@ -525,6 +540,28 @@ void display_score_ppu_off()
 	vram_adr(NTADR_A(13, 20));
 	vram_write("SCORE", 6);
 	vram_adr(NTADR_A(12, 21));
+	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
+
+	display_score_best_ppu_off();
+}
+
+void display_score_best_ppu_off()
+{
+	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
+	
+
+	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
+	{
+		_display_score[i] = score_best_bcd[i] + '0';
+		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+	}
+	_display_score[NUM_SCORE_DIGITS] = '0';
+	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
+
+	vram_adr(NTADR_A(12, 17));
+	vram_write("HISCORE", 7);
+	vram_adr(NTADR_A(12, 18));
 	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
 }
 
@@ -699,4 +736,20 @@ void draw_cur_time_ppu_off()
 
  	vram_adr(NTADR_A(22, 3));	
 	vram_write(best_time, 8);
+}
+
+void draw_statusbar_ppu_off()
+{
+	vram_adr(NTADR_A(3, 2));
+	vram_write("SCORE", 5);
+
+	vram_adr(NTADR_A(12, 2));
+	vram_write("HISCORE", 7);
+
+
+	vram_adr(NTADR_A(24, 2));	
+	vram_write("TIME", 4);
+	vram_adr(NTADR_A(22, 3));	
+	vram_write(TEXT_EmptyTime, 8);
+	draw_cur_time_ppu_off();
 }
