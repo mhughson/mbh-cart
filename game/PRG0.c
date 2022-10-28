@@ -97,6 +97,7 @@ void load_screen_gameover()
     oam_clear();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_gameover);
+	display_score_ppu_off();
     ppu_on_all();
     fade_from_black();
 }
@@ -107,7 +108,7 @@ void load_screen_levelcomplete()
     oam_clear();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_levelcomplete);
-	vram_adr(NTADR_A(2, 2));
+	vram_adr(NTADR_A(3, 2));
 	vram_write("SCORE", 5);	
     ppu_on_all();
     fade_from_black();
@@ -404,6 +405,8 @@ void update_gameplay()
 		{
 			i = ANIM_MOVE_RIGHT;
 		}
+		queue_next_anim(i);
+		commit_next_anim();
 
 		// goblin test
 		//
@@ -448,19 +451,25 @@ void update_gameplay()
 
 		if (player1.pos_y > FP_WHOLE(240))
 		{
-			go_to_state(STATE_GAMEOVER);
-			return;
+			if (timer_expired)
+			{
+				go_to_state(STATE_GAMEOVER);
+				return;
+			}
+			else
+			{
+				cur_state = 0xff;
+				go_to_state(STATE_GAMEPLAY);
+			}
 		}
 	}
 
 	global_working_anim = &player1.sprite.anim;
-	queue_next_anim(i);
-	commit_next_anim();
 	update_anim();
 
 	draw_player();
 
-	if (!player1.is_dead)
+	if (!timer_expired)
 	{
 		draw_cur_time();
 	}

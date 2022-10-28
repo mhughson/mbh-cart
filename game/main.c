@@ -99,6 +99,7 @@ unsigned char cur_state;
 unsigned char gems_remaining;
 unsigned char cur_room_index;
 signed char cur_time_digits[6];
+unsigned char timer_expired;
 
 game_actor* in_obj_a;
 game_actor* in_obj_b;
@@ -283,6 +284,7 @@ void go_to_state(unsigned char next_state)
 			}
 
 			cur_room_index = 0;
+			timer_expired = 0;
 		}
 		default:
 		{
@@ -331,8 +333,11 @@ void go_to_state(unsigned char next_state)
 			pal_bg(palette_bg);
 			pal_spr(palette);			
 
-			in_nametable = NAMETABLE_A;
-			banked_call(BANK_0, load_current_map);
+			if (!player1.is_dead)
+			{
+				in_nametable = NAMETABLE_A;
+				banked_call(BANK_0, load_current_map);
+			}
 
 			// vram_adr(NTADR_A(7, 2));
 			// vram_write("NESDEV COMPO 2022", 17);
@@ -394,6 +399,10 @@ void go_to_state(unsigned char next_state)
 			banked_call(BANK_0, load_screen_gameover);
 			music_stop();
 			sfx_play(22, 0);
+
+			// will be checked going into STATE_GAMEPLAY
+			player1.is_dead = 0;
+			
 			// music_play(3);
 			// delay(240);
 			// music_stop();
@@ -430,12 +439,15 @@ unsigned char intersects_box_box()
 void kill_player()
 {
 	music_stop();
-	sfx_play(21, 0);
 	//sfx_play(22, 0);
 
-	player1.vel_x = 0;
-	player1.vel_y = -FP_WHOLE(3);
-	player1.is_dead = 1;
+	if (!player1.is_dead )
+	{
+		sfx_play(21, 0);
+		player1.vel_x = 0;
+		player1.vel_y = -FP_WHOLE(3);
+		player1.is_dead = 1;
+	}
 	//go_to_state(STATE_GAMEOVER);
 }
 
@@ -487,7 +499,6 @@ void display_score()
 {
 	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
 
-
 	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
 	{
 		_display_score[i] = score_bcd[i] + '0';
@@ -496,6 +507,25 @@ void display_score()
 	_display_score[NUM_SCORE_DIGITS] = '0';
 	_display_score[NUM_SCORE_DIGITS + 1] = '0';
 	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
+}
+
+void display_score_ppu_off()
+{
+	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
+
+	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
+	{
+		_display_score[i] = score_bcd[i] + '0';
+		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+	}
+	_display_score[NUM_SCORE_DIGITS] = '0';
+	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
+
+	vram_adr(NTADR_A(13, 20));
+	vram_write("SCORE", 6);
+	vram_adr(NTADR_A(12, 21));
+	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
 }
 
 // const unsigned int _digit_shift_table[NUM_SCORE_DIGITS] =
@@ -631,6 +661,7 @@ void draw_cur_time()
 				// This cancels ALL vram buffer, and will likely be too heavy handed
 				// in the end, but it works for now (TM).
 				clear_vram_buffer();
+				timer_expired = 1;
 				kill_player();
 			}
 		}

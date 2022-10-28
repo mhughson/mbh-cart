@@ -151,6 +151,7 @@ extern unsigned char gems_remaining;
 extern unsigned char grounded;
 extern unsigned char cur_room_index;
 extern signed char cur_time_digits[6];
+extern unsigned char timer_expired;
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
@@ -179,6 +180,7 @@ void kill_player();
 void fade_to_black();
 void fade_from_black();
 void display_score();
+void display_score_ppu_off();
 void draw_cur_time();
 void draw_cur_time_ppu_off();
 
@@ -192,20 +194,20 @@ void draw_cur_time_ppu_off();
 /// TODO
 
 // Core Loop
-* Don't go to game over on death (only on time up)
+[done]
 
 
 // Must Have
 * Actual level design.
 * Roof collision.
 * Handle case when landing on Blocks (treat as rails I think?)
-* Add credits to the boot screen
+* Track and display hi-score
 
 // Should Have
 * Level complete screen++
-* Lives
 * Countdown Timer (with score associated)
 * Additional enemies
+* Score multiplier to reward skill play
 * Pause
 * Settings (Music/Sound disable)
 * [Bug] Tile lookup on edges is broken.
@@ -227,6 +229,7 @@ void draw_cur_time_ppu_off();
 * Difficulty.
 * Custom header tiles for HUD.
 * Time sound effect on low time.
+* Delay on starting gameplay (flashing player, etc)
 
 
 ///
