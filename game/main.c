@@ -393,6 +393,7 @@ void go_to_state(unsigned char next_state)
 		{
 			banked_call(BANK_0, load_screen_gameover);
 			music_stop();
+			sfx_play(22, 0);
 			// music_play(3);
 			// delay(240);
 			// music_stop();
@@ -430,6 +431,7 @@ void kill_player()
 {
 	music_stop();
 	sfx_play(21, 0);
+	//sfx_play(22, 0);
 
 	player1.vel_x = 0;
 	player1.vel_y = -FP_WHOLE(3);
