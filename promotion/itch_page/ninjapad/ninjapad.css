@@ -1,0 +1,375 @@
+#ninjaPad {
+    background-color: #222;
+    height: 0%;
+}
+
+#GAMEPAD {
+    display: none;
+    position: absolute;
+    align-items: center;
+    width: 100%;
+}
+
+#SCREEN {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#OSD {
+    color: red;
+    display: flex;
+    position: absolute;
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: Karmatic Arcade;
+    box-sizing: border-box;
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translateZ(0);
+}
+
+#OSD a {
+  text-decoration: none;
+  margin: 0 auto;
+  display: inline-block;
+  transform: translateZ(0);
+}
+
+#OSD a:link {
+  color: red;
+}
+
+#OSD a:visited {
+  color: red;
+}
+
+#OSD a:hover {
+   color: red;
+}
+
+#OSD a:active {
+   color: yellow;
+}
+
+#REC_STATUS {
+    display: flex;
+    position: absolute;
+    justify-content: left;
+    align-items: center;
+    font-family: VCR OSD Mono;
+    color: white;
+    background-color: black;
+}
+
+#REC_MENU {
+    display: flex;
+    position: absolute;
+    justify-content: right;
+    align-items: center;
+    font-family: VCR OSD Mono;
+    color: white;
+    background-color: black;
+}
+
+#REC_MENU a:link {
+    text-decoration: none;
+    margin: 0 auto;
+    display: inline-block;
+    transform: translateZ(0);
+}
+
+#REC_MENU a:link {
+    color: white;
+}
+
+#REC_MENU a:visited {
+    color: white;
+}
+
+#REC_MENU a:hover {
+    color: white;
+}
+
+#REC_MENU a:active {
+    color: lime;
+}
+
+#DEADZONE {
+    background: #444;
+}
+
+.verticalCenter {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.noselect {
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.dirButtons {
+    position: absolute;
+    left: 4vmin;
+    top: 10vmin;
+    width: 35vmin;
+    height: 35vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.actionButtons {
+    position: absolute;
+    right: 4vmin;
+    top: 10vmin;
+    width: 35vmin;
+    height: 35vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.functionalTL {
+    position: absolute;
+    left: 45vmin;
+    top: 10vmin;
+    width: 10vmin;
+    height: 17.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.functionalBR {
+    position: absolute;
+    left: 45vmin;
+    top: 27.5vmin;
+    width: 10vmin;
+    height: 17.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dpad {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+
+.analogRing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: transparent;
+    border-width: 2.5vmin;
+    border-style: inset;
+}
+
+.analogStick {
+    position: absolute;
+    width: 62%;
+    height: 62%;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: #666;
+    border-width: 2.5vmin;
+    border-style: outset;
+}
+
+.button_B {
+    position: absolute;
+    left: 0%;
+    top: 25%;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: monospace;
+}
+
+.button_A {
+    position: absolute;
+    right: 0%;
+    top: -2.5%;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: monospace;
+}
+
+.button_AB {
+    position: absolute;
+    right: 0%;
+    bottom: -2.5%;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: monospace;
+
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.button_Ax {
+    position: absolute;
+    right: 0%;
+    bottom: -2.5%;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: monospace;
+}
+
+.button_ABx {
+    position: absolute;
+    right: 0%;
+    top: -2.5%;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    font-family: monospace;
+
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.button_SELECT {
+    position: absolute;
+    left: 0%;
+    top: 56%;
+    width: 100%;
+    height: 32%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_START {
+    position: absolute;
+    left: 0%;
+    bottom: 56%;
+    width: 100%;
+    height: 32%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
+.analogSwitchButton {
+    --color_off: #830000;
+    --color_on: red;
+    display: flex;
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 32%;
+    box-sizing: border-box;
+    border-width: 1vmin;
+    border-style: outset;
+    border-radius: 20%;
+    background-color: var(--color_off);
+    border-top-color: var(--color_off);
+    border-left-color: var(--color_off);
+    border-right-color: var(--color_off);
+    border-bottom-color: var(--color_off);
+}
+
+.menuButton {
+    --color_off: #830000;
+    --color_on: red;
+    display: flex;
+    position: absolute;
+    left: 0%;
+    bottom: 0%;
+    width: 100%;
+    height: 32%;
+    box-sizing: border-box;
+    border-width: 1vmin;
+    border-style: outset;
+    border-radius: 20%;
+    background-color: var(--color_off);
+    border-top-color: var(--color_off);
+    border-left-color: var(--color_off);
+    border-right-color: var(--color_off);
+    border-bottom-color: var(--color_off);
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[id^="BUTTON"] {
+    --color: #BBB;
+    background-color: var(--color);
+    border-top-color: var(--color);
+    border-left-color: var(--color);
+    border-right-color: var(--color);
+    border-bottom-color: var(--color);
+    border-style: outset;
+    border-width: 1vmin;
+}
+
+@font-face {
+    font-family: 'VCR OSD Mono';
+    src: url('res/VCR_OSD_MONO.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Karmatic Arcade';
+    src: url('res/ka1.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

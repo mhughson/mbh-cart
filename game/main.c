@@ -78,7 +78,7 @@ unsigned char in_oam_x;
 unsigned char in_oam_y;
 const unsigned char *in_oam_data;
 game_actor player1;
-game_actor enemy1;
+game_actor objs[NUM_ACTORS];
 unsigned int temp16;
 unsigned char tempFlags;
 unsigned char tempFlagsUp;
@@ -101,6 +101,8 @@ unsigned char gems_remaining;
 unsigned char cur_room_index;
 signed char cur_time_digits[6];
 unsigned char timer_expired;
+unsigned char loaded_obj_index;
+unsigned char loaded_obj_id;
 
 game_actor* in_obj_a;
 game_actor* in_obj_b;
@@ -153,6 +155,7 @@ void main (void)
 
 		ppu_wait_nmi(); // wait till beginning of the frame
 
+//		PROFILE_POKE(PROF_B);
 		oam_clear();
 
 		pads = pad_poll(0) | pad_poll(1); // read the first controller
@@ -206,6 +209,8 @@ void main (void)
 				break;
 			}
 		}
+
+		PROFILE_POKE(PROF_CLEAR);
 	}
 }
 
@@ -256,6 +261,7 @@ void commit_next_anim()
 
 void go_to_state(unsigned char next_state)
 {
+
 	if (next_state == cur_state)
 	{
 		return;
@@ -350,23 +356,53 @@ void go_to_state(unsigned char next_state)
 			// todo: non-vram version!
 			display_score();
 
+
 			px = 128 << 8;
 			py = (6 * 16) << 8;
 			dx = P1_MOVE_SPEED;
 			dy = 0;
 			is_jumping = 0;
 
-			player1.pos_x = FP_WHOLE(4 * 16);
-			player1.pos_y = FP_WHOLE(9 * 16);
+
 			player1.vel_x = P1_MOVE_SPEED;
 			player1.vel_y = 0;
 			player1.is_dead = 0;
+			player1.type = TYPE_PLAYER;
 
-			enemy1.pos_x = FP_WHOLE(2 * 16);
-			enemy1.pos_y = FP_WHOLE(9 * 16);
-			enemy1.vel_x = P1_MOVE_SPEED;
-			enemy1.vel_y = 0;
-			enemy1.is_dead = 0;
+			memfill(objs, 0, NUM_ACTORS * sizeof(game_actor));
+
+			// used to track which object has been read in from the dynamics layer, across
+			// multiple loops.
+			x = 0;
+			// used to count how many dynamic objects are created.
+			y = 0;
+			do
+			{
+				banked_call(BANK_0, get_obj_id);				
+
+				switch (loaded_obj_id - TYPE_ID_START_INDEX_TILED)
+				{
+					case TYPE_PLAYER:
+					{
+						player1.pos_x = FP_WHOLE((loaded_obj_index % ROOM_WIDTH_TILES) << 4);
+						player1.pos_y = FP_WHOLE((loaded_obj_index / ROOM_WIDTH_TILES) << 4);
+						break;
+					}
+					case TYPE_GOBLIN:
+					{
+						objs[y].pos_x = FP_WHOLE((loaded_obj_index % ROOM_WIDTH_TILES) << 4);
+						objs[y].pos_y = FP_WHOLE((loaded_obj_index / ROOM_WIDTH_TILES) << 4);
+						objs[y].vel_x = P1_MOVE_SPEED;
+						objs[y].vel_y = 0;
+						objs[y].is_dead = 0;
+						objs[y].type = TYPE_GOBLIN;
+						if (objs[y].pos_x >= FP_WHOLE(128)) objs[y].vel_x *= -1;
+						++y;	
+						break;
+					}
+				}
+
+			} while(loaded_obj_id != 0xff);
 
 			fade_from_black();
 			music_play(0);

@@ -77,6 +77,10 @@ const struct anim_def* sprite_anims[] =
 	&goblin_move_right_up,
 };
 
+// private functions
+void update_goblin();
+void draw_goblin();
+
 void load_screen_boot()
 {
     ppu_off();
@@ -89,6 +93,9 @@ void load_screen_title()
     ppu_off();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_title);
+
+	vram_adr(NTADR_A(3, 2));
+	vram_write("SCORE", 5);	
     ppu_on_all();
 }
 void load_screen_gameover()
@@ -168,6 +175,14 @@ void vram_buffer_load_2x2_metatile()
 	local_i |= ((metatiles_default)[local_att_index16]) << 6;	
 
 	one_vram_buffer(local_i, get_at_addr(0, (local_x) * CELL_SIZE, (local_y) * CELL_SIZE));
+}
+
+void get_obj_id()
+{
+	loaded_obj_index = rooms_maps_a[cur_room_index][240 + x + NUM_CUSTOM_PROPS];
+	++x;
+	loaded_obj_id = rooms_maps_a[cur_room_index][240 + x + NUM_CUSTOM_PROPS];
+	++x;
 }
 
 void load_current_map()
@@ -419,40 +434,18 @@ void update_gameplay()
 		queue_next_anim(i);
 		commit_next_anim();
 
-		// goblin test
-		//
-
-		enemy1.pos_x += enemy1.vel_x;
-		enemy1.pos_y += enemy1.vel_y;
-
-		in_obj_a = &player1;
-		in_obj_b = &enemy1;
-		if (intersects_box_box())
+		for (i = 0; i < NUM_ACTORS; ++i)
 		{
-			if ((enemy1.pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
+			in_obj_a = &objs[i];
+			switch (in_obj_a->type)
 			{
-				// if downward, bounce
-				if (player1.vel_y > 0)
+				case TYPE_GOBLIN:
 				{
-					sfx_play(5, ++cur_sfx_chan);
-					player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
-					is_jumping = 1;
-					enemy1.vel_x = FP_0_25;
+					update_goblin();
+					break;
 				}
 			}
-			else
-			{
-				kill_player();
-			}
-		}
-
-		global_working_anim = &enemy1.sprite.anim;
-		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT);
-		commit_next_anim();
-		update_anim();
-
-		//
-		// goblin test		
+		}	
 	}
 	else
 	{
@@ -494,17 +487,69 @@ void update_gameplay()
 	// 	music_stop();
 	// }
 
+	for (i = 0; i < NUM_ACTORS; ++i)
+	{
+		in_obj_a = &objs[i];
+		switch (in_obj_a->type)
+		{
+			case TYPE_GOBLIN:
+			{
+				draw_goblin();
+				break;
+			}
+		}
+	}
+}
 
-	// goblin test
-	//
+void update_goblin()
+{
+		in_obj_a->pos_x += in_obj_a->vel_x;
+		in_obj_a->pos_y += in_obj_a->vel_y;
 
-	oam_meta_spr(
-		high_byte(enemy1.pos_x), 
-		high_byte(enemy1.pos_y), 
-		meta_player_list[sprite_anims[enemy1.sprite.anim.anim_current]->frames[enemy1.sprite.anim.anim_frame]]);
+		in_obj_b = &player1;
+		if (intersects_box_box())
+		{
+			if ((in_obj_a->pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
+			{
+				// if downward, bounce
+				if (player1.vel_y > 0)
+				{
+					sfx_play(5, ++cur_sfx_chan);
+					player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
+					is_jumping = 1;
+					in_obj_a->vel_x = (in_obj_a->vel_x > 0) ? FP_0_25 : -FP_0_25;
+				}
+			}
+			else
+			{
+				kill_player();
+			}
+		}
 
-	//
-	// goblin test
+		global_working_anim = &in_obj_a->sprite.anim;
+		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT);
+		commit_next_anim();
+		update_anim();
+}
+
+void draw_goblin()
+{
+	if (in_obj_a->vel_x < 0)
+	{
+		in_oam_x = high_byte(in_obj_a->pos_x);
+		in_oam_y = high_byte(in_obj_a->pos_y);
+		in_oam_data = meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]];
+		c_oam_meta_spr_flipped();
+	}
+	else
+	{
+		oam_meta_spr(high_byte(in_obj_a->pos_x), high_byte(in_obj_a->pos_y), meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]]);
+	}
+
+	// oam_meta_spr(
+	// 	high_byte(in_obj_a->pos_x), 
+	// 	high_byte(in_obj_a->pos_y), 
+	// 	meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]]);
 }
 
 void draw_player()

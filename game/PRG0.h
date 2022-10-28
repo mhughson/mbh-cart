@@ -13,6 +13,10 @@ void load_screen_levelcomplete();
 void update_gameplay();
 void draw_player();
 
+// params: x (object to start at)
+// output: loaded_obj_index
+//         loaded_obj_id 
+void get_obj_id();
 // params: in_nametable
 void load_current_map();
 

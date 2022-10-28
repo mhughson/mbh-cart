@@ -70,9 +70,18 @@ enum { BANK_0, BANK_1, BANK_2 };
 
 #define NUM_SCORE_DIGITS (5)
 
+#define NUM_ACTORS (6)
+// subracting this from the tile id from the name table, will give you the OBJ_TYPE
+#define TYPE_ID_START_INDEX_TILED (112)
+
 enum STATES 
 {
 	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER, STATE_LEVEL_COMPLETE
+};
+
+enum OBJ_TYPES
+{
+	TYPE_NONE, TYPE_PLAYER, TYPE_GOBLIN,
 };
 
 typedef struct anim_info
@@ -112,6 +121,8 @@ typedef struct game_actor
 	unsigned char facing_left;
 
 	unsigned char is_dead;
+
+	unsigned char type;
 } game_actor;
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -130,7 +141,6 @@ extern unsigned char in_oam_x;
 extern unsigned char in_oam_y;
 extern const unsigned char *in_oam_data;
 extern game_actor player1;
-extern game_actor enemy1;
 extern unsigned int temp16;
 extern unsigned char tempFlags;
 extern unsigned char tempFlagsDown;
@@ -153,9 +163,12 @@ extern unsigned char grounded;
 extern unsigned char cur_room_index;
 extern signed char cur_time_digits[6];
 extern unsigned char timer_expired;
+extern unsigned char loaded_obj_index;
+extern unsigned char loaded_obj_id;
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
+extern game_actor objs[NUM_ACTORS];
 // load_current_map
 extern unsigned int in_nametable;
 // add_bcd_score
@@ -205,12 +218,13 @@ void draw_statusbar_ppu_off();
 * [later] Actual level design.
 
 // Should Have
-* Level complete screen++
-* Countdown Timer (with score associated)
 * Additional enemies
 * Score multiplier to reward skill play
+* Level complete screen++
+* Countdown Timer (with score associated)
 * Pause
 * Settings (Music/Sound disable)
+* Auto-advance credits.
 * [Bug] Tile lookup on edges is broken.
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
 * [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
@@ -218,6 +232,7 @@ void draw_statusbar_ppu_off();
 
 
 // Nice to Have
+* Palette changes for level
 * Big countdown text for final seconds.
 * Title screen nose/mouth overlay.
 * Timed collectibles (cherries, etc)
