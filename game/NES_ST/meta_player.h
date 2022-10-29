@@ -232,6 +232,46 @@ const unsigned char meta_player_Metasprite17_data[]={
 
 };
 
+const unsigned char meta_player_Metasprite18_data[]={
+
+	  0,  0,0xe0,2,
+	  8,  0,0xe1,2,
+	  0,  8,0xf0,2,
+	  8,  8,0xf1,2,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite19_data[]={
+
+	  0,  0,0xe2,2,
+	  8,  0,0xe3,2,
+	  0,  8,0xf2,2,
+	  8,  8,0xf3,2,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite20_data[]={
+
+	  0,  0,0xe4,2,
+	  8,  0,0xe5,2,
+	  0,  8,0xf4,2,
+	  8,  8,0xf5,2,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite21_data[]={
+
+	  0,  0,0xe6,2,
+	  8,  0,0xe7,2,
+	  0,  8,0xf6,2,
+	  8,  8,0xf7,2,
+	0x80
+
+};
+
 const unsigned char* const meta_player_list[]={
 
 	meta_player_Metasprite0_data,
@@ -251,7 +291,11 @@ const unsigned char* const meta_player_list[]={
 	meta_player_Metasprite14_data,
 	meta_player_Metasprite15_data,
 	meta_player_Metasprite16_data,
-	meta_player_Metasprite17_data
+	meta_player_Metasprite17_data,
+	meta_player_Metasprite18_data,
+	meta_player_Metasprite19_data,
+	meta_player_Metasprite20_data,
+	meta_player_Metasprite21_data
 
 };
 

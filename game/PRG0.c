@@ -53,6 +53,8 @@ const anim_def goblin_move_right 		= { 5, 3, { 9, 10, 11 } };
 const anim_def goblin_move_right_down 	= { 5, 3, { 12, 13, 14 } };
 const anim_def goblin_move_right_up 	= { 5, 3, { 15, 16, 17 } };
 
+const anim_def boulder_move_right	= { 5, 4, { 18, 19, 20, 21 }};
+
 enum
 {
 	ANIM_MOVE_RIGHT = 0,
@@ -62,6 +64,8 @@ enum
 	ANIM_GOBLIN_MOVE_RIGHT,
 	ANIM_GOBLIN_MOVE_RIGHT_DOWN,
 	ANIM_GOBLIN_MOVE_RIGHT_UP, 	
+
+	ANIM_BOULDER_MOVE_RIGHT,
 
 	NUM_ANIMS,
 };
@@ -75,6 +79,8 @@ const struct anim_def* sprite_anims[] =
 	&goblin_move_right,
 	&goblin_move_right_down,
 	&goblin_move_right_up,
+
+	&boulder_move_right,
 };
 
 // private functions
@@ -715,7 +721,7 @@ void update_boulder()
 		}
 
 		global_working_anim = &in_obj_a->sprite.anim;
-		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT_UP);
+		queue_next_anim(ANIM_BOULDER_MOVE_RIGHT);
 		commit_next_anim();
 		update_anim();
 
