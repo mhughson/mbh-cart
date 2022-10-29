@@ -384,13 +384,21 @@ void update_gameplay()
 
 		if (index & FLAG_WALL && player1.vel_y < 0)
 		{
+			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
+			in_y_tile = (high_byte(player1.pos_y))/16;
+			index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+			if (current_room[index] == TILE_ID_BREAKABLE_ROCK)
+			{
+				current_room[index] = 0;
+				vram_buffer_load_2x2_metatile();
+			}
 			player1.vel_y = 0;
-			player1.pos_y = py_old;
+			player1.pos_y = py_old;		
 		}
 
 		// check for blocks above before allowing a jump. Can be remove if needed for perf or something. Just avoids weird spammy jumps.
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y)-1)/16));
-		if (pads_new & PAD_A && grounded && (index & FLAG_WALL) == 0)
+		if (pads_new & PAD_A && grounded)// && (index & FLAG_WALL) == 0)
 		{
 			sfx_play(5, ++cur_sfx_chan);
 			player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
@@ -637,8 +645,17 @@ void update_boulder()
 
 	x = (high_byte(in_obj_a->pos_x)) + (in_obj_a->vel_x > 0 ? 16 : 0);
 
-	if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(in_obj_a->pos_y) + 8)/16)) & FLAG_WALL)
+	index = GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(in_obj_a->pos_y) + 8)/16);
+
+	if (GET_META_TILE_FLAGS(index) & FLAG_WALL)
 	{
+		if (current_room[index] == TILE_ID_BREAKABLE_ROCK)
+		{
+			in_x_tile = x/16;
+			in_y_tile = (high_byte(in_obj_a->pos_y) + 8)/16;
+			current_room[index] = 0;
+			vram_buffer_load_2x2_metatile();
+		}
 		in_obj_a->vel_x *= -1;
 	}
 

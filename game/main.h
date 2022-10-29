@@ -44,8 +44,10 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define FLAG_DOWN_RIGHT		(1 << 5)
 #define FLAG_ENTRY			(1 << 7)
 
+#define TILE_ID_BREAKABLE_ROCK (59)
+
 #define P1_MOVE_SPEED (FP_WHOLE(1))
-#define BOULDER_MOVE_SPEED (FP_WHOLE(1) + FP_0_15)
+#define BOULDER_MOVE_SPEED (FP_WHOLE(1))
 #define BOULDER_FALL_SPEED (FP_0_025)
 
 // Fixed Point Math Helpers
@@ -229,6 +231,7 @@ void draw_statusbar_ppu_off();
 * Pause
 * Settings (Music/Sound disable)
 * Auto-advance credits.
+* Delay before boulder respawns, and telgraph is dropping in.
 * [Bug] Tile lookup on edges is broken.
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
 * [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
@@ -250,6 +253,7 @@ void draw_statusbar_ppu_off();
 * Custom header tiles for HUD.
 * Time sound effect on low time.
 * Delay on starting gameplay (flashing player, etc)
+* [Bug] Boulder POPS when going down ramps on 2nd level if make speed set to something like 1.15
 
 
 ///

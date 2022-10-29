@@ -14,7 +14,7 @@
  "name":"nametable",
  "spacing":0,
  "tilecount":480,
- "tiledversion":"1.7.0",
+ "tiledversion":"1.6.0",
  "tileheight":16,
  "tiles":[
         {
@@ -2633,12 +2633,12 @@
                 {
                  "name":"flag0",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag1",
                  "type":"bool",
-                 "value":false
+                 "value":true
                 }, 
                 {
                  "name":"flag2",
