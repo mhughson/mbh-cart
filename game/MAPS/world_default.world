@@ -20,6 +20,13 @@
             "width": 256,
             "x": -256,
             "y": 0
+        },
+        {
+            "fileName": "map_alpha.json",
+            "height": 240,
+            "width": 256,
+            "x": -512,
+            "y": 0
         }
     ],
     "onlyShowAdjacentMaps": false,

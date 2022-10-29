@@ -86,6 +86,8 @@ const struct anim_def* sprite_anims[] =
 // private functions
 void update_goblin();
 void draw_goblin();
+void update_boulder_spawner();
+void draw_boulder_spawner() { }
 void update_boulder();
 void draw_boulder();
 
@@ -451,6 +453,12 @@ void update_gameplay()
 					break;
 				}
 
+				case TYPE_BOULDER_SPAWNER:
+				{
+					update_boulder_spawner();
+					break;
+				}
+
 				case TYPE_BOULDER:
 				{
 					update_boulder();
@@ -570,10 +578,54 @@ void draw_goblin()
 	// 	meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]]);
 }
 
+void update_boulder_spawner()
+{
+	static unsigned char _i;
+
+	// is_dead is used to track the id of the boulder we last spawned
+	if (in_obj_a->is_dead == 0)
+	{
+		for (_i = 0; _i < NUM_ACTORS; ++_i)
+		{
+			if (objs[_i].type == TYPE_NONE)
+			{
+				objs[_i].pos_x = in_obj_a->pos_x;
+				objs[_i].pos_y = in_obj_a->pos_y;
+				objs[_i].vel_x = -FP_0_25;
+				objs[_i].vel_y = 0;
+				objs[_i].is_dead = 0;
+				objs[_i].type = TYPE_BOULDER;
+				// remember who we own.
+				in_obj_a->is_dead = _i;
+				break;
+			}
+		}
+	}
+	else
+	{
+		_i = in_obj_a->is_dead;
+		if (objs[_i].is_dead)
+		{
+			objs[_i].pos_x = in_obj_a->pos_x;
+			objs[_i].pos_y = in_obj_a->pos_y;
+			objs[_i].vel_x = -FP_0_25;
+			objs[_i].vel_y = 0;
+			objs[_i].is_dead = 0;
+			objs[_i].type = TYPE_BOULDER;			
+		}
+	}
+}
+
 void update_boulder()
 {
 	// TODO: is_on_ramp
 //PROFILE_POKE(PROF_R);
+//	static unsigned char _i;
+
+	if (in_obj_a->is_dead)
+	{
+		return;
+	}
 
 	px_old = in_obj_a->pos_x;
 	py_old = in_obj_a->pos_y;
@@ -594,12 +646,12 @@ void update_boulder()
 	
 	temp_on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
 
-	i = 0;
-	// Did we move into a new tile
-	if (((high_byte(px_old) + 8) / 16) != ((high_byte(in_obj_a->pos_x) + 8) / 16))
-	{
-		i = 1;
-	}
+	// _i = 0;
+	// // Did we move into a new tile
+	// if (((high_byte(px_old) + 8) / 16) != ((high_byte(in_obj_a->pos_x) + 8) / 16))
+	// {
+	// 	_i = 1;
+	// }
 	
 //	if (i)
 	{
@@ -660,77 +712,41 @@ void update_boulder()
 	{
 		//kill_player();
 		// destroy boulder?
+		in_obj_a->is_dead = 1;
 	}
 
-// OLD UPDATE
-//
-
-		// in_obj_a->vel_y += GRAVITY_LOW;
-
-		// index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(in_obj_a->pos_x) + 8)/16, (high_byte(in_obj_a->pos_y) + 16)/16));
-		// if (in_obj_a->vel_y >= 0 && (index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT)))
-		// {
-
-		// }
-		// else if (in_obj_a->vel_y >= 0 && index & FLAG_FLOOR)// && ((index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT)) == 0))
-		// {
-		// 	if (in_obj_a->vel_y >= FP_0_25)
-		// 	{
-		// 		in_obj_a->vel_y -= FP_0_75;
-		// 		in_obj_a->vel_y *= -1;
-		// 	}
-		// 	else
-		// 	{
-		// 		in_obj_a->vel_y = 0;
-		// 	}
-		// 	in_obj_a->pos_y = FP_WHOLE((((high_byte(in_obj_a->pos_y)) / 16)) * 16);
-		// }
-
-		// in_obj_a->pos_x += in_obj_a->vel_x;
-		// in_obj_a->pos_y += in_obj_a->vel_y;
-
-		// x = (high_byte(in_obj_a->pos_x)) + (in_obj_a->vel_x > 0 ? 16 : 0);
-
-		// if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(in_obj_a->pos_y) + 8)/16)) & FLAG_WALL)
-		// {
-		// 	in_obj_a->vel_x *= -1;
-		// }
-
-//
-// END OLD UPDATE
-
-
-		in_obj_b = &player1;
-		if (intersects_box_box())
+	in_obj_b = &player1;
+	if (intersects_box_box())
+	{
+		if ((in_obj_a->pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
 		{
-			if ((in_obj_a->pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
+			// if downward, bounce
+			if (player1.vel_y > 0)
 			{
-				// if downward, bounce
-				if (player1.vel_y > 0)
-				{
-					sfx_play(5, ++cur_sfx_chan);
-					player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
-					is_jumping = 1;
-					//in_obj_a->vel_x = (in_obj_a->vel_x > 0) ? FP_0_25 : -FP_0_25;
-				}
-			}
-			else
-			{
-				kill_player();
+				sfx_play(5, ++cur_sfx_chan);
+				player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
+				is_jumping = 1;
+				//in_obj_a->vel_x = (in_obj_a->vel_x > 0) ? FP_0_25 : -FP_0_25;
 			}
 		}
+		else
+		{
+			kill_player();
+		}
+	}
 
-		global_working_anim = &in_obj_a->sprite.anim;
-		queue_next_anim(ANIM_BOULDER_MOVE_RIGHT);
-		commit_next_anim();
-		update_anim();
+	global_working_anim = &in_obj_a->sprite.anim;
+	queue_next_anim(ANIM_BOULDER_MOVE_RIGHT);
+	commit_next_anim();
+	update_anim();
 
 //PROFILE_POKE(PROF_B);		
 }
 
 void draw_boulder()
 {
-	if (in_obj_a->vel_x < 0)
+	// boulder looks better with reversed animations
+	if (in_obj_a->vel_x > 0)
 	{
 		in_oam_x = high_byte(in_obj_a->pos_x);
 		in_oam_y = high_byte(in_obj_a->pos_y);
