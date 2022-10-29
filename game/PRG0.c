@@ -80,6 +80,9 @@ const struct anim_def* sprite_anims[] =
 // private functions
 void update_goblin();
 void draw_goblin();
+void update_boulder();
+void draw_boulder();
+
 
 void load_screen_boot()
 {
@@ -441,6 +444,12 @@ void update_gameplay()
 					update_goblin();
 					break;
 				}
+
+				case TYPE_BOULDER:
+				{
+					update_boulder();
+					break;
+				}
 			}
 		}	
 	}
@@ -492,6 +501,12 @@ void update_gameplay()
 			case TYPE_GOBLIN:
 			{
 				draw_goblin();
+				break;
+			}
+
+			case TYPE_BOULDER:
+			{
+				draw_boulder();
 				break;
 			}
 		}
@@ -547,6 +562,179 @@ void draw_goblin()
 	// 	high_byte(in_obj_a->pos_x), 
 	// 	high_byte(in_obj_a->pos_y), 
 	// 	meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]]);
+}
+
+void update_boulder()
+{
+	// TODO: is_on_ramp
+//PROFILE_POKE(PROF_R);
+
+	px_old = in_obj_a->pos_x;
+	py_old = in_obj_a->pos_y;
+
+	
+	in_obj_a->pos_x += in_obj_a->vel_x;
+	in_obj_a->pos_y += in_obj_a->vel_y;
+
+
+	x = (high_byte(in_obj_a->pos_x)) + (in_obj_a->vel_x > 0 ? 16 : 0);
+
+	if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(in_obj_a->pos_y) + 8)/16)) & FLAG_WALL)
+	{
+		in_obj_a->vel_x *= -1;
+	}
+
+	index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(in_obj_a->pos_x) + 8)/16, (high_byte(in_obj_a->pos_y) + 16)/16));
+	
+	temp_on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
+
+	i = 0;
+	// Did we move into a new tile
+	if (((high_byte(px_old) + 8) / 16) != ((high_byte(in_obj_a->pos_x) + 8) / 16))
+	{
+		i = 1;
+	}
+	
+//	if (i)
+	{
+		if ((index & (FLAG_DOWN_RIGHT)) && in_obj_a->vel_x > 0)
+		{
+			in_obj_a->vel_y = abs(in_obj_a->vel_x);
+			in_obj_a->vel_y += BOULDER_FALL_SPEED;
+			if (in_obj_a->vel_y > BOULDER_MOVE_SPEED) in_obj_a->vel_y = BOULDER_MOVE_SPEED;
+			in_obj_a->vel_x = (in_obj_a->vel_x < 0) ? -in_obj_a->vel_y : in_obj_a->vel_y;
+		}
+		else if ((index & (FLAG_DOWN_LEFT)) && in_obj_a->vel_x < 0)
+		{
+			// if ((index & FLAG_ENTRY))
+			// {
+			// 	//in_obj_a->vel_x = -BOULDER_MOVE_SPEED;
+			// 	in_obj_a->vel_y = abs(in_obj_a->vel_x);
+			// }
+			// else
+			{
+				in_obj_a->vel_y = abs(in_obj_a->vel_x);
+				in_obj_a->vel_y += BOULDER_FALL_SPEED;
+				if (in_obj_a->vel_y > BOULDER_MOVE_SPEED) in_obj_a->vel_y = BOULDER_MOVE_SPEED;
+				in_obj_a->vel_x = (in_obj_a->vel_x < 0) ? -in_obj_a->vel_y : in_obj_a->vel_y;
+			}
+//			is_on_ramp = 1;
+		}
+	}
+
+	if (!temp_on_ramp)
+	{
+		in_obj_a->vel_y += GRAVITY_LOW;
+	}
+	// else
+	// {
+	// 	in_obj_a->vel_y += GRAVITY_LOW;
+	// 	// keep x and y in sync.
+	// 	in_obj_a->vel_x = (in_obj_a->vel_x < 0) ? -in_obj_a->vel_y : -in_obj_a->vel_y;
+	// }
+
+	if (in_obj_a->vel_y >= 0 && index & FLAG_FLOOR && (/*!is_on_ramp ||*/ !temp_on_ramp))// (!on_ramp || ((pads & PAD_DOWN) == 0)))
+	{
+		in_obj_a->vel_y = 0;
+		in_obj_a->pos_y = FP_WHOLE((((high_byte(in_obj_a->pos_y)) / 16)) * 16);
+//		is_on_ramp = 0;
+	}
+
+
+	// roof
+	index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(in_obj_a->pos_x) + 8)/16, (high_byte(in_obj_a->pos_y))/16));
+	if (index & FLAG_WALL && in_obj_a->vel_y < 0)
+	{
+		in_obj_a->vel_y = 0;
+		in_obj_a->pos_y = py_old;
+	}
+
+	index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(in_obj_a->pos_x) + 8)/16, (high_byte(in_obj_a->pos_y) + 8)/16));
+	if (index & FLAG_KILL)
+	{
+		//kill_player();
+		// destroy boulder?
+	}
+
+// OLD UPDATE
+//
+
+		// in_obj_a->vel_y += GRAVITY_LOW;
+
+		// index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(in_obj_a->pos_x) + 8)/16, (high_byte(in_obj_a->pos_y) + 16)/16));
+		// if (in_obj_a->vel_y >= 0 && (index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT)))
+		// {
+
+		// }
+		// else if (in_obj_a->vel_y >= 0 && index & FLAG_FLOOR)// && ((index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT)) == 0))
+		// {
+		// 	if (in_obj_a->vel_y >= FP_0_25)
+		// 	{
+		// 		in_obj_a->vel_y -= FP_0_75;
+		// 		in_obj_a->vel_y *= -1;
+		// 	}
+		// 	else
+		// 	{
+		// 		in_obj_a->vel_y = 0;
+		// 	}
+		// 	in_obj_a->pos_y = FP_WHOLE((((high_byte(in_obj_a->pos_y)) / 16)) * 16);
+		// }
+
+		// in_obj_a->pos_x += in_obj_a->vel_x;
+		// in_obj_a->pos_y += in_obj_a->vel_y;
+
+		// x = (high_byte(in_obj_a->pos_x)) + (in_obj_a->vel_x > 0 ? 16 : 0);
+
+		// if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(in_obj_a->pos_y) + 8)/16)) & FLAG_WALL)
+		// {
+		// 	in_obj_a->vel_x *= -1;
+		// }
+
+//
+// END OLD UPDATE
+
+
+		in_obj_b = &player1;
+		if (intersects_box_box())
+		{
+			if ((in_obj_a->pos_y + FP_WHOLE(8)) > (player1.pos_y + FP_WHOLE(16)))
+			{
+				// if downward, bounce
+				if (player1.vel_y > 0)
+				{
+					sfx_play(5, ++cur_sfx_chan);
+					player1.vel_y = -(FP_WHOLE(1) + FP_0_25);
+					is_jumping = 1;
+					//in_obj_a->vel_x = (in_obj_a->vel_x > 0) ? FP_0_25 : -FP_0_25;
+				}
+			}
+			else
+			{
+				kill_player();
+			}
+		}
+
+		global_working_anim = &in_obj_a->sprite.anim;
+		queue_next_anim(ANIM_GOBLIN_MOVE_RIGHT_UP);
+		commit_next_anim();
+		update_anim();
+
+//PROFILE_POKE(PROF_B);		
+}
+
+void draw_boulder()
+{
+	if (in_obj_a->vel_x < 0)
+	{
+		in_oam_x = high_byte(in_obj_a->pos_x);
+		in_oam_y = high_byte(in_obj_a->pos_y);
+		in_oam_data = meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]];
+		c_oam_meta_spr_flipped();
+	}
+	else
+	{
+		oam_meta_spr(high_byte(in_obj_a->pos_x), high_byte(in_obj_a->pos_y), meta_player_list[sprite_anims[in_obj_a->sprite.anim.anim_current]->frames[in_obj_a->sprite.anim.anim_frame]]);
+	}
 }
 
 void draw_player()

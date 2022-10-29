@@ -400,6 +400,17 @@ void go_to_state(unsigned char next_state)
 						++y;	
 						break;
 					}
+					case TYPE_BOULDER:
+					{
+						objs[y].pos_x = FP_WHOLE((loaded_obj_index % ROOM_WIDTH_TILES) << 4);
+						objs[y].pos_y = FP_WHOLE((loaded_obj_index / ROOM_WIDTH_TILES) << 4);
+						objs[y].vel_x = -FP_0_25;
+						objs[y].vel_y = 0;
+						objs[y].is_dead = 0;
+						objs[y].type = TYPE_BOULDER;
+						++y;	
+						break;
+					}
 				}
 
 			} while(loaded_obj_id != 0xff);

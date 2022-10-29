@@ -45,8 +45,12 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define FLAG_ENTRY			(1 << 7)
 
 #define P1_MOVE_SPEED (FP_WHOLE(1))
+#define BOULDER_MOVE_SPEED (FP_WHOLE(1) + FP_0_15)
+#define BOULDER_FALL_SPEED (FP_0_025)
 
 // Fixed Point Math Helpers
+
+#define FP_0_025 (6)
 #define FP_0_05 (13)
 #define FP_0_10 (26)
 #define FP_0_15 (38)
@@ -81,7 +85,7 @@ enum STATES
 
 enum OBJ_TYPES
 {
-	TYPE_NONE, TYPE_PLAYER, TYPE_GOBLIN,
+	TYPE_NONE, TYPE_PLAYER, TYPE_GOBLIN, TYPE_BOULDER,
 };
 
 typedef struct anim_info
