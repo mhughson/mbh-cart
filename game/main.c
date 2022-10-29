@@ -66,6 +66,7 @@ unsigned int index16;
 unsigned char x;
 unsigned char y;
 unsigned char tick_count;
+unsigned int ticks_in_state16;
 unsigned char pads;
 unsigned char pads_new;
 unsigned int px;
@@ -83,7 +84,6 @@ unsigned int temp16;
 unsigned char tempFlags;
 unsigned char tempFlagsUp;
 unsigned char tempFlagsDown;
-unsigned char ticks_since_attack;
 unsigned char temp_on_ramp;
 unsigned char is_jumping;
 unsigned char is_on_ramp;
@@ -152,6 +152,7 @@ void main (void)
 	while (1)
 	{
 		++tick_count;
+		++ticks_in_state16;
 
 		ppu_wait_nmi(); // wait till beginning of the frame
 
@@ -167,7 +168,7 @@ void main (void)
 		{
 			case STATE_BOOT:
 			{
-				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON || ticks_in_state16 > (60 * 2))
 				{
 					go_to_state(STATE_TITLE);
 				}
@@ -298,6 +299,8 @@ void go_to_state(unsigned char next_state)
 			break;
 		}
 	}
+
+	ticks_in_state16 = 0;
 
 	cur_state = next_state;
 

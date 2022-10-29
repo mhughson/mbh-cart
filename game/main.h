@@ -139,6 +139,7 @@ extern unsigned int index16;
 extern unsigned char x;
 extern unsigned char y;
 extern unsigned char tick_count;
+extern unsigned int ticks_in_state16;
 extern unsigned char pads;
 extern unsigned char pads_new;
 extern unsigned int px_old;
@@ -151,7 +152,6 @@ extern unsigned int temp16;
 extern unsigned char tempFlags;
 extern unsigned char tempFlagsDown;
 extern unsigned char tempFlagsUp;
-extern unsigned char ticks_since_attack;
 extern unsigned char temp_on_ramp;
 extern unsigned char is_jumping;
 extern unsigned char is_on_ramp;
@@ -230,7 +230,6 @@ void draw_statusbar_ppu_off();
 * Countdown Timer (with score associated)
 * Pause
 * Settings (Music/Sound disable)
-* Auto-advance credits.
 * Delay before boulder respawns, and telgraph is dropping in.
 * [Bug] Tile lookup on edges is broken.
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
@@ -243,6 +242,7 @@ void draw_statusbar_ppu_off();
 * Big countdown text for final seconds.
 * Title screen nose/mouth overlay.
 * Timed collectibles (cherries, etc)
+* Collectibles in blocks.
 * Score tally on Level complete screen.
 * Score tally on Game Over screen.
 * Point kickers
