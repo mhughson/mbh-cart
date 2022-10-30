@@ -225,7 +225,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Delay on starting gameplay (flashing player, etc)
 * New game over art
 * Timed collectibles (cherries, etc)
 * Point kickers
@@ -233,7 +232,7 @@ void draw_statusbar_ppu_off();
 * Delay before boulder respawns, and telgraph is dropping in.
 * [Bug] Can get stuck in tile if jumping into the corner of it. (https://www.youtube.com/watch?v=3CVitijT8k8&ab_channel=WhiteHat94)
 * [Bug] Tile lookup on edges is broken.
-* Time sound effect on low time.
+* Time sound effect on low time. (fast music too)
 * Hold up/down sign.
 * Block smash animation
 * Collectibles in blocks.
@@ -241,7 +240,6 @@ void draw_statusbar_ppu_off();
 
 // Nice to Have
 * Blinking PRESS START text
-* Sound effect on PRESS START
 * Make breakable blocks more obvious.
 * [Feedback] Level complete is too abrupt and confusing.
 * [Feedback] 2nd level is annoying that you can't get back to the top. Maybe put jumpable tracks?

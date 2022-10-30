@@ -270,6 +270,22 @@ void update_gameplay()
 		set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
 	}
 
+	if (ticks_in_state16 < 120)
+	{
+		if (ticks_in_state16 == 60)
+		{
+			music_play(0);
+		}
+		if (tick_count % 16 < 8)
+		{
+		global_working_anim = &player1.sprite.anim;
+		queue_next_anim(ANIM_MOVE_RIGHT);
+		commit_next_anim();
+		draw_player();
+		}
+		return;
+	}
+
 	if (!player1.is_dead)
 	{
 		px_old = player1.pos_x;
@@ -451,6 +467,8 @@ void update_gameplay()
 		{
 			i = ANIM_MOVE_RIGHT;
 		}
+
+		global_working_anim = &player1.sprite.anim;		
 		queue_next_anim(i);
 		commit_next_anim();
 

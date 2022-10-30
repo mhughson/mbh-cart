@@ -195,6 +195,9 @@ void main (void)
 			{
 				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
 				{
+					music_stop();
+					sfx_play(16, ++cur_sfx_chan);
+					//delay(30);
 					go_to_state(STATE_GAMEPLAY);
 				}
 
@@ -459,7 +462,7 @@ void go_to_state(unsigned char next_state)
 			is_paused = 0;
 
 			fade_from_black();
-			music_play(0);
+			//music_play(0);
 
 			break;
 		}
