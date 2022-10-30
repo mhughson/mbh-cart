@@ -1,27 +1,6 @@
 {
     "maps": [
         {
-            "fileName": "test_map.json",
-            "height": 240,
-            "width": 256,
-            "x": 0,
-            "y": 0
-        },
-        {
-            "fileName": "test_map_02.json",
-            "height": 240,
-            "width": 256,
-            "x": 256,
-            "y": 0
-        },
-        {
-            "fileName": "test_map_03.json",
-            "height": 240,
-            "width": 256,
-            "x": -256,
-            "y": 0
-        },
-        {
             "fileName": "map_alpha.json",
             "height": 240,
             "width": 256,

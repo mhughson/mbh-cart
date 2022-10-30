@@ -97,6 +97,10 @@ void load_screen_boot()
     ppu_off();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_boot);
+
+	vram_adr(NTADR_A(2, 2));
+	vram_write("BETA 1.0", 8);	
+
     ppu_on_all();
 }
 void load_screen_title()
