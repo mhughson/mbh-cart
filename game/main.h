@@ -226,20 +226,30 @@ void draw_statusbar_ppu_off();
 // Should Have (ordered by priority)
 * Pause
 * Delay on starting gameplay (flashing player, etc)
+* New boulder art
+* New game over art
 * Timed collectibles (cherries, etc)
 * Point kickers
 * Big countdown text for final seconds.
 * Delay before boulder respawns, and telgraph is dropping in.
+* [Bug] Can get stuck in tile if jumping into the corner of it. (https://www.youtube.com/watch?v=3CVitijT8k8&ab_channel=WhiteHat94)
 * [Bug] Tile lookup on edges is broken.
 * Time sound effect on low time.
+* Hold up/down sign.
 * Block smash animation
 * Collectibles in blocks.
-* New boulder art
-* New game over art
 * New font art
 
 
 // Nice to Have
+* Blinking PRESS START text
+* Sound effect on PRESS START
+* Make breakable blocks more obvious.
+* [Feedback] Level complete is too abrupt and confusing.
+* [Feedback] 2nd level is annoying that you can't get back to the top. Maybe put jumpable tracks?
+* [Feedback] 2nd level is too punishing.
+* Change color of player on main menu.
+* Open up a gap on the left side of level 2 (maybe)
 * More levels
 * Settings (Music/Sound disable)
 * Additional enemies
@@ -253,8 +263,10 @@ void draw_statusbar_ppu_off();
 * Death animation.
 * Difficulty.
 * Custom header tiles for HUD.
+* [Bug] Awkward physics on 2nd ramp of 2nd level. Makes top left diamond very annoying.
 * [Bug] Boulder POPS when going down ramps on 2nd level if make speed set to something like 1.15
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
+* [Bug] Fall through ramp if bouncing off enemy onto the top of a down ramp (https://www.youtube.com/watch?v=3CVitijT8k8&ab_channel=WhiteHat94)
 * [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
 * [Bug] Title sprites are seen on just after fade in to first level.
 
