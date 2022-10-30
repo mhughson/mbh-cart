@@ -171,6 +171,7 @@ extern signed char cur_time_digits[6];
 extern unsigned char timer_expired;
 extern unsigned char loaded_obj_index;
 extern unsigned char loaded_obj_id;
+extern unsigned char is_paused;
 
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
@@ -224,9 +225,7 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Pause
 * Delay on starting gameplay (flashing player, etc)
-* New boulder art
 * New game over art
 * Timed collectibles (cherries, etc)
 * Point kickers
@@ -238,8 +237,7 @@ void draw_statusbar_ppu_off();
 * Hold up/down sign.
 * Block smash animation
 * Collectibles in blocks.
-* New font art
-
+* Quit from pause menu.
 
 // Nice to Have
 * Blinking PRESS START text

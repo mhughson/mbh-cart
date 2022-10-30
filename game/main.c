@@ -103,6 +103,7 @@ signed char cur_time_digits[6];
 unsigned char timer_expired;
 unsigned char loaded_obj_index;
 unsigned char loaded_obj_id;
+unsigned char is_paused;
 
 game_actor* in_obj_a;
 game_actor* in_obj_b;
@@ -129,6 +130,21 @@ unsigned char grounded;
 //void load_current_map(unsigned int nt);
 //void update_player();
 //void update_gameplay();
+
+const unsigned char pause_text[] = "PAUSE";
+void draw_pause_sprites(void)
+{
+	static unsigned char speed;
+	static unsigned char shake_offset;
+
+	// NOTE: Loop accounts for null term.
+	for(i = 0; i < 5; ++i)
+	{
+		speed = tick_count >> 4;
+		shake_offset = ease_pulse[((i + speed) & 3)]; // &3 = %4 = number of entries in array.
+		oam_spr(108 + (i << 3), 128 + shake_offset, (0xc0 + i), 0);
+	}
+}
 
 // It seems like main() MUST be in fixed back!
 void main (void) 
@@ -188,7 +204,29 @@ void main (void)
 
 			case STATE_GAMEPLAY:
 			{
-				banked_call(BANK_0, update_gameplay);
+				if (!is_paused)
+				{
+					if (pads_new & PAD_START)
+					{
+						pal_bg_bright(2);
+						set_music_speed(12);
+						is_paused = 1;
+					}
+					else
+					{
+						banked_call(BANK_0, update_gameplay);
+					}
+				}
+				else
+				{
+					if (pads_new & PAD_START)
+					{
+						is_paused = 0;
+						set_music_speed(4);
+						pal_bg_bright(4);
+					}
+					draw_pause_sprites();
+				}
 				break;
 			}
 
@@ -417,6 +455,8 @@ void go_to_state(unsigned char next_state)
 				}
 
 			} while(loaded_obj_id != 0xff);
+
+			is_paused = 0;
 
 			fade_from_black();
 			music_play(0);
