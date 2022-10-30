@@ -239,7 +239,6 @@ void draw_statusbar_ppu_off();
 * Quit from pause menu.
 
 // Nice to Have
-* Big text for score on game over.
 * Big text for score on status bar (see pacman ce for lables)
 * Highlight score when high-score reached on game over screen.
 * Blinking PRESS START text

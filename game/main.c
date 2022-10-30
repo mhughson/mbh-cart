@@ -321,6 +321,11 @@ void go_to_state(unsigned char next_state)
 #if DEBUG_ENABLED
 			if (pads & PAD_SELECT)
 			{
+				for (i = 0; i < NUM_SCORE_DIGITS; ++i)
+				{
+					score_bcd[i] = i;
+					score_best_bcd[i] = 9 - i;
+				}
 				cur_time_digits[3] = 3;
 			}
 			else
@@ -615,46 +620,41 @@ void display_score()
 	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 12<<3, 3<<3));	
 }
 
-#define GAME_OVER_ZERO_TILE (0xd0)
+#define GAME_OVER_ZERO_TILE (0xe0)
 void display_score_ppu_off()
 {
-	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
-
+	static unsigned char _display_score[NUM_SCORE_DIGITS];
+	static unsigned char _display_score_bottom[NUM_SCORE_DIGITS];
+	
 	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
 	{
 		_display_score[i] = score_bcd[i] + GAME_OVER_ZERO_TILE;
-		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+		_display_score_bottom[i] = _display_score[i] + 0x10;
 	}
-	_display_score[NUM_SCORE_DIGITS] = GAME_OVER_ZERO_TILE;
-	_display_score[NUM_SCORE_DIGITS + 1] = GAME_OVER_ZERO_TILE;
-	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
 
-	// vram_adr(NTADR_A(13, 20));
-	// vram_write("SCORE", 6);
 	vram_adr(NTADR_A(12, 16));
-	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
+	vram_write(_display_score, (NUM_SCORE_DIGITS));
+	vram_adr(NTADR_A(12, 17));
+	vram_write(_display_score_bottom, (NUM_SCORE_DIGITS));
 
 	display_score_best_ppu_off();
 }
 
 void display_score_best_ppu_off()
 {
-	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
+	static unsigned char _display_score[NUM_SCORE_DIGITS];
+	static unsigned char _display_score_bottom[NUM_SCORE_DIGITS];
 	
-
 	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
 	{
 		_display_score[i] = score_best_bcd[i] + GAME_OVER_ZERO_TILE;
-		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
+		_display_score_bottom[i] = _display_score[i] + 0x10;
 	}
-	_display_score[NUM_SCORE_DIGITS] = GAME_OVER_ZERO_TILE;
-	_display_score[NUM_SCORE_DIGITS + 1] = GAME_OVER_ZERO_TILE;
-	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
 
-	// vram_adr(NTADR_A(12, 17));
-	// vram_write("HISCORE", 7);
 	vram_adr(NTADR_A(12, 12));
-	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
+	vram_write(_display_score, (NUM_SCORE_DIGITS));
+	vram_adr(NTADR_A(12, 13));
+	vram_write(_display_score_bottom, (NUM_SCORE_DIGITS));
 }
 
 // const unsigned int _digit_shift_table[NUM_SCORE_DIGITS] =
