@@ -17,30 +17,28 @@ const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0
 
 const unsigned char palette_title_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x16,0x00,0x37,0x0f,0x19,0x17,0x38,0x0f,0x17,0x13,0x37 };
 
-// face
 const unsigned char title_screen_Metasprite0_data[]={
 
-	- 8,-12,0x01,2,
-	  0,-12,0x02,2,
-	- 8,- 4,0x11,2,
-	  0,- 4,0x12,2,
+	- 8,-12,0xdb,2,
+	  0,-12,0xdc,2,
+	- 8,- 4,0xeb,2,
+	  0,- 4,0xec,2,
 
-	- 8,  4,0x21,2,
-	  0,  4,0x22,2,
+	- 8,  4,0xfb,2,
+	  0,  4,0xfc,2,
 	0x80
 
 };
 
-// diamond
 const unsigned char title_screen_Metasprite1_data[]={
 
-	-12,- 8,0x03,1,
-	- 4,- 8,0x04,1,
-	  4,- 8,0x05,1,
-	-12,  0,0x13,1,
+	-12,- 8,0xdd,1,
+	- 4,- 8,0xde,1,
+	  4,- 8,0xdf,1,
+	-12,  0,0xed,1,
 
-	- 4,  0,0x14,1,
-	  4,  0,0x15,1,
+	- 4,  0,0xee,1,
+	  4,  0,0xef,1,
 	0x80
 
 };
@@ -476,7 +474,7 @@ void go_to_state(unsigned char next_state)
 			}
 			music_play(2);
 			delay(120);
-			banked_call(BANK_0, load_screen_levelcomplete);
+			banked_call(BANK_0, load_screen_levelcomplete);			
 			break;
 		}
 
@@ -617,22 +615,23 @@ void display_score()
 	multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 12<<3, 3<<3));	
 }
 
+#define GAME_OVER_ZERO_TILE (0xd0)
 void display_score_ppu_off()
 {
 	static unsigned char _display_score[NUM_SCORE_DIGITS + 2];
 
 	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
 	{
-		_display_score[i] = score_bcd[i] + '0';
+		_display_score[i] = score_bcd[i] + GAME_OVER_ZERO_TILE;
 		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
 	}
-	_display_score[NUM_SCORE_DIGITS] = '0';
-	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	_display_score[NUM_SCORE_DIGITS] = GAME_OVER_ZERO_TILE;
+	_display_score[NUM_SCORE_DIGITS + 1] = GAME_OVER_ZERO_TILE;
 	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
 
-	vram_adr(NTADR_A(13, 20));
-	vram_write("SCORE", 6);
-	vram_adr(NTADR_A(12, 21));
+	// vram_adr(NTADR_A(13, 20));
+	// vram_write("SCORE", 6);
+	vram_adr(NTADR_A(12, 16));
 	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
 
 	display_score_best_ppu_off();
@@ -645,16 +644,16 @@ void display_score_best_ppu_off()
 
 	for (i = 0; i < NUM_SCORE_DIGITS; ++i)
 	{
-		_display_score[i] = score_best_bcd[i] + '0';
+		_display_score[i] = score_best_bcd[i] + GAME_OVER_ZERO_TILE;
 		//one_vram_buffer(score_bcd[i] + '0', get_ppu_addr(0, 2<<3, 2<<3));
 	}
-	_display_score[NUM_SCORE_DIGITS] = '0';
-	_display_score[NUM_SCORE_DIGITS + 1] = '0';
+	_display_score[NUM_SCORE_DIGITS] = GAME_OVER_ZERO_TILE;
+	_display_score[NUM_SCORE_DIGITS + 1] = GAME_OVER_ZERO_TILE;
 	//multi_vram_buffer_horz(_display_score, NUM_SCORE_DIGITS + 2, get_ppu_addr(0, 2<<3, 3<<3));
 
-	vram_adr(NTADR_A(12, 17));
-	vram_write("HISCORE", 7);
-	vram_adr(NTADR_A(12, 18));
+	// vram_adr(NTADR_A(12, 17));
+	// vram_write("HISCORE", 7);
+	vram_adr(NTADR_A(12, 12));
 	vram_write(_display_score, (NUM_SCORE_DIGITS + 2));
 }
 

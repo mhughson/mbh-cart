@@ -31,6 +31,8 @@ const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 // BCD encoded score values:
 const unsigned char SCORE_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 0, 5 };
 
+const unsigned char palette_gameover_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x00,0x1a,0x38,0x0f,0x16,0x28,0x38,0x0f,0x00,0x1a,0x17 };
+
 typedef struct anim_def
 {
 	// how many frames to hold on each frame of animation.
@@ -115,11 +117,13 @@ void load_screen_gameover()
     fade_to_black();
     ppu_off();
     oam_clear();
+	set_chr_bank_0(2);
+	bank_bg(1);
+	bank_spr(0);	
+	pal_bg(palette_gameover_bg);
+	pal_spr(palette_gameover_bg);	
     vram_adr(NTADR_A(0, 0));
-    vram_unrle(screen_empty);
-	
-	vram_adr(NTADR_A(12, 15));
-	vram_write("FINISH!", 7);	
+    vram_unrle(screen_gameover);
 	display_score_ppu_off();
     ppu_on_all();
     fade_from_black();

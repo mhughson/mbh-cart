@@ -225,20 +225,23 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* New game over art
+* Hold up/down sign.
 * Timed collectibles (cherries, etc)
 * Point kickers
+* Communicate timed gameplay mechanic at start.
 * Big countdown text for final seconds.
 * Delay before boulder respawns, and telgraph is dropping in.
 * [Bug] Can get stuck in tile if jumping into the corner of it. (https://www.youtube.com/watch?v=3CVitijT8k8&ab_channel=WhiteHat94)
 * [Bug] Tile lookup on edges is broken.
 * Time sound effect on low time. (fast music too)
-* Hold up/down sign.
 * Block smash animation
 * Collectibles in blocks.
 * Quit from pause menu.
 
 // Nice to Have
+* Big text for score on game over.
+* Big text for score on status bar (see pacman ce for lables)
+* Highlight score when high-score reached on game over screen.
 * Blinking PRESS START text
 * Make breakable blocks more obvious.
 * [Feedback] Level complete is too abrupt and confusing.
