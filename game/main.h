@@ -221,39 +221,42 @@ void draw_statusbar_ppu_off();
 
 
 // Must Have
-* [later] Actual level design.
+[done]
 
-// Should Have
-* Additional enemies
-* Score multiplier to reward skill play
-* Level complete screen++
-* Countdown Timer (with score associated)
+// Should Have (ordered by priority)
 * Pause
-* Settings (Music/Sound disable)
+* Delay on starting gameplay (flashing player, etc)
+* Timed collectibles (cherries, etc)
+* Point kickers
+* Big countdown text for final seconds.
 * Delay before boulder respawns, and telgraph is dropping in.
 * [Bug] Tile lookup on edges is broken.
-* [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
-* [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
-* [Bug] Title sprites are seen on just after fade in to first level.
+* Time sound effect on low time.
+* Block smash animation
+* Collectibles in blocks.
+* New boulder art
+* New game over art
+* New font art
 
 
 // Nice to Have
+* More levels
+* Settings (Music/Sound disable)
+* Additional enemies
+* Level complete screen++
 * Palette changes for level
-* Big countdown text for final seconds.
 * Title screen nose/mouth overlay.
-* Timed collectibles (cherries, etc)
-* Collectibles in blocks.
 * Score tally on Level complete screen.
 * Score tally on Game Over screen.
-* Point kickers
 * Stunned animation for Goblin
 * Brake sparks.
 * Death animation.
 * Difficulty.
 * Custom header tiles for HUD.
-* Time sound effect on low time.
-* Delay on starting gameplay (flashing player, etc)
 * [Bug] Boulder POPS when going down ramps on 2nd level if make speed set to something like 1.15
+* [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
+* [Bug] Sometimes, when going slowly down ramp, then speeding up, player pops back up to upper rail.
+* [Bug] Title sprites are seen on just after fade in to first level.
 
 
 ///
