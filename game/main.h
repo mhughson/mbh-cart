@@ -225,7 +225,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Hold up/down sign.
 * Timed collectibles (cherries, etc)
 * Point kickers
 * Communicate timed gameplay mechanic at start.
@@ -234,7 +233,7 @@ void draw_statusbar_ppu_off();
 * [Bug] Can get stuck in tile if jumping into the corner of it. (https://www.youtube.com/watch?v=3CVitijT8k8&ab_channel=WhiteHat94)
 * [Bug] Tile lookup on edges is broken.
 * Time sound effect on low time. (fast music too)
-* Block smash animation
+* Block smash animation'
 * Collectibles in blocks.
 * Quit from pause menu.
 
