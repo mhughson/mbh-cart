@@ -288,6 +288,104 @@ const unsigned char meta_player_Metasprite23_data[]={
 
 };
 
+const unsigned char meta_player_Metasprite24_data[]={
+
+	  0,  0,0xe8,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite25_data[]={
+
+	  8,  0,0xe9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite26_data[]={
+
+	  0,  8,0xf8,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite27_data[]={
+
+	  8,  8,0xf9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_data[]={
+
+	  0,  0,0xe8,3,
+	  8,  0,0xe9,3,
+	  0,  8,0xf8,3,
+	  8,  8,0xf9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_copy_data[]={
+
+	- 1,- 2,0xe8,3,
+	  9,- 2,0xe9,3,
+	- 1,  7,0xf8,3,
+	  9,  7,0xf9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_copy_copy_data[]={
+
+	- 2,- 4,0xe8,3,
+	 10,- 4,0xe9,3,
+	- 2,  6,0xf8,3,
+	 10,  6,0xf9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_copy_copy_copy_data[]={
+
+	- 3,- 6,0xe8,3,
+	 11,- 6,0xe9,3,
+	- 3,  5,0xf8,3,
+	 11,  5,0xf9,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_copy_copy_copy_copy_data[]={
+
+	- 4,- 8,0xea,3,
+	 12,- 8,0xeb,3,
+	- 4,  4,0xfa,3,
+	 12,  4,0xfb,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite28_copy_copy_copy_copy_copy_data[]={
+
+	- 7,-10,0xea,3,
+	 15,-10,0xeb,3,
+	- 5,  3,0xfa,3,
+	 13,  3,0xfb,3,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite34_data[]={
+
+	- 9,-12,0xea,3,
+	 17,-12,0xeb,3,
+	- 6,  2,0xfa,3,
+	 14,  2,0xfb,3,
+	0x80
+
+};
+
 const unsigned char* const meta_player_list[]={
 
 	meta_player_Metasprite0_data,
@@ -313,7 +411,18 @@ const unsigned char* const meta_player_list[]={
 	meta_player_Metasprite20_data,
 	meta_player_Metasprite21_data,
 	meta_player_Metasprite22_data,
-	meta_player_Metasprite23_data
+	meta_player_Metasprite23_data,
+	meta_player_Metasprite24_data,
+	meta_player_Metasprite25_data,
+	meta_player_Metasprite26_data,
+	meta_player_Metasprite27_data,
+	meta_player_Metasprite28_data,
+	meta_player_Metasprite28_copy_data,
+	meta_player_Metasprite28_copy_copy_data,
+	meta_player_Metasprite28_copy_copy_copy_data,
+	meta_player_Metasprite28_copy_copy_copy_copy_data,
+	meta_player_Metasprite28_copy_copy_copy_copy_copy_data,
+	meta_player_Metasprite34_data
 
 };
 

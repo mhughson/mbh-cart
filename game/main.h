@@ -80,6 +80,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define NUM_SCORE_DIGITS (5)
 
 #define NUM_ACTORS (6)
+#define NUM_PARTICLES (8)
 // subracting this from the tile id from the name table, will give you the OBJ_TYPE
 #define TYPE_ID_START_INDEX_TILED (112)
 
@@ -193,6 +194,8 @@ extern game_actor* in_obj_b;
 extern game_actor objs[NUM_ACTORS];
 extern kicker kickers[NUM_ACTORS];
 extern unsigned char cur_kicker;
+extern game_actor particles[NUM_PARTICLES];
+extern unsigned char cur_particle;
 // load_current_map
 extern unsigned int in_nametable;
 // add_bcd_score
@@ -242,7 +245,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Block smash animation'
 * Big countdown text for final seconds.
 * Quit from pause menu.
 * Delay before boulder respawns, and telgraph is dropping in.
@@ -250,6 +252,7 @@ void draw_statusbar_ppu_off();
 * Collectibles in blocks.
 
 // Nice to Have
+* Improve broken block physics.
 * Give a few points for bouncing on enemy heads.
 * Increase jump velocity ever so slightly to make getting up onto blocks a little easier.
 * Animated bat sprites on title screen (maybe dark palette and in the background).

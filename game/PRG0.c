@@ -61,6 +61,8 @@ const anim_def goblin_move_right_up 	= { 5, 3, { 15, 16, 17 } };
 
 const anim_def boulder_move_right	= { 5, 4, { 18, 19, 20, 21 }};
 
+const anim_def block_destroyed = { 2, 6, {29, 30, 31, 32, 33, 34 }};
+
 enum
 {
 	ANIM_MOVE_RIGHT = 0,
@@ -72,6 +74,8 @@ enum
 	ANIM_GOBLIN_MOVE_RIGHT_UP, 	
 
 	ANIM_BOULDER_MOVE_RIGHT,
+
+	ANIM_BLOCK_DESTROYED,
 
 	NUM_ANIMS,
 };
@@ -87,6 +91,8 @@ const struct anim_def* sprite_anims[] =
 	&goblin_move_right_up,
 
 	&boulder_move_right,
+
+	&block_destroyed,
 };
 
 // private functions
@@ -280,6 +286,18 @@ void load_current_map()
 	}
 }
 
+void spawn_destroyed_block_particles()
+{
+	particles[cur_particle].pos_x = FP_WHOLE(in_x_tile * 16);
+	particles[cur_particle].pos_y = FP_WHOLE(in_y_tile * 16);
+	
+	global_working_anim = &particles[cur_particle].sprite.anim;
+	queue_next_anim(ANIM_BLOCK_DESTROYED);
+	commit_next_anim();
+	particles[cur_particle].is_dead = (6 * 2) - 1; // length of the animation
+	cur_particle = (cur_particle + 1) % NUM_PARTICLES;
+}
+
 void update_gameplay()
 {
 	static unsigned char entered_new_tile;
@@ -454,6 +472,9 @@ void update_gameplay()
 						current_room[index] = 0;
 						vram_buffer_load_2x2_metatile();
 						sfx_play(13, ++cur_sfx_chan);
+
+						// uses in_x_tile and in_y_tile
+						spawn_destroyed_block_particles();
 					}
 					player1.vel_y = 0;
 					//player1.pos_y = py_old;		
@@ -615,6 +636,20 @@ void update_gameplay()
 				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
 				current_room[index] = 0;
 				vram_buffer_load_2x2_metatile();	
+			}
+		}
+
+		for (i = 0; i < NUM_PARTICLES; ++i)
+		{
+			if (particles[i].is_dead > 0)
+			{
+				--particles[i].is_dead;
+				global_working_anim = &particles[i].sprite.anim;
+				update_anim();
+				oam_meta_spr(
+					high_byte(particles[i].pos_x), 
+					high_byte(particles[i].pos_y), 
+					meta_player_list[sprite_anims[particles[i].sprite.anim.anim_current]->frames[particles[i].sprite.anim.anim_frame]]);
 			}
 		}
 
@@ -835,6 +870,9 @@ void update_boulder()
 			current_room[index] = 0;
 			vram_buffer_load_2x2_metatile();
 			sfx_play(13, ++cur_sfx_chan);
+
+			// uses in_x_tile and in_y_tile
+			spawn_destroyed_block_particles();
 		}
 		in_obj_a->vel_x *= -1;
 	}
