@@ -240,6 +240,10 @@ void load_current_map()
 		}
 	}
 
+	// trigger gets set when a super gem spawning is found.
+	super_gem_trigger = 0xff;
+	super_gem_ticks16 = 0;
+
 	index = 0;
 	// Write attribute data to VRAM in 32x32 chunks.
 	for (y = 0; y < 15; y+=2)
@@ -471,21 +475,57 @@ void update_gameplay()
 		{
 			if (current_room[index] == TILE_ID_SUPER_GEM)
 			{
+				// Extra special collection.
+				sfx_play(0, ++cur_sfx_chan);
+
 				in_points = SCORE_SUPER_GEM_BCD;
 			}
 			else
 			{
+				sfx_play(2, ++cur_sfx_chan);
+
 				in_points = SCORE_GEM_BCD;
             	--gems_remaining;
+
+				// Is this the gem that will spawn the super gems?
+				if (gems_remaining == super_gem_trigger)
+				{
+					sfx_play(11, ++cur_sfx_chan);
+
+					// Place the super gem tiles in the nametable directly.
+
+					// Left
+					in_x_tile = super_gem_x_tile - 1;
+					in_y_tile = super_gem_y_tile;
+					index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+					current_room[index] = TILE_ID_SUPER_GEM - 1;
+					vram_buffer_load_2x2_metatile();
+
+					// Middle
+					in_x_tile += 1;
+					index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+					current_room[index] = TILE_ID_SUPER_GEM;
+					vram_buffer_load_2x2_metatile();		
+					
+					// Right
+					in_x_tile += 1;
+					index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+					current_room[index] = TILE_ID_SUPER_GEM + 1;
+					vram_buffer_load_2x2_metatile();
+
+					// start the countdown timer.
+					super_gem_ticks16 = SUPER_GEM_DISPLAY_LENGTH_TICKS;
+				}			
 			}
 			add_bcd_score();
 			display_score();
-			//one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
+
+			// get the index of this gem again, incase the logic above for super gems ran.
+			index = GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16);
 			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
 			in_y_tile = (high_byte(player1.pos_y) + 8)/16;
 			current_room[index] = 0;
 			vram_buffer_load_2x2_metatile();
-			sfx_play(2, ++cur_sfx_chan);
 
 			// clear the surrounding tiles if this is a wide super gem
 			if (in_points == SCORE_SUPER_GEM_BCD)
@@ -531,6 +571,35 @@ void update_gameplay()
 		global_working_anim = &player1.sprite.anim;		
 		queue_next_anim(i);
 		commit_next_anim();
+
+		// Did time run out for the super gems?
+		if (super_gem_ticks16 > 0)
+		{
+			--super_gem_ticks16;
+			if (super_gem_ticks16 == 0)
+			{
+				// clear gems
+
+				// Left
+				in_x_tile = super_gem_x_tile - 1;
+				in_y_tile = super_gem_y_tile;
+				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+				current_room[index] = 0;
+				vram_buffer_load_2x2_metatile();
+
+				// Middle
+				in_x_tile += 1;
+				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+				current_room[index] = 0;
+				vram_buffer_load_2x2_metatile();		
+				
+				// Right
+				in_x_tile += 1;
+				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+				current_room[index] = 0;
+				vram_buffer_load_2x2_metatile();	
+			}
+		}
 
 		for (i = 0; i < NUM_ACTORS; ++i)
 		{

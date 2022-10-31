@@ -72,6 +72,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define WALK_SPEED (FP_WHOLE(1) + FP_0_50)
 #define JUMP_COYOTE_DELAY (8)
 #define ATTACK_LEN (5)
+#define SUPER_GEM_DISPLAY_LENGTH_TICKS (30u * 60u)
 
 #define NUM_BG_BANKS 2 // MUST BE POWER OF 2
 
@@ -88,7 +89,7 @@ enum STATES
 
 enum OBJ_TYPES
 {
-	TYPE_NONE, TYPE_PLAYER, TYPE_GOBLIN, TYPE_BOULDER_SPAWNER, TYPE_BOULDER,
+	TYPE_NONE, TYPE_PLAYER, TYPE_GOBLIN, TYPE_BOULDER_SPAWNER, TYPE_SUPER_GEM_SPAWNER, TYPE_BOULDER,
 };
 
 typedef struct anim_info
@@ -166,6 +167,10 @@ extern char in_y_tile;
 extern unsigned char char_state;
 extern unsigned char cur_state;
 extern unsigned char gems_remaining;
+extern unsigned char super_gem_trigger;
+extern unsigned int super_gem_ticks16;
+extern unsigned char super_gem_x_tile;
+extern unsigned char super_gem_y_tile;
 extern unsigned char grounded;
 extern unsigned char cur_room_index;
 extern signed char cur_time_digits[6];
@@ -226,7 +231,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Timed collectibles (cherries, etc)
 * Point kickers
 * Block smash animation'
 * Big countdown text for final seconds.
@@ -236,6 +240,7 @@ void draw_statusbar_ppu_off();
 * Collectibles in blocks.
 
 // Nice to Have
+* Animated bat sprites on title screen (maybe dark palette and in the background).
 * Grass and other greenery dodads.
 * Coyote time.
 * Lava pits
@@ -248,7 +253,7 @@ void draw_statusbar_ppu_off();
 * [Feedback] 2nd level is too punishing.
 * Change color of player on main menu.
 * Open up a gap on the left side of level 2 (maybe)
-* More levels
+* More levels (for now, could duplicate final levels and just make them harder)
 * Settings (Music/Sound disable)
 * Additional enemies
 * Level complete screen++

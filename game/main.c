@@ -95,6 +95,10 @@ unsigned char cur_sfx_chan;
 unsigned char char_state;
 unsigned char cur_state;
 unsigned char gems_remaining;
+unsigned char super_gem_trigger;
+unsigned int super_gem_ticks16;
+unsigned char super_gem_x_tile;
+unsigned char super_gem_y_tile;
 unsigned char cur_room_index;
 signed char cur_time_digits[6];
 unsigned char timer_expired;
@@ -438,12 +442,6 @@ void go_to_state(unsigned char next_state)
 			dy = 0;
 			is_jumping = 0;
 
-
-			player1.vel_x = P1_MOVE_SPEED;
-			player1.vel_y = 0;
-			player1.is_dead = 0;
-			player1.type = TYPE_PLAYER;
-
 			memfill(objs, 0, NUM_ACTORS * sizeof(game_actor));
 
 			// used to track which object has been read in from the dynamics layer, across
@@ -486,9 +484,28 @@ void go_to_state(unsigned char next_state)
 						++y;	
 						break;
 					}
+					case TYPE_SUPER_GEM_SPAWNER:
+					{
+						// Only setup the super gems the first time loading
+						// into a level.
+						if (!player1.is_dead)
+						{
+							super_gem_x_tile = loaded_obj_index % ROOM_WIDTH_TILES;
+							super_gem_y_tile = loaded_obj_index / ROOM_WIDTH_TILES;
+							// Trigger the super gems at the half way point of collecting all the gems
+							super_gem_trigger = gems_remaining / 2;
+						}
+						break;
+					}
 				}
 
 			} while(loaded_obj_id != 0xff);
+
+			player1.vel_x = P1_MOVE_SPEED;
+			player1.vel_y = 0;
+			// Must be done after loading objects as some depend on this (super gem)
+			player1.is_dead = 0;
+			player1.type = TYPE_PLAYER;
 
 			is_paused = 0;
 
