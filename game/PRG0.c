@@ -111,7 +111,7 @@ void load_screen_boot()
     vram_unrle(screen_boot);
 
 	vram_adr(NTADR_A(2, 2));
-	vram_write("BETA 2.0", 8);	
+	vram_write("BETA 3.0", 8);	
 
     ppu_on_all();
 }
