@@ -225,16 +225,15 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
+* Communicate timed gameplay mechanic at start.
 * Timed collectibles (cherries, etc)
 * Point kickers
-* Communicate timed gameplay mechanic at start.
-* Big countdown text for final seconds.
-* Delay before boulder respawns, and telgraph is dropping in.
-* [Bug] Tile lookup on edges is broken.
-* Time sound effect on low time. (fast music too)
 * Block smash animation'
-* Collectibles in blocks.
+* Big countdown text for final seconds.
 * Quit from pause menu.
+* Delay before boulder respawns, and telgraph is dropping in.
+* Time sound effect on low time. (fast music too)
+* Collectibles in blocks.
 
 // Nice to Have
 * Coyote time.
