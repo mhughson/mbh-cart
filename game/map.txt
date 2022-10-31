@@ -25,7 +25,7 @@ unpack.o:
 PRG0.o:
     BSS               Offs=000245  Size=00000D  Align=00001  Fill=0000
     DATA              Offs=000004  Size=00000E  Align=00001  Fill=0000
-    BANK0             Offs=000000  Size=00304E  Align=00001  Fill=0000
+    BANK0             Offs=000000  Size=00306D  Align=00001  Fill=0000
 PRG1.o:
 PRG2.o:
 ..\lib/nes.lib(add.o):
@@ -98,7 +98,7 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000000  0000E5  0000E6  00001
 DATA                  000300  000311  000012  00001
 BSS                   000312  000563  000252  00001
-BANK0                 008000  00B04D  00304E  00001
+BANK0                 008000  00B06C  00306D  00001
 BANK1                 008000  0092E5  0012E6  00001
 BANK2                 008000  00A1B1  0021B2  00001
 STARTUP               00C000  00C0F2  0000F3  00001
@@ -124,7 +124,7 @@ _delay                    00C72F RLA    _display_score            00DEDB RLA
 _display_score_ppu_off    00DF97 RLA    _draw_cur_time            00E082 RLA    
 _draw_statusbar_ppu_off   00E1D5 RLA    _fade_from_black          00DEB8 RLA    
 _fade_to_black            00DE90 RLA    _gems_remaining           00047D RLA    
-_get_at_addr              00C9A4 RLA    _get_obj_id               009D04 RLA    
+_get_at_addr              00C9A4 RLA    _get_obj_id               009D12 RLA    
 _get_pad_new              00C884 RLA    _get_ppu_addr             00C97D RLA    
 _global_working_anim      00046D RLA    _go_to_state              00D850 RLA    
 _grounded                 000483 RLA    _i                        000352 RLA    
@@ -136,7 +136,7 @@ _in_y_tile                00047A RLA    _index                    000353 RLA
 _index16                  000354 RLA    _intersects_box_box       00DD72 RLA    
 _is_jumping               00037B RLA    _is_on_ramp               00037C RLA    
 _kickers                  0004F3 RLA    _kill_player              00DE68 RLA    
-_load_current_map         009D88 RLA    _load_screen_boot         008EFE RLA    
+_load_current_map         009D96 RLA    _load_screen_boot         008EFE RLA    
 _load_screen_gameover     008F4F RLA    _load_screen_levelcomplete 008F8C RLA    
 _load_screen_rules        008F3B RLA    _load_screen_title        008F27 RLA    
 _loaded_obj_id            00048D RLA    _loaded_obj_index         00048C RLA    
@@ -224,8 +224,8 @@ _in_points                00050E RLA    _cur_sfx_chan             000510 RLA
 __STACK_START__           000700 REA    _load_screen_boot         008EFE RLA    
 _load_screen_title        008F27 RLA    _load_screen_rules        008F3B RLA    
 _load_screen_gameover     008F4F RLA    _load_screen_levelcomplete 008F8C RLA    
-_update_gameplay          008FAC RLA    _get_obj_id               009D04 RLA    
-_load_current_map         009D88 RLA    _set_prg_bank             00C0F3 RLA    
+_update_gameplay          008FAC RLA    _get_obj_id               009D12 RLA    
+_load_current_map         009D96 RLA    _set_prg_bank             00C0F3 RLA    
 _set_chr_bank_0           00C105 RLA    _pal_bg                   00C2A2 RLA    
 _pal_spr                  00C2AC RLA    _pal_bg_bright            00C2E2 RLA    
 _pal_bright               00C2F0 RLA    _ppu_off                  00C2F7 RLA    
@@ -514,36 +514,36 @@ addysp1 (addysp.o):
     sub.o                     runtime/sub.s(8)
     or.o                      runtime/or.s(9)
 aslax2 (aslax2.o):
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
 aslax4 (aslax4.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
     main.o                    main.s(3476)
 asrax1 (asrax1.o):
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
 asrax4 (asrax4.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 boolult (makebool.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 callax (call.o):
     bank_helpers.o            A53\bank_helpers.s(175)
 copydata (copydata.o):
     crt0.o                    crt0.s(29)
 decsp2 (decsp2.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
 decsp3 (decsp3.o):
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
@@ -573,8 +573,8 @@ ldaidx (ldai.o):
 negax (negabs.o):
     shelp.o                   runtime/shelp.s(11)
     mod.o                     runtime/mod.s(11)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
     main.o                    main.s(3476)
 popa (popa.o):
     crt0.o                    crt0.s(29)
@@ -604,10 +604,10 @@ ptr4 (zeropage.o):
     udiv.o                    runtime/udiv.s(10)
     shelp.o                   runtime/shelp.s(12)
 pusha (pusha.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
     bank_helpers.o            A53\bank_helpers.s(175)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
@@ -618,11 +618,11 @@ pusha (pusha.o):
 pusha0 (pushax.o):
     main.o                    main.s(3476)
 pushax (pushax.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
     bank_helpers.o            A53\bank_helpers.s(175)
     main.o                    main.s(3476)
     main.o                    main.s(3476)
@@ -634,14 +634,14 @@ pushax (pushax.o):
 regsave (zeropage.o):
     PRG0.o                    PRG0.s(10)
 shlax3 (aslax3.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 shlax4 (aslax4.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 sp (zeropage.o):
     popptr1.o                 runtime/popptr1.s(9)
     addysp.o                  runtime/addysp.s(8)
@@ -669,9 +669,9 @@ sreg (zeropage.o):
     PRG0.o                    PRG0.s(10)
     main.o                    main.s(10)
 staspidx (staspidx.o):
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
 staxspidx (staxspi.o):
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
 tmp1 (zeropage.o):
     staxspi.o                 runtime/staxspi.s(10)
     staspidx.o                runtime/staspidx.s(9)
@@ -689,12 +689,12 @@ tmp1 (zeropage.o):
 tmp2 (zeropage.o):
     shelp.o                   runtime/shelp.s(12)
 tosaddax (add.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 tosicmp (icmp.o):
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
-    PRG0.o                    PRG0.s(10135)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
+    PRG0.o                    PRG0.s(10153)
 tosmoda0 (mod.o):
     main.o                    main.s(3476)
 tosorax (or.o):

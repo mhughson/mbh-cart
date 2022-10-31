@@ -453,6 +453,7 @@ void update_gameplay()
 					{
 						current_room[index] = 0;
 						vram_buffer_load_2x2_metatile();
+						sfx_play(13, ++cur_sfx_chan);
 					}
 					player1.vel_y = 0;
 					//player1.pos_y = py_old;		
@@ -833,6 +834,7 @@ void update_boulder()
 			in_y_tile = (high_byte(in_obj_a->pos_y) + 8)/16;
 			current_room[index] = 0;
 			vram_buffer_load_2x2_metatile();
+			sfx_play(13, ++cur_sfx_chan);
 		}
 		in_obj_a->vel_x *= -1;
 	}
