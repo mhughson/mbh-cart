@@ -7,6 +7,7 @@
 
 void load_screen_boot();
 void load_screen_title();
+void load_screen_rules();
 void load_screen_gameover();
 void load_screen_levelcomplete();
 

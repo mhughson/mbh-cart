@@ -13,6 +13,7 @@
 #include "NES_ST/screen_gameover.h"
 #include "NES_ST/screen_levelcomplete.h"
 #include "NES_ST/screen_empty.h"
+#include "NES_ST/screen_rules.h"
 
 #include "map_defs.h"
 #include "maps_a.h"
@@ -110,6 +111,13 @@ void load_screen_title()
     ppu_off();
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_title);
+    ppu_on_all();
+}
+void load_screen_rules()
+{
+    ppu_off();
+    vram_adr(NTADR_A(0, 0));
+    vram_unrle(screen_rules);
     ppu_on_all();
 }
 void load_screen_gameover()

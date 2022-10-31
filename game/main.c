@@ -13,7 +13,7 @@
 #pragma code-name ("CODE")
 
 const unsigned char palette[16]   ={ 0x0f,0x0f,0x13,0x37,0x0f,0x17,0x29,0x20,0x0f,0x07,0x17,0x10,0x0f,0x14,0x24,0x34 };
-const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0f,0x07,0x16,0x38,0x0f,0x08,0x19,0x24 };
+const unsigned char palette_bg[16]={ 0x0f,0x07,0x17,0x10,0x0f,0x03,0x11,0x35,0x0f,0x07,0x16,0x38,0x0f,0x2d,0x19,0x24 };
 const unsigned char palette_title_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x16,0x00,0x37,0x0f,0x19,0x17,0x38,0x0f,0x17,0x13,0x37 };
 
 const unsigned char title_screen_Metasprite0_data[]={
@@ -195,10 +195,21 @@ void main (void)
 					music_stop();
 					sfx_play(16, ++cur_sfx_chan);
 					//delay(30);
+					go_to_state(STATE_RULES);
+				}
+				else
+				{
+					oam_meta_spr(140, 128 + (ease_pulse[(tick_count / 16) % 4]), title_screen_Metasprite1_data);
+				}
+				break;
+			}			
+			
+			case STATE_RULES:
+			{
+				if (pads_new & PAD_ANY_CONFIRM_BUTTON)
+				{
 					go_to_state(STATE_GAMEPLAY);
 				}
-
-				oam_meta_spr(140, 128 + (ease_pulse[(tick_count / 16) % 4]), title_screen_Metasprite1_data);
 				break;
 			}
 
@@ -369,6 +380,23 @@ void go_to_state(unsigned char next_state)
 
 			banked_call(BANK_0, load_screen_title);
 			music_play(1);
+
+			fade_from_black();
+			break;
+		}
+
+		case STATE_RULES:
+		{
+			fade_to_black();
+
+			set_chr_bank_0(0);
+			bank_bg(0);
+			bank_spr(1);
+
+			pal_bg(palette_bg);
+			pal_spr(palette);			
+
+			banked_call(BANK_0, load_screen_rules);
 
 			fade_from_black();
 			break;
@@ -550,7 +578,7 @@ void fade_to_black()
 	pal_bright(1);
 	delay(FADE_DELAY);
 	pal_bright(0);
-//	delay(FADE_DELAY);
+	delay(FADE_DELAY);
 }
 
 void fade_from_black()

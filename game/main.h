@@ -82,7 +82,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 
 enum STATES 
 {
-	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER, STATE_LEVEL_COMPLETE
+	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER, STATE_LEVEL_COMPLETE, STATE_RULES,
 };
 
 enum OBJ_TYPES
@@ -225,7 +225,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Communicate timed gameplay mechanic at start.
 * Timed collectibles (cherries, etc)
 * Point kickers
 * Block smash animation'
@@ -242,7 +241,6 @@ void draw_statusbar_ppu_off();
 * Big text for score on status bar (see pacman ce for lables)
 * Highlight score when high-score reached on game over screen.
 * Blinking PRESS START text
-* Make breakable blocks more obvious.
 * [Feedback] Level complete is too abrupt and confusing.
 * [Feedback] 2nd level is annoying that you can't get back to the top. Maybe put jumpable tracks?
 * [Feedback] 2nd level is too punishing.
@@ -261,6 +259,7 @@ void draw_statusbar_ppu_off();
 * Death animation.
 * Difficulty.
 * Custom header tiles for HUD.
+* [Bug] Dying at top of level ends when player goes off top edge.
 * [Bug] Awkward physics on 2nd ramp of 2nd level. Makes top left diamond very annoying.
 * [Bug] Boulder POPS when going down ramps on 2nd level if make speed set to something like 1.15
 * [Bug] Can fall into ramp if bounching off wall after launching up from ramp.
