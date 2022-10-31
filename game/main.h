@@ -73,6 +73,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define JUMP_COYOTE_DELAY (8)
 #define ATTACK_LEN (5)
 #define SUPER_GEM_DISPLAY_LENGTH_TICKS (30u * 60u)
+#define KICKER_DISPLAY_LENGTH_TICKS (60)
 
 #define NUM_BG_BANKS 2 // MUST BE POWER OF 2
 
@@ -133,6 +134,14 @@ typedef struct game_actor
 	unsigned char type;
 } game_actor;
 
+typedef struct kicker
+{
+	unsigned char pos_x;
+	unsigned char pos_y;
+	unsigned char meta_id;
+	unsigned char ticks_remaining;
+} kicker;
+
 #pragma bss-name(push, "ZEROPAGE")
 
 extern unsigned char i;
@@ -182,6 +191,8 @@ extern unsigned char is_paused;
 extern game_actor* in_obj_a;
 extern game_actor* in_obj_b;
 extern game_actor objs[NUM_ACTORS];
+extern kicker kickers[NUM_ACTORS];
+extern unsigned char cur_kicker;
 // load_current_map
 extern unsigned int in_nametable;
 // add_bcd_score
@@ -231,7 +242,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Point kickers
 * Block smash animation'
 * Big countdown text for final seconds.
 * Quit from pause menu.
@@ -266,6 +276,7 @@ void draw_statusbar_ppu_off();
 * Death animation.
 * Difficulty.
 * Custom header tiles for HUD.
+* [Bug] Pausing during opening of gameplay breaks music.
 * [Bug] Dying at top of level ends when player goes off top edge.
 * [Bug] Awkward physics on 2nd ramp of 2nd level. Makes top left diamond very annoying.
 * [Bug] Boulder POPS when going down ramps on 2nd level if make speed set to something like 1.15

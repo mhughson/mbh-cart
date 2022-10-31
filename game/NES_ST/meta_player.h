@@ -272,6 +272,22 @@ const unsigned char meta_player_Metasprite21_data[]={
 
 };
 
+const unsigned char meta_player_Metasprite22_data[]={
+
+	- 8,- 4,0xd2,0,
+	  0,- 4,0xd4,0,
+	0x80
+
+};
+
+const unsigned char meta_player_Metasprite23_data[]={
+
+	- 8,- 4,0xd3,0,
+	  0,- 4,0xd4,0,
+	0x80
+
+};
+
 const unsigned char* const meta_player_list[]={
 
 	meta_player_Metasprite0_data,
@@ -295,7 +311,9 @@ const unsigned char* const meta_player_list[]={
 	meta_player_Metasprite18_data,
 	meta_player_Metasprite19_data,
 	meta_player_Metasprite20_data,
-	meta_player_Metasprite21_data
+	meta_player_Metasprite21_data,
+	meta_player_Metasprite22_data,
+	meta_player_Metasprite23_data
 
 };
 

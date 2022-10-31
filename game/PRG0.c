@@ -31,7 +31,9 @@ const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 
 // BCD encoded score values:
 const unsigned char SCORE_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 0, 5 };
+#define SCORE_GEM_META_INDEX (22)
 const unsigned char SCORE_SUPER_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 2, 5 };
+#define SCORE_SUPER_GEM_META_INDEX (23)
 
 const unsigned char palette_gameover_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x00,0x1a,0x38,0x0f,0x16,0x28,0x38,0x0f,0x00,0x1a,0x17 };
 
@@ -479,6 +481,13 @@ void update_gameplay()
 				sfx_play(0, ++cur_sfx_chan);
 
 				in_points = SCORE_SUPER_GEM_BCD;
+
+				kickers[cur_kicker].meta_id = SCORE_SUPER_GEM_META_INDEX;
+				kickers[cur_kicker].pos_x = (((high_byte(player1.pos_x) + 8) / 16) * 16) + 8;
+				kickers[cur_kicker].pos_y = ((high_byte(player1.pos_y) + 8) / 16) * 16;
+				kickers[cur_kicker].ticks_remaining = KICKER_DISPLAY_LENGTH_TICKS;
+				++cur_kicker;
+				if (cur_kicker >= NUM_ACTORS) cur_kicker = 0;				
 			}
 			else
 			{
@@ -486,6 +495,13 @@ void update_gameplay()
 
 				in_points = SCORE_GEM_BCD;
             	--gems_remaining;
+				
+				kickers[cur_kicker].meta_id = SCORE_GEM_META_INDEX;
+				kickers[cur_kicker].pos_x = (((high_byte(player1.pos_x) + 8) / 16) * 16) + 8;
+				kickers[cur_kicker].pos_y = ((high_byte(player1.pos_y) + 8) / 16) * 16;
+				kickers[cur_kicker].ticks_remaining = KICKER_DISPLAY_LENGTH_TICKS;
+				++cur_kicker;
+				if (cur_kicker >= NUM_ACTORS) cur_kicker = 0;
 
 				// Is this the gem that will spawn the super gems?
 				if (gems_remaining == super_gem_trigger)
@@ -603,6 +619,17 @@ void update_gameplay()
 
 		for (i = 0; i < NUM_ACTORS; ++i)
 		{
+
+			if (kickers[i].ticks_remaining > 0)
+			{
+				--kickers[i].ticks_remaining;
+				if (kickers[i].ticks_remaining % 4 == 0)
+				{		
+					--kickers[i].pos_y;
+				}
+				oam_meta_spr(kickers[i].pos_x, kickers[i].pos_y, meta_player_list[kickers[i].meta_id]);
+			}
+
 			in_obj_a = &objs[i];
 			switch (in_obj_a->type)
 			{

@@ -77,6 +77,8 @@ unsigned char in_oam_y;
 const unsigned char *in_oam_data;
 game_actor player1;
 game_actor objs[NUM_ACTORS];
+kicker kickers[NUM_ACTORS];
+unsigned char cur_kicker;
 unsigned int temp16;
 unsigned char tempFlags;
 unsigned char tempFlagsUp;
@@ -443,6 +445,7 @@ void go_to_state(unsigned char next_state)
 			is_jumping = 0;
 
 			memfill(objs, 0, NUM_ACTORS * sizeof(game_actor));
+			memfill(kickers, 0, NUM_ACTORS * sizeof(kicker));
 
 			// used to track which object has been read in from the dynamics layer, across
 			// multiple loops.
