@@ -250,6 +250,8 @@ void draw_statusbar_ppu_off();
 * Collectibles in blocks.
 
 // Nice to Have
+* Give a few points for bouncing on enemy heads.
+* Increase jump velocity ever so slightly to make getting up onto blocks a little easier.
 * Animated bat sprites on title screen (maybe dark palette and in the background).
 * Grass and other greenery dodads.
 * Coyote time.
