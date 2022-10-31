@@ -31,6 +31,7 @@ const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 
 // BCD encoded score values:
 const unsigned char SCORE_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 0, 5 };
+const unsigned char SCORE_SUPER_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 2, 5 };
 
 const unsigned char palette_gameover_bg[16]={ 0x0f,0x17,0x00,0x10,0x0f,0x00,0x1a,0x38,0x0f,0x16,0x28,0x38,0x0f,0x00,0x1a,0x17 };
 
@@ -227,7 +228,7 @@ void load_current_map()
 		for (x = 0; x < 16; ++x)
 		{
 			index16 = GRID_XY_TO_ROOM_INDEX(x, y);
-		    if (GET_META_TILE_FLAGS(index16) & FLAG_COLLECTIBLE)
+		    if (GET_META_TILE_FLAGS(index16) & FLAG_COLLECTIBLE && (current_room[index16] != TILE_ID_SUPER_GEM))
             {
                 ++gems_remaining;
             }
@@ -464,19 +465,39 @@ void update_gameplay()
 			is_jumping = 1;
 		}		
 
-		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16));
-		if (index & FLAG_COLLECTIBLE)
+		index = GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 8)/16);
+		tempFlags = GET_META_TILE_FLAGS(index);
+		if (tempFlags & FLAG_COLLECTIBLE)
 		{
-			in_points = SCORE_GEM_BCD;
+			if (current_room[index] == TILE_ID_SUPER_GEM)
+			{
+				in_points = SCORE_SUPER_GEM_BCD;
+			}
+			else
+			{
+				in_points = SCORE_GEM_BCD;
+            	--gems_remaining;
+			}
 			add_bcd_score();
-            --gems_remaining;
 			display_score();
 			//one_vram_buffer('0' + score, get_ppu_addr(0, 16, 0));
 			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
 			in_y_tile = (high_byte(player1.pos_y) + 8)/16;
-			current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
+			current_room[index] = 0;
 			vram_buffer_load_2x2_metatile();
 			sfx_play(2, ++cur_sfx_chan);
+
+			// clear the surrounding tiles if this is a wide super gem
+			if (in_points == SCORE_SUPER_GEM_BCD)
+			{
+				in_x_tile += 1;
+				current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
+				vram_buffer_load_2x2_metatile();
+
+				in_x_tile -= 2;
+				current_room[GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile)] = 0;
+				vram_buffer_load_2x2_metatile();			
+			}
 			//multi_vram_buffer_horz(const char * data, unsigned char len, int ppu_address);
 
             if (gems_remaining == 0 
@@ -489,7 +510,7 @@ void update_gameplay()
                 return;
             }
 		}
-		if (index & FLAG_KILL)
+		if (tempFlags & FLAG_KILL)
 		{
 			kill_player();
 		}

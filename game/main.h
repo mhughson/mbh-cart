@@ -45,6 +45,7 @@ enum { BANK_0, BANK_1, BANK_2 };
 #define FLAG_ENTRY			(1 << 7)
 
 #define TILE_ID_BREAKABLE_ROCK (59)
+#define TILE_ID_SUPER_GEM (18)
 
 #define P1_MOVE_SPEED (FP_WHOLE(1))
 #define BOULDER_MOVE_SPEED (FP_WHOLE(1))
@@ -235,6 +236,7 @@ void draw_statusbar_ppu_off();
 * Collectibles in blocks.
 
 // Nice to Have
+* Grass and other greenery dodads.
 * Coyote time.
 * Lava pits
 * Delay on accepting button presses on game over.
