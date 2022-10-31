@@ -209,7 +209,7 @@ void main (void)
 					if (pads_new & PAD_START)
 					{
 						pal_bg_bright(2);
-						set_music_speed(12);
+						music_pause(1);
 						is_paused = 1;
 					}
 					else
@@ -222,7 +222,7 @@ void main (void)
 					if (pads_new & PAD_START)
 					{
 						is_paused = 0;
-						set_music_speed(4);
+						music_pause(0);
 						pal_bg_bright(4);
 					}
 					draw_pause_sprites();

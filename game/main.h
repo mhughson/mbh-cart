@@ -225,7 +225,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Pause text is missing from 1 bank
 * Coyote time.
 * More collision points on floor. (make sure to test ramps thoroughly)
 * Timed collectibles (cherries, etc)
