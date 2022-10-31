@@ -110,9 +110,10 @@ void load_screen_boot()
     vram_adr(NTADR_A(0, 0));
     vram_unrle(screen_boot);
 
+#if DEBUG_ENABLED
 	vram_adr(NTADR_A(2, 2));
-	vram_write("BETA 3.0", 8);	
-
+	vram_write("RC 1.0", 6);	
+#endif // DEBUG_ENABLED
     ppu_on_all();
 }
 void load_screen_title()
@@ -301,7 +302,7 @@ void spawn_destroyed_block_particles()
 void update_gameplay()
 {
 	static unsigned char entered_new_tile;
-	static unsigned char entered_new_tile_y;
+
 	if ((tick_count % 32) == 0)
 	{
 		++char_state;

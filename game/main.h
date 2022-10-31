@@ -5,7 +5,7 @@
 #ifndef ONCE_MAIN_H
 #define ONCE_MAIN_H
 
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 #if DEBUG_ENABLED
 #define PROFILE_POKE(val) POKE((0x2001),(val));
