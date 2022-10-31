@@ -24,7 +24,7 @@
 #define NUM_Y_COLLISION_OFFSETS 3
 const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 8, 15 };
 #define NUM_X_COLLISION_OFFSETS 2
-const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 4, 12 };
+const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 2, 14 };
 
 const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
 
@@ -338,11 +338,16 @@ void update_gameplay()
 		player1.pos_y += (pads & PAD_B) ? player1.vel_y >> 1 : player1.vel_y;
 #endif
 
-		x = (high_byte(player1.pos_x)) + (player1.vel_x > 0 ? 16 : 0);
-
-		if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(player1.pos_y) + 8)/16)) & FLAG_WALL)
+		for (i = 0; i < NUM_X_COLLISION_OFFSETS; ++i)
 		{
-			player1.vel_x *= -1;
+			x = (high_byte(player1.pos_x)) + (player1.vel_x > 0 ? 16 : 0);
+
+			if (GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX(x/16, (high_byte(player1.pos_y) + x_collision_offsets[i])/16)) & FLAG_WALL)
+			{
+				player1.vel_x *= -1;
+				player1.pos_x = px_old;
+				break;
+			}
 		}
 
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y) + 16)/16));
@@ -406,18 +411,28 @@ void update_gameplay()
 			}
 		}
 
-		if (index & FLAG_WALL && player1.vel_y < 0)
+		// track if we hit a roof.
+		if (player1.vel_y < 0)
 		{
-			in_x_tile = (high_byte(player1.pos_x) + 8)/16;
-			in_y_tile = (high_byte(player1.pos_y))/16;
-			index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
-			if (current_room[index] == TILE_ID_BREAKABLE_ROCK)
+			for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
 			{
-				current_room[index] = 0;
-				vram_buffer_load_2x2_metatile();
+				in_x_tile = (high_byte(player1.pos_x) + y_collision_offsets[i])/16;
+				in_y_tile = (high_byte(player1.pos_y))/16;
+				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+				tempFlags = GET_META_TILE_FLAGS(index);
+				if (tempFlags & FLAG_WALL)
+				{
+					if (current_room[index] == TILE_ID_BREAKABLE_ROCK)
+					{
+						current_room[index] = 0;
+						vram_buffer_load_2x2_metatile();
+					}
+					player1.vel_y = 0;
+					//player1.pos_y = py_old;		
+					player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y)) / 16) + 1) * 16);
+					break;
+				}
 			}
-			player1.vel_y = 0;
-			player1.pos_y = py_old;		
 		}
 
 		// check for blocks above before allowing a jump. Can be remove if needed for perf or something. Just avoids weird spammy jumps.
