@@ -301,6 +301,7 @@ void spawn_destroyed_block_particles()
 void update_gameplay()
 {
 	static unsigned char entered_new_tile;
+	static unsigned char entered_new_tile_y;
 	if ((tick_count % 32) == 0)
 	{
 		++char_state;
@@ -415,7 +416,9 @@ void update_gameplay()
 		}
 
 		grounded = 0;
-		if (player1.vel_y >= 0 && (!is_on_ramp || !temp_on_ramp))// (!on_ramp || ((pads & PAD_DOWN) == 0)))
+		
+		// We only want to collide with the top 4 pixels of the ramps since you can jump through them.
+		if (player1.vel_y >= 0 && (!is_on_ramp || !temp_on_ramp) && (high_byte(player1.pos_y) % 16) < 4)// (!on_ramp || ((pads & PAD_DOWN) == 0)))
 		{
 			in_y_tile = (high_byte(player1.pos_y) + 16)/16;
 			for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)

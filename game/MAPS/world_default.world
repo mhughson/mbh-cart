@@ -11,7 +11,7 @@
             "fileName": "map_beta.json",
             "height": 240,
             "width": 256,
-            "x": 256,
+            "x": 512,
             "y": -240
         },
         {
@@ -25,7 +25,14 @@
             "fileName": "map_cashin_01.json",
             "height": 240,
             "width": 256,
-            "x": 512,
+            "x": 256,
+            "y": -240
+        },
+        {
+            "fileName": "map_cashin_02.json",
+            "height": 240,
+            "width": 256,
+            "x": -512,
             "y": -240
         }
     ],
