@@ -225,8 +225,6 @@ void draw_statusbar_ppu_off();
 [done]
 
 // Should Have (ordered by priority)
-* Coyote time.
-* More collision points on floor. (make sure to test ramps thoroughly)
 * Timed collectibles (cherries, etc)
 * Point kickers
 * Communicate timed gameplay mechanic at start.
@@ -239,6 +237,8 @@ void draw_statusbar_ppu_off();
 * Quit from pause menu.
 
 // Nice to Have
+* Coyote time.
+* Lava pits
 * Delay on accepting button presses on game over.
 * Big text for score on status bar (see pacman ce for lables)
 * Highlight score when high-score reached on game over screen.

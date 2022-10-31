@@ -267,6 +267,7 @@ void load_current_map()
 
 void update_gameplay()
 {
+	static unsigned char entered_new_tile;
 	if ((tick_count % 32) == 0)
 	{
 		++char_state;
@@ -354,14 +355,14 @@ void update_gameplay()
 		
 		temp_on_ramp = index & (FLAG_DOWN_LEFT | FLAG_DOWN_RIGHT);
 
-		i = 0;
+		entered_new_tile = 0;
 		if (((high_byte(px_old) + 8) / 16) != ((high_byte(player1.pos_x) + 8) / 16))
 		{
-			i = 1;
+			entered_new_tile = 1;
 		}
 		
 
-		if (i && pads & PAD_DOWN)
+		if (entered_new_tile && pads & PAD_DOWN)
 		{
 			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x > 0)
 			{
@@ -381,13 +382,24 @@ void update_gameplay()
 		}
 
 		grounded = 0;
-		if (player1.vel_y >= 0 && index & FLAG_FLOOR && (!is_on_ramp || !temp_on_ramp))// (!on_ramp || ((pads & PAD_DOWN) == 0)))
+		if (player1.vel_y >= 0 && (!is_on_ramp || !temp_on_ramp))// (!on_ramp || ((pads & PAD_DOWN) == 0)))
 		{
-			player1.vel_y = 0;
-			player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y)) / 16)) * 16);
-			grounded = 1;
-			is_jumping = 0;
-			is_on_ramp = 0;
+			in_y_tile = (high_byte(player1.pos_y) + 16)/16;
+			for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
+			{
+				in_x_tile = (high_byte(player1.pos_x) + y_collision_offsets[i])/16;
+				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
+				tempFlags = GET_META_TILE_FLAGS(index);
+				if (tempFlags & FLAG_FLOOR)
+				{
+					player1.vel_y = 0;
+					player1.pos_y = FP_WHOLE((((high_byte(player1.pos_y)) / 16)) * 16);
+					grounded = 1;
+					is_jumping = 0;
+					is_on_ramp = 0;
+					break;
+				}
+			}
 		}
 
 		// if (index == 0)
@@ -397,7 +409,7 @@ void update_gameplay()
 		// }
 
 		index = GET_META_TILE_FLAGS(GRID_XY_TO_ROOM_INDEX((high_byte(player1.pos_x) + 8)/16, (high_byte(player1.pos_y))/16));
-		if (i && pads & PAD_UP)
+		if (entered_new_tile && pads & PAD_UP)
 		{
 			if ((index & (FLAG_DOWN_RIGHT)) && (index & FLAG_ENTRY) && player1.vel_x < 0)
 			{
@@ -414,10 +426,10 @@ void update_gameplay()
 		// track if we hit a roof.
 		if (player1.vel_y < 0)
 		{
+			in_y_tile = (high_byte(player1.pos_y))/16;
 			for (i = 0; i < NUM_Y_COLLISION_OFFSETS; ++i)
 			{
 				in_x_tile = (high_byte(player1.pos_x) + y_collision_offsets[i])/16;
-				in_y_tile = (high_byte(player1.pos_y))/16;
 				index = GRID_XY_TO_ROOM_INDEX(in_x_tile, in_y_tile);
 				tempFlags = GET_META_TILE_FLAGS(index);
 				if (tempFlags & FLAG_WALL)
