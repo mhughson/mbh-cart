@@ -2,12 +2,17 @@
 
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "A53/bank_helpers.h"
+#include "MMC1/bank_helpers.h"
 #include "../include/stdlib.h"
 
 #include "main.h"
 #include "PRG0.h"
 #include "map_defs.h"
+
+// If we don't define something in here, we will be build errors.
+#pragma bss-name(push, "XRAM")
+unsigned char wram_array[0x2000];
+#pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
@@ -52,7 +57,6 @@ const unsigned char* const title_screen_list[]={
 const char ease_pulse[4] = {-1, 0, 1, 0};
 
 const unsigned char TEXT_EmptyTime[] = "00:00:00";
-
 
 // Initalized RAM variables
 //
@@ -160,6 +164,7 @@ void main (void)
 	clear_vram_buffer();
 
 	set_chr_bank_0(0);
+	set_chr_bank_1(1);
 	bank_bg(0);
 	bank_spr(1);
 
@@ -379,7 +384,8 @@ void go_to_state(unsigned char next_state)
 		{
 			fade_to_black();
 
-			set_chr_bank_0(2);
+			set_chr_bank_0(4);
+			set_chr_bank_1(5);
 			bank_bg(0);
 			bank_spr(1);
 
@@ -398,6 +404,7 @@ void go_to_state(unsigned char next_state)
 			fade_to_black();
 
 			set_chr_bank_0(0);
+			set_chr_bank_1(1);
 			bank_bg(0);
 			bank_spr(1);
 
@@ -417,6 +424,7 @@ void go_to_state(unsigned char next_state)
 			ppu_off();
 
 			set_chr_bank_0(0);
+			set_chr_bank_1(1);
 			bank_bg(0);
 			bank_spr(1);
 

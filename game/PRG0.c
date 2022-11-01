@@ -2,7 +2,7 @@
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "A53/bank_helpers.h"
+#include "MMC1/bank_helpers.h"
 #include "../include/stdlib.h"
 
 #pragma rodata-name ("BANK0")
@@ -27,7 +27,7 @@ const unsigned char y_collision_offsets[NUM_Y_COLLISION_OFFSETS] = { 1, 8, 15 };
 #define NUM_X_COLLISION_OFFSETS 2
 const unsigned char x_collision_offsets[NUM_X_COLLISION_OFFSETS] = { 2, 14 };
 
-const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 1 };
+const unsigned char bg_banks[NUM_BG_BANKS] = { 0, 2 };
 
 // BCD encoded score values:
 const unsigned char SCORE_GEM_BCD[NUM_SCORE_DIGITS] =  { 0, 0, 0, 0, 5 };
@@ -135,7 +135,8 @@ void load_screen_gameover()
     fade_to_black();
     ppu_off();
     oam_clear();
-	set_chr_bank_0(2);
+	set_chr_bank_0(4);
+	set_chr_bank_1(5);
 	bank_bg(1);
 	bank_spr(0);	
 	pal_bg(palette_gameover_bg);
@@ -308,6 +309,7 @@ void update_gameplay()
 		++char_state;
 		char_state = char_state & (NUM_BG_BANKS - 1); // %NUM_BG_BANKS assumes power of 2
 		set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
+		set_chr_bank_1(bg_banks[char_state] + 1);
 	}
 
 	if (ticks_in_state16 < 120)

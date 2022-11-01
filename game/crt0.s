@@ -35,8 +35,6 @@ FT_SFX_ENABLE   = 1		;undefine to exclude all sound effects code
 	.import	__CODE_LOAD__   ,__CODE_RUN__   ,__CODE_SIZE__
 	.import	__RODATA_LOAD__ ,__RODATA_RUN__ ,__RODATA_SIZE__
 	.import NES_MAPPER, NES_PRG_BANKS, NES_CHR_BANKS, NES_MIRRORING
-    
-	.import upload_chars
 
     .include "zeropage.inc"
 
@@ -123,11 +121,11 @@ PAL_BUF:			.res 32 ; originally hardcode to $01c0, inside stack memory, be was g
     .byte $4e,$45,$53,$1a
 	.byte <NES_PRG_BANKS
 	.byte <NES_CHR_BANKS
-	.byte <NES_MIRRORING|(<NES_MAPPER&$f<<4); ;|2 ;battery save
-	.byte <NES_MAPPER&$f0|8
-	.byte $00,$00,$00 ;$07 ;8kb work RAM
-	.byte $09 ;32k of CHR RAM
-	.byte $00,$00,$00,$00
+	.byte <NES_MIRRORING|(<NES_MAPPER<<4)|2 ;battery save
+	.byte $8|(<NES_MAPPER&$f0);ines2 flag + upper half of mapper number
+	.res 2,0
+	.byte $70 ; 8kb save ram
+	.res 5,0
 
 
 ; linker complains if I don't have at least one mention of each bank
@@ -135,10 +133,10 @@ PAL_BUF:			.res 32 ; originally hardcode to $01c0, inside stack memory, be was g
 .segment "BANK0"
 .segment "BANK1"
 .segment "BANK2"
-; .segment "BANK3"
-; .segment "BANK4"
-; .segment "BANK5"
-; .segment "BANK6"
+.segment "BANK3"
+.segment "BANK4"
+.segment "BANK5"
+.segment "BANK6"
 
 .segment "STARTUP"
 
@@ -156,44 +154,31 @@ _exit:
     stx DMC_FREQ
     stx PPU_CTRL		;no NMI
 	
-clearRAM:
-    txa
-@1:
-    sta $000,x
-    sta $100,x
-    sta $200,x
-    sta $300,x
-    sta $400,x
-    sta $500,x
-    sta $600,x
-    sta $700,x
-    inx
-    bne @1
-
-	;x is still zero
 	
-; Mapper reset
+; MMC1 reset
 
-	lda #$81		; outer PRG bank
-	sta A53_REG_SELECT
-	lda #7	; 
-	sta A53_REG_VALUE
+	lda #$80 ; reset all latches
+	sta $8000
+	sta $a000
+	sta $c000
+	sta $e000
 	
-	lda #$80		; mode
-	sta A53_REG_SELECT
-	lda #%101111	; 
-	sta A53_REG_VALUE
+	lda #$1f 	; set control to horizontal mirroring, 
+				; last bank $c000, $8000 swappable
+				; CHR in 4k and 4k mode
+	jsr _set_mmc1_ctrl
 	
-
 	lda #$00 ;CHR bank #0 for first tileset
 	jsr _set_chr_bank_0
 	
-	;lda #$01 ;CHR bank #1 for second tileset
-	;jsr _set_chr_bank_1
+	lda #$01 ;CHR bank #1 for second tileset
+	jsr _set_chr_bank_1
 	
-	lda #$01 ;PRG bank #1 at $8000
+	lda #$00 ;PRG bank #0 at $8000
 	jsr _set_prg_bank
 	
+	
+	;x is still zero
 
 initPPU:
     bit PPU_STATUS
@@ -227,15 +212,27 @@ clearVRAM:
 	bne @1
 	dey
 	bne @1
-	
-	jsr upload_chars
+
+clearRAM:
+    txa
+@1:
+    sta $000,x
+    sta $100,x
+    sta $200,x
+    sta $300,x
+    sta $400,x
+    sta $500,x
+    sta $600,x
+    sta $700,x
+    inx
+    bne @1
 
 	lda #4
 	jsr _pal_bright
 	jsr _pal_clear
 	jsr _oam_clear
 
-    ;jsr	zerobss
+    jsr	zerobss
 	jsr	copydata
 
     lda #<(__STACK_START__+__STACKSIZE__) ;changed
@@ -249,7 +246,7 @@ clearVRAM:
 	lda #%10000000
 	sta <PPU_CTRL_VAR
 	sta PPU_CTRL		;enable NMI
-	lda #%00000000 ;#%00000110 updated to disable left 8 pixels
+	lda #%00000110
 	sta <PPU_MASK_VAR
 
 waitSync3:
@@ -310,8 +307,8 @@ detectNTSC:
 	
 	
 
-	;.include "MMC1/mmc1_macros.asm"
-	.include "A53/bank_helpers.asm"
+	.include "MMC1/mmc1_macros.asm"
+	.include "MMC1/bank_helpers.asm"
 	.include "LIB/neslib.s"
 	.include "LIB/nesdoug.s"
 	
@@ -353,11 +350,23 @@ sounds_data:
    	.word irq	;$fffe irq / brk
 
 
-;.segment "CHARS"
+.segment "CHARS"
 
-;	.incbin "chrrom_bank0.chr"
-;	.incbin "chrrom_bank1.chr"
-;	.incbin "chrrom_bank2.chr"
+; NOTE: NEW_TILESET_CHANGE_REQUIRED
+	.incbin "chrrom_bank0.chr"
+	.incbin "chrrom_bank1.chr"
+	.incbin "chrrom_bank2.chr"
+	.incbin "chrrom_bank3.chr"
+;	.incbin "chrrom_bank4.chr"
+;	.incbin "chrrom_bank5.chr"
+;	.incbin "chrrom_bank6.chr"
+;	.incbin "chrrom_bank7.chr"
+;	.incbin "chrrom_bank8.chr"
+;	.incbin "chrrom_bank9.chr"
+;	.incbin "chrrom_bank10.chr"
+;	.incbin "chrrom_bank11.chr"
+;	.incbin "chrrom_bank12.chr"
+;	.incbin "chrrom_bank13.chr"
 ; the CHARS segment is much bigger, and I could have 
 ; incbin-ed many more chr files
 	
