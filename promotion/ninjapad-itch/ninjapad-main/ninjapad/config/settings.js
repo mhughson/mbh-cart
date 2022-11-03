@@ -1,5 +1,5 @@
 // Show/hide debug messages
-const DEBUG = false;
+const DEBUG = true;
 
 // Virtual analog deadzone
 const DEADZONE = 2; // vmin
@@ -14,18 +14,18 @@ const EMULATION_DISPLAY = "emu-canvas";
 // Emulation settings
 const SYSTEM = "nes";
 const EMULATOR = "jsnes";
-const DEFAULT_ROM = "roms/main.nes";
+const DEFAULT_ROM = "roms/minekart_madness_mmc1.nes";
 
 // User experience
 const SINGLE_ROM = true;
 const SAVE_STATES = true;
-const INPUT_RECORDER = false;
+const INPUT_RECORDER = true;
 
 // Owner info
 const HOMEPAGE = "https://twitter.com/matthughson";
 const ABOUT = (`
     Follow me on Twitter:<br/>
     <a href="${HOMEPAGE}" target="_blank">
-    <font color="yellow">Matt Hughson</font>
+    <font color="yellow">matthughson</font>
     </a>
 `);
