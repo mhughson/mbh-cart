@@ -246,7 +246,7 @@ clearRAM:
 	lda #%10000000
 	sta <PPU_CTRL_VAR
 	sta PPU_CTRL		;enable NMI
-	lda #%00000110
+	lda #%00000000
 	sta <PPU_MASK_VAR
 
 waitSync3:
