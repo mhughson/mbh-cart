@@ -3,11 +3,6 @@
 
 
 
-
-; Edited to work with MMC1 code
-.define SOUND_BANK 2
-
-
 FT_BASE_ADR		= $0100		;page in RAM, should be $xx00
 FT_DPCM_OFF		= $f000		;$c000..$ffc0, 64-byte steps
 FT_SFX_STREAMS	= 4			;number of sound effects played at once, 1..4
@@ -15,7 +10,7 @@ FT_SFX_STREAMS	= 4			;number of sound effects played at once, 1..4
 FT_THREAD       = 1		;undefine if you call sound effects in the same thread as sound update
 FT_PAL_SUPPORT	= 1		;undefine to exclude PAL support
 FT_NTSC_SUPPORT	= 1		;undefine to exclude NTSC support
-FT_DPCM_ENABLE  = 1		;undefine to exclude all DMC code
+FT_DPCM_ENABLE  = 0		;undefine to exclude all DMC code
 FT_SFX_ENABLE   = 1		;undefine to exclude all sound effects code
 
 
@@ -36,6 +31,7 @@ FT_SFX_ENABLE   = 1		;undefine to exclude all sound effects code
 	.import	__RODATA_LOAD__ ,__RODATA_RUN__ ,__RODATA_SIZE__
 	.import NES_MAPPER, NES_PRG_BANKS, NES_CHR_BANKS, NES_MIRRORING
 
+	.importzp _PAD_STATE, _PAD_STATET ;added
     .include "zeropage.inc"
 
 
@@ -54,7 +50,7 @@ CTRL_PORT1	=$4016
 CTRL_PORT2	=$4017
 
 OAM_BUF		=$0200
-;PAL_BUF		=$01c0
+PAL_BUF		=$01c0
 VRAM_BUF	=$0700
 
 
@@ -70,6 +66,7 @@ NAME_UPD_ENABLE: 	.res 1
 PAL_UPDATE: 		.res 1
 PAL_BG_PTR: 		.res 2
 PAL_SPR_PTR: 		.res 2
+PAL_PPU_PAL_PTR:	.res 2
 SCROLL_X: 			.res 1
 SCROLL_Y: 			.res 1
 SCROLL_X1: 			.res 1
@@ -82,7 +79,6 @@ PPU_CTRL_VAR1: 		.res 1
 PPU_MASK_VAR: 		.res 1
 RAND_SEED: 			.res 2
 FT_TEMP: 			.res 3
-BANK_WRITE_IP:		.res 1
 
 TEMP: 				.res 11
 SPRID:				.res 1
@@ -102,41 +98,50 @@ RLE_HIGH	=TEMP+1
 RLE_TAG		=TEMP+2
 RLE_BYTE	=TEMP+3
 
-OFFSET:				.res 1
-PAL_OVERRIDE:		.res 1
-
 ;nesdoug code requires
 VRAM_INDEX:			.res 1
 META_PTR:			.res 2
 DATA_PTR:			.res 2
 
+.segment "BSS" ; (it can be any segment)
+CREDITS_QUEUED: .res 1
+_CREDITS_QUEUED = CREDITS_QUEUED ; alias with a _
+.export _CREDITS_QUEUED
 
-; bss segment added my mhughson. not really sure if this is correct :|
-.segment "BSS"
+;CREDITS_COUNTDOWN:	.res 1
+;_CREDITS_COUNTDOWN = CREDITS_COUNTDOWN ; alias with a _
+;.export _CREDITS_COUNTDOWN
 
-PAL_BUF:			.res 32 ; originally hardcode to $01c0, inside stack memory, be was getting hit with stack overflow.
+CREDITS1_PREV: 	.res 1
+CREDITS2_PREV:	.res 1
+
+; used by vs system with multiple possible ppu types.
+PPU_VERSION: .res 1
+_PPU_VERSION = PPU_VERSION ; alias with a _
+.export _PPU_VERSION
 
 .segment "HEADER"
-
     .byte $4e,$45,$53,$1a
 	.byte <NES_PRG_BANKS
 	.byte <NES_CHR_BANKS
-	.byte <NES_MIRRORING|(<NES_MAPPER<<4)|2 ;battery save
-	.byte $8|(<NES_MAPPER&$f0);ines2 flag + upper half of mapper number
-	.res 2,0
-	.byte $70 ; 8kb save ram
-	.res 5,0
+
+.if (VS_SYS_ENABLED)
+	; use ines 2.0 for vs system ppu specifications.
+	.byte <NES_MIRRORING|((<NES_MAPPER<<4)&$ff)|2 ; mirroring | mapper low bits | save support
+	.byte (<NES_MAPPER&$f0)|(1<<3)|1 ; mapper upper nibble | iNes2.0 | vs system
+	.res 5,0 ;filler
+	.byte 2 ; PPU 0001
+	.res 2
+	;.res 8,0
+.else
+	; use ines 1.0 for maximum compatibility.
+	.byte <NES_MIRRORING|(<NES_MAPPER<<4)
+	.byte (<NES_MAPPER&$f0)
+	.res 8,0
+.endif
+;.byte $4E,$45,$53,$1A,$02,$01,$32,$69,$00,$00,$50,$00,$00,$52,$00,$00
 
 
-; linker complains if I don't have at least one mention of each bank
-.segment "ONCE"
-.segment "BANK0"
-.segment "BANK1"
-.segment "BANK2"
-.segment "BANK3"
-.segment "BANK4"
-.segment "BANK5"
-.segment "BANK6"
 
 .segment "STARTUP"
 
@@ -153,32 +158,6 @@ _exit:
     stx PPU_MASK
     stx DMC_FREQ
     stx PPU_CTRL		;no NMI
-	
-	
-; MMC1 reset
-
-	lda #$80 ; reset all latches
-	sta $8000
-	sta $a000
-	sta $c000
-	sta $e000
-	
-	lda #$1f 	; set control to horizontal mirroring, 
-				; last bank $c000, $8000 swappable
-				; CHR in 4k and 4k mode
-	jsr _set_mmc1_ctrl
-	
-	lda #$00 ;CHR bank #0 for first tileset
-	jsr _set_chr_bank_0
-	
-	lda #$01 ;CHR bank #1 for second tileset
-	jsr _set_chr_bank_1
-	
-	lda #$00 ;PRG bank #0 at $8000
-	jsr _set_prg_bank
-	
-	
-	;x is still zero
 
 initPPU:
     bit PPU_STATUS
@@ -274,6 +253,17 @@ detectNTSC:
 	ldx #0
 	jsr _set_vram_update
 
+	ldx #<music_data
+	ldy #>music_data
+	lda <NTSC_MODE
+	jsr FamiToneInit
+
+	.if(FT_SFX_ENABLE)
+	ldx #<sounds_data
+	ldy #>sounds_data
+	jsr FamiToneSfxInit
+	.endif
+
 	lda #$fd
 	sta <RAND_SEED
 	sta <RAND_SEED+1
@@ -281,65 +271,30 @@ detectNTSC:
 	lda #0
 	sta PPU_SCROLL
 	sta PPU_SCROLL
-	
-	
-	
-	lda #SOUND_BANK ;PRG bank where all the music stuff is there
-					;SOUND_BANK is defined above
-	jsr _set_prg_bank
-	
-	ldx #<music_data
-	ldy #>music_data
-	lda <NTSC_MODE
-	jsr FamiToneInit
-
-	ldx #<sounds_data
-	ldy #>sounds_data
-	jsr FamiToneSfxInit
-	
-	lda #$00 ;PRG bank #0 at $8000, back to basic
-	jsr _set_prg_bank
-	
-	;for split screens with different CHR bank at top... disable it
-	jsr _unset_nmi_chr_tile_bank
 
 	jmp _main			;no parameters
-	
-	
 
-	.include "MMC1/mmc1_macros.asm"
-	.include "MMC1/bank_helpers.asm"
 	.include "LIB/neslib.s"
 	.include "LIB/nesdoug.s"
-	
-
-
-
-	
-; I put all the music stuff on bank 6
-; all the music functions swap in bank 6
-	
-;.segment "CODE" ;does nothing-segments set in famitone5.s again
 	.include "MUSIC/famitone5.s"
-
-.segment "BANK2" ; im suprised this works, having music/sound data in different bank from famitone, but it does.
-music_data:
- 	.include "MUSIC/songs.s"
-
-sounds_data:
- 	.include "MUSIC/sounds.s"
-
-
 	
-; NOTE: This won't work with music/sound other than the MMC1 demo. I think this is become the 
-;		memory layout needs to be really specific: https://nesdoug.com/2018/09/05/17-dmc-sound/
-;
-;		"This is the tricky part. DMC samples must go between $c000 and $ffc0. preferably as far 
-;		to the end as possible. Subtract the byte size of the samples from ffc0 and round down 
-;		to the next xx40. In the cfg file, define the SAMPLE segment to start there."
-;
+	
+	
+.segment "RODATA"
+
+music_data:
+	.include "MUSIC/songs.s"
+
+
+
+	.if(FT_SFX_ENABLE)
+sounds_data:
+	.include "MUSIC/sounds.s"
+	.endif
+
+; Not used, so don't allocate space for it.
 ;.segment "SAMPLES"
-;	.incbin "MUSIC/BassDrum.dmc"
+;	.incbin "music_dpcm.bin"
 
 
 
@@ -352,21 +307,4 @@ sounds_data:
 
 .segment "CHARS"
 
-; NOTE: NEW_TILESET_CHANGE_REQUIRED
 	.incbin "chrrom_bank0.chr"
-	.incbin "chrrom_bank1.chr"
-	.incbin "chrrom_bank2.chr"
-	.incbin "chrrom_bank3.chr"
-;	.incbin "chrrom_bank4.chr"
-;	.incbin "chrrom_bank5.chr"
-;	.incbin "chrrom_bank6.chr"
-;	.incbin "chrrom_bank7.chr"
-;	.incbin "chrrom_bank8.chr"
-;	.incbin "chrrom_bank9.chr"
-;	.incbin "chrrom_bank10.chr"
-;	.incbin "chrrom_bank11.chr"
-;	.incbin "chrrom_bank12.chr"
-;	.incbin "chrrom_bank13.chr"
-; the CHARS segment is much bigger, and I could have 
-; incbin-ed many more chr files
-	

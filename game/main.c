@@ -2,17 +2,11 @@
 
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "MMC1/bank_helpers.h"
 #include "../include/stdlib.h"
 
 #include "main.h"
 #include "PRG0.h"
 #include "map_defs.h"
-
-// If we don't define something in here, we will be build errors.
-#pragma bss-name(push, "XRAM")
-unsigned char wram_array[0x2000];
-#pragma bss-name(pop)
 
 #pragma rodata-name ("CODE")
 #pragma code-name ("CODE")
@@ -160,11 +154,13 @@ void main (void)
 {
 	ppu_off(); // screen off
 
+	PPU_VERSION = ((DIP5!=0)<<2) | ((DIP4 != 0)<<1) | (DIP3 != 0);
+	// trigger pal_bright to get the colors to updated based on the new PPU setting.
+	pal_bright(0);
+
 	set_vram_buffer(); // do at least once, sets a pointer to a buffer
 	clear_vram_buffer();
 
-	set_chr_bank_0(0);
-	set_chr_bank_1(1);
 	bank_bg(0);
 	bank_spr(1);
 
@@ -173,6 +169,7 @@ void main (void)
 
 	cur_state = 0xff;
 	go_to_state(STATE_BOOT);
+	fade_from_black();
 
 	// infinite loop
 	while (1)
@@ -238,7 +235,7 @@ void main (void)
 					}
 					else
 					{
-						banked_call(BANK_0, update_gameplay);
+						update_gameplay();
 					}
 				}
 				else
@@ -376,7 +373,7 @@ void go_to_state(unsigned char next_state)
 	{
 		case STATE_BOOT:
 		{
-			banked_call(BANK_0, load_screen_boot);
+			load_screen_boot();
 			break;
 		}
 
@@ -384,15 +381,13 @@ void go_to_state(unsigned char next_state)
 		{
 			fade_to_black();
 
-			set_chr_bank_0(4);
-			set_chr_bank_1(5);
 			bank_bg(0);
 			bank_spr(1);
 
 			pal_bg(palette_title_bg);
 			pal_spr(palette_bg);			
 
-			banked_call(BANK_0, load_screen_title);
+			load_screen_title();
 			music_play(1);
 
 			fade_from_black();
@@ -403,15 +398,13 @@ void go_to_state(unsigned char next_state)
 		{
 			fade_to_black();
 
-			set_chr_bank_0(0);
-			set_chr_bank_1(1);
 			bank_bg(0);
 			bank_spr(1);
 
 			pal_bg(palette_bg);
 			pal_spr(palette);			
 
-			banked_call(BANK_0, load_screen_rules);
+			load_screen_rules();
 
 			fade_from_black();
 			break;
@@ -423,8 +416,6 @@ void go_to_state(unsigned char next_state)
 
 			ppu_off();
 
-			set_chr_bank_0(0);
-			set_chr_bank_1(1);
 			bank_bg(0);
 			bank_spr(1);
 
@@ -434,7 +425,7 @@ void go_to_state(unsigned char next_state)
 			if (!player1.is_dead)
 			{
 				in_nametable = NAMETABLE_A;
-				banked_call(BANK_0, load_current_map);
+				load_current_map();
 			}
 
 			// vram_adr(NTADR_A(7, 2));
@@ -465,7 +456,7 @@ void go_to_state(unsigned char next_state)
 			y = 0;
 			do
 			{
-				banked_call(BANK_0, get_obj_id);				
+				get_obj_id();
 
 				switch (loaded_obj_id - TYPE_ID_START_INDEX_TILED)
 				{
@@ -538,13 +529,13 @@ void go_to_state(unsigned char next_state)
 			}
 			music_play(2);
 			delay(120);
-			banked_call(BANK_0, load_screen_levelcomplete);			
+			load_screen_levelcomplete();	
 			break;
 		}
 
 		case STATE_GAMEOVER:
 		{
-			banked_call(BANK_0, load_screen_gameover);
+			load_screen_gameover();
 			music_stop();
 			sfx_play(22, 0);
 

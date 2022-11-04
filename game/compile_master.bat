@@ -17,6 +17,7 @@ set path=..\bin\;%path%
 set CC65_HOME=..\
 
 set a53enable=0
+set vs_on=1
 
 IF DEFINED audio (
 	MUSIC\text2vol5.exe MUSIC\songs.txt -ca65
@@ -31,30 +32,26 @@ IF DEFINED maps (
 IF DEFINED code (
 	REM -g adds debug information, but the end result .nes file is not
 	REM affected, so leave it in all the time.
-	cc65 -g -Oirs %name%.c --add-source
-	cc65 -g -Oirs PRG0.c --add-source
-	cc65 -g -Oirs PRG1.c --add-source
-	cc65 -g -Oirs PRG2.c --add-source
-	cc65 -g -Oirs MMC1\bank_helpers.c --add-source
-	ca65 crt0.s
+	cc65 -g -Oirs -D VS_SYS_ENABLED=%vs_on% %name%.c --add-source
+	cc65 -g -Oirs -D VS_SYS_ENABLED=%vs_on% PRG0.c --add-source
+	cc65 -g -Oirs -D VS_SYS_ENABLED=%vs_on% PRG1.c --add-source
+	cc65 -g -Oirs -D VS_SYS_ENABLED=%vs_on% PRG2.c --add-source
+	ca65 -D VS_SYS_ENABLED=%vs_on% crt0.s
 	ca65 %name%.s -g
 	ca65 PRG0.s -g
 	ca65 PRG1.s -g
 	ca65 PRG2.s -g
-	ca65 MMC1\bank_helpers.s -g
 
 	REM -dbgfile does not impact the resulting .nes file.
-	ld65 -C MMC1_128_128.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o MMC1\bank_helpers.o PRG0.o PRG1.o PRG2.o nes.lib -Ln labels.txt -m map.txt
+	ld65 -C nrom_32k_vert.cfg --dbgfile %name%.dbg -o %name%.nes crt0.o %name%.o PRG0.o PRG1.o PRG2.o nes.lib -Ln labels.txt -m map.txt
 
 	del *.o
-	del MMC1\*.o
 
 	mkdir BUILD\
 	move /Y %name%.nes BUILD\ 
 	move /Y %name%.dbg BUILD\ 
 	move /Y labels.txt BUILD\ 
 	move /Y %name%.s BUILD\ 
-	move /Y MMC1\bank_helpers.s BUILD\ 
 	move /Y PRG0.s BUILD\ 
 	move /Y PRG1.s BUILD\ 
 	move /Y PRG2.s BUILD\

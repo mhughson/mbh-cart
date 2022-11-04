@@ -2,11 +2,7 @@
 #include "main.h"
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
-#include "MMC1/bank_helpers.h"
 #include "../include/stdlib.h"
-
-#pragma rodata-name ("BANK0")
-#pragma code-name ("BANK0")
 
 #include "NES_ST/screen_boot.h"
 #include "NES_ST/screen_title.h"
@@ -135,8 +131,6 @@ void load_screen_gameover()
     fade_to_black();
     ppu_off();
     oam_clear();
-	set_chr_bank_0(4);
-	set_chr_bank_1(5);
 	bank_bg(1);
 	bank_spr(0);	
 	pal_bg(palette_gameover_bg);
@@ -306,10 +300,7 @@ void update_gameplay()
 
 	if ((tick_count % 32) == 0)
 	{
-		++char_state;
-		char_state = char_state & (NUM_BG_BANKS - 1); // %NUM_BG_BANKS assumes power of 2
-		set_chr_bank_0(bg_banks[char_state]); // switch the BG bank
-		set_chr_bank_1(bg_banks[char_state] + 1);
+		// TODO: possible animate tiles.
 	}
 
 	if (ticks_in_state16 < 120)

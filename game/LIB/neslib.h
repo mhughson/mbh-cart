@@ -114,9 +114,6 @@ void __fastcall__ oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,u
 
 void __fastcall__ oam_meta_spr(unsigned char x,unsigned char y,const unsigned char *data);
 
-//same as oam_meta_spr, but allows for sprite id offets, and palette override.
-void __fastcall__ oam_meta_spr_offset(unsigned char x, unsigned char y, unsigned char offset, unsigned char pal_override, const unsigned char *data);
-
 
 //hide all remaining sprites from given offset
 // Note: sprid removed for speed

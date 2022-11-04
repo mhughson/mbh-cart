@@ -84,6 +84,20 @@ enum { BANK_0, BANK_1, BANK_2 };
 // subracting this from the tile id from the name table, will give you the OBJ_TYPE
 #define TYPE_ID_START_INDEX_TILED (112)
 
+#if VS_SYS_ENABLED
+// Note: 1 based to match documentation and user face numbering.
+#define DIP1 (PEEK(0x4016) & 1<<3) // FREE PLAY
+#define DIP2 (PEEK(0x4016) & 1<<4) // EXTRA COIN COST
+
+#define DIP3 (PEEK(0x4017) & 1<<2) // PPU.0
+#define DIP4 (PEEK(0x4017) & 1<<3) // PPU.1
+#define DIP5 (PEEK(0x4017) & 1<<4) // PPU.2
+
+#define DIP6 (PEEK(0x4017) & 1<<5) // MUSIC OFF
+#define DIP7 (PEEK(0x4017) & 1<<6) // SFX OFF
+#define DIP8 (PEEK(0x4017) & 1<<7) // MUTE MAIN MENU
+#endif // VS_SYS_ENABLED
+
 enum STATES 
 {
 	STATE_BOOT, STATE_TITLE, STATE_GAMEPLAY, STATE_GAMEOVER, STATE_LEVEL_COMPLETE, STATE_RULES,
@@ -144,6 +158,10 @@ typedef struct kicker
 } kicker;
 
 #pragma bss-name(push, "ZEROPAGE")
+
+
+extern unsigned char CREDITS_QUEUED;
+extern unsigned char PPU_VERSION;
 
 extern unsigned char i;
 extern unsigned char index;

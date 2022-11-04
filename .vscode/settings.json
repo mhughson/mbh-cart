@@ -17,6 +17,7 @@
         "screen_title.h": "c",
         "screen_boot.h": "c",
         "meta_tiles_default.h": "c",
-        "screen_empty.h": "c"
+        "screen_empty.h": "c",
+        "main.h": "c"
     }
 }

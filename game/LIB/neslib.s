@@ -5,17 +5,14 @@
 ;nesdoug version, 2019-09
 ;minor change %%, added ldx #0 to functions returning char
 ;removed sprid from c functions to speed them up
-;music and nmi changed for mmc1
 
-;SOUND_BANK is defined at the top of crt0.s
-;and needs to match the bank where the music is
 
 
 
 	.export _pal_all,_pal_bg,_pal_spr,_pal_col,_pal_clear
 	.export _pal_bright,_pal_spr_bright,_pal_bg_bright
 	.export _ppu_off,_ppu_on_all,_ppu_on_bg,_ppu_on_spr,_ppu_mask,_ppu_system
-	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_meta_spr_offset,_oam_hide_rest
+	.export _oam_clear,_oam_size,_oam_spr,_oam_meta_spr,_oam_hide_rest
 	.export _ppu_wait_frame,_ppu_wait_nmi
 	.export _scroll,_split
 	.export _bank_spr,_bank_bg
@@ -27,36 +24,71 @@
 	.export _vram_adr,_vram_put,_vram_fill,_vram_inc,_vram_unrle
 	.export _set_vram_update,_flush_vram_update
 	.export _memcpy,_memfill,_delay
-	.export real_nmi
 	
 	.export _flush_vram_update_nmi, _oam_set, _oam_get
-
 
 
 ;NMI handler
 
 nmi:
-    pha 
-    lda <BANK_WRITE_IP
-    beq @continue
-        lda #$00
-        sta BANK_WRITE_IP
-        pla
-        jmp @skip_all ; If we were in the middle of switching banks, skip this nmi. Gross, but effective.
-    @continue:
-    pla
-
-	jsr real_nmi
-	
-	@skip_all:
-	rti
-
-real_nmi:
 	pha
 	txa
 	pha
 	tya
 	pha
+
+	; check for credits in the first slot
+	lda CREDITS1_PREV
+	and #%00100000
+	beq @check_slot_2_creds
+	lda $4016
+	and #%00100000
+	bne @check_slot_2_creds
+	inc CREDITS_QUEUED
+
+@check_slot_2_creds:
+	lda $4016
+	sta CREDITS1_PREV
+
+	; check for credits in the second slot
+	lda CREDITS2_PREV
+	and #%01000000
+	beq @done_credit_check
+	lda $4016
+	and #%01000000
+	bne @done_credit_check
+	inc CREDITS_QUEUED
+
+@done_credit_check:
+	lda $4016
+	sta CREDITS2_PREV	
+
+
+	; if prev_val_a == 1
+		; if new_val_a == 0
+			; inc CREDITS_QUEUED
+	; prev_val_a = new_val_b
+	; repeat for b
+
+		; check for zero
+		; if now zero
+
+;on the Vs system, check for credits!
+;todo: check for 1 and 2 independently. hook up to c logic.
+; 	lda CREDITS_COUNTDOWN
+; 	beq @check_for_creds
+; 	dec CREDITS_COUNTDOWN
+; 	jmp @skip_creds
+
+; @check_for_creds:
+; 	lda $4016
+; 	and #%01100000
+; 	beq @skip_creds
+; 	inc CREDITS_QUEUED
+; 	lda #70
+; 	sta CREDITS_COUNTDOWN
+	
+;@skip_creds:
 
 	lda <PPU_MASK_VAR	;if rendering is disabled, do not access the VRAM at all
 	and #%00011000
@@ -64,14 +96,6 @@ real_nmi:
 	jmp	@skipAll
 
 @doUpdate:
-
-;for split screens with different CHR bank at top	
-	lda nmiChrTileBank
-	cmp #NO_CHR_BANK 
-	beq @no_chr_chg
-	jsr _set_chr_bank_0
-@no_chr_chg:
-
 
 	lda #>OAM_BUF		;update OAM
 	sta PPU_OAM_DMA
@@ -85,12 +109,12 @@ real_nmi:
 	ldx #0
 	stx <PAL_UPDATE
 
-	lda #$3f
+	lda #$3f ; 63
 	sta PPU_ADDR
 	stx PPU_ADDR
 
 	ldy PAL_BUF				;background color, remember it in X
-	lda (PAL_BG_PTR),y
+	lda (PAL_BG_PTR),y		;pointer to palBrightTable
 	sta PPU_DATA
 	tax
 	
@@ -159,23 +183,13 @@ real_nmi:
 
 @skipNtsc:
 
-;switch the music into the prg bank first
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
 	jsr FamiToneUpdate
-	pla
-	sta BP_BANK ;restore prg bank
-	jsr _set_prg_bank
 
 	pla
 	tay
 	pla
 	tax
 	pla
-
-	rts
 
 irq:
 
@@ -275,10 +289,72 @@ _pal_clear:
 _pal_spr_bright:
 
 	tax
+
+.if(VS_SYS_ENABLED)	
+	lda PPU_VERSION
+	beq @PPU0
+	
+	cmp #1
+	beq @PPU1
+	
+	cmp #2
+	beq @PPU2
+	
+	cmp #3
+	beq @PPU3
+	
+	cmp #4
+	beq @PPU4
+	
+	cmp #5
+	beq @PPU5
+
+.endif ;.if(VS_SYS_ENABLED)	
+
+@PPU0:
 	lda palBrightTableL,x
 	sta <PAL_SPR_PTR
 	lda palBrightTableH,x	;MSB is never zero
 	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+
+.if(VS_SYS_ENABLED)	
+@PPU1:
+	lda palBrightTableL_RP2C04_0002,x
+	sta <PAL_SPR_PTR
+	lda palBrightTableH_RP2C04_0002,x	;MSB is never zero
+	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+	
+@PPU2:
+	lda palBrightTableL_RP2C04_0003,x
+	sta <PAL_SPR_PTR
+	lda palBrightTableH_RP2C04_0003,x	;MSB is never zero
+	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+	
+@PPU3:
+	lda palBrightTableL_RP2C04_0004,x
+	sta <PAL_SPR_PTR
+	lda palBrightTableH_RP2C04_0004,x	;MSB is never zero
+	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+	
+@PPU4:
+	lda palBrightTableL_2C03,x
+	sta <PAL_SPR_PTR
+	lda palBrightTableH_2C03,x	;MSB is never zero
+	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+	
+@PPU5:
+	lda palBrightTableL_2C02,x
+	sta <PAL_SPR_PTR
+	lda palBrightTableH_2C02,x	;MSB is never zero
+	sta <PAL_SPR_PTR+1
+	jmp @PPU_END
+.endif ;.if(VS_SYS_ENABLED)	
+@PPU_END:
 	sta <PAL_UPDATE
 	rts
 
@@ -289,10 +365,74 @@ _pal_spr_bright:
 _pal_bg_bright:
 
 	tax
+
+.if(VS_SYS_ENABLED)		
+	lda PPU_VERSION
+	beq @PPU0
+	
+	cmp #1
+	beq @PPU1
+	
+	cmp #2
+	beq @PPU2
+	
+	cmp #3
+	beq @PPU3
+	
+	cmp #4
+	beq @PPU4
+	
+	cmp #5
+	beq @PPU5
+
+.endif ;.if(VS_SYS_ENABLED)	
+
+@PPU0:
 	lda palBrightTableL,x
 	sta <PAL_BG_PTR
 	lda palBrightTableH,x	;MSB is never zero
 	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+	
+.if(VS_SYS_ENABLED)	
+@PPU1:
+	lda palBrightTableL_RP2C04_0002,x
+	sta <PAL_BG_PTR
+	lda palBrightTableH_RP2C04_0002,x	;MSB is never zero
+	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+	
+@PPU2:
+	lda palBrightTableL_RP2C04_0003,x
+	sta <PAL_BG_PTR
+	lda palBrightTableH_RP2C04_0003,x	;MSB is never zero
+	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+	
+@PPU3:
+	lda palBrightTableL_RP2C04_0004,x
+	sta <PAL_BG_PTR
+	lda palBrightTableH_RP2C04_0004,x	;MSB is never zero
+	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+	
+@PPU4:
+	lda palBrightTableL_2C03,x
+	sta <PAL_BG_PTR
+	lda palBrightTableH_2C03,x	;MSB is never zero
+	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+	
+@PPU5:
+	lda palBrightTableL_2C02,x
+	sta <PAL_BG_PTR
+	lda palBrightTableH_2C02,x	;MSB is never zero
+	sta <PAL_BG_PTR+1
+	jmp @PPU_END
+.endif ;.if(VS_SYS_ENABLED)	
+
+@PPU_END:
+
 	sta <PAL_UPDATE
 	rts
 
@@ -471,16 +611,11 @@ _oam_spr:
 
 _oam_meta_spr:
 
-	; The last 2 bytes of params get stored in A and X
+	sta <PTR
+	stx <PTR+1
 
-	; PTR is a 2 byte WORD stored in TEMP array (see crt0.s)
-
-	sta <PTR  		;store a in the lower byte of PTR
-	stx <PTR+1 		;store x in the lower byte of PTR+1. Is this the same as "stx >PTR"?
-
-	ldy #1			;2 popa calls replacement, performed in reversed order
-					;store the number 1 in Y
-	lda (sp),y		;??
+	ldy #1		;2 popa calls replacement, performed in reversed order
+	lda (sp),y
 	dey
 	sta <SCRX
 	lda (sp),y
@@ -527,69 +662,6 @@ _oam_meta_spr:
 	stx SPRID
 	rts
 
-
-;void __fastcall__ oam_meta_spr_offset(unsigned char x, unsigned char y, unsigned char offset, unsigned char pal_override, const unsigned char *data);
-_oam_meta_spr_offset:
-    sta <PTR
-    stx <PTR+1
-
-    ldy #3        	;3 popa calls replacement, performed in reversed order
-    lda (sp),y		; Back to original code...
-    dey
-    sta <SCRX
-    lda (sp),y
-	dey
-    sta <SCRY
-    lda (sp),y		; load the offset into A
-	dey
-    sta OFFSET		; store A (the offset) at address OFFSET.
-	lda (sp),y		; load the offset into A
-   	sta PAL_OVERRIDE ; store A (the pal override) at address PAL_OVERRIDE.
-    
-    ldx SPRID
-
-@1:
-
-    lda (PTR),y        ;x offset
-    cmp #$80
-    beq @2
-    iny
-    clc
-    adc <SCRX
-    sta OAM_BUF+3,x
-    lda (PTR),y        ;y offset
-    iny
-    clc
-    adc <SCRY
-    sta OAM_BUF+0,x
-    lda (PTR),y        ;tile
-    clc
-    adc OFFSET			; increment the tile id by the offset amount.
-    iny
-    sta OAM_BUF+1,x
-    lda (PTR),y        	;attribute
-	and #$e0			; a & 0x11100000 ; V,H,B,unused x 3,pal[2]
-	ora PAL_OVERRIDE	; a | PAL_OVERRIDE
-    iny
-    sta OAM_BUF+2,x
-    inx
-    inx
-    inx
-    inx
-    jmp @1
-
-@2:
-
-    lda <sp
-    adc #3 ;3            ;carry is always set here
-    sta <sp
-    bcc @3
-    inc <sp+1
-
-@3:
-
-    stx SPRID
-    rts
 
 
 ;void __fastcall__ oam_hide_rest(void);
@@ -904,57 +976,20 @@ _vram_write:
 
 
 ;void __fastcall__ music_play(unsigned char song);
-;a = song #
 
-_music_play:
-	tax
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
-	txa ;song number
-	jsr FamiToneMusicPlay
-	
-	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
-	;rts
+_music_play=FamiToneMusicPlay
+
 
 
 ;void __fastcall__ music_stop(void);
 
-_music_stop:
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
-	jsr FamiToneMusicStop
-	
-	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
-	;rts
+_music_stop=FamiToneMusicStop
 
 
 
 ;void __fastcall__ music_pause(unsigned char pause);
-;a = pause or not
 
-_music_pause:
-	tax
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
-	txa ;song number
-	jsr FamiToneMusicPause
-	
-	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
-	;rts
-
-	
+_music_pause=FamiToneMusicPause
 
 
 
@@ -963,25 +998,13 @@ _music_pause:
 _sfx_play:
 
 .if(FT_SFX_ENABLE)
-; a = channel
+
 	and #$03
 	tax
 	lda @sfxPriority,x
 	tax
-	
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
-	
-	jsr popa ;a = sound
-	;x = channel offset
-	jsr FamiToneSfxPlay
-	
-	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
-	;rts
+	jsr popa
+	jmp FamiToneSfxPlay
 
 @sfxPriority:
 
@@ -993,23 +1016,9 @@ _sfx_play:
 
 
 ;void __fastcall__ sample_play(unsigned char sample);
-;a = sample #
 
 .if(FT_DPCM_ENABLE)
-_sample_play:
-	tax
-	lda BP_BANK ;save current prg bank
-	pha
-	lda #SOUND_BANK
-	jsr _set_prg_bank
-	txa ;sample number
-	jsr FamiToneSamplePlay
-	
-	pla
-	sta BP_BANK ;restore prg bank
-	jmp _set_prg_bank
-	;rts
-
+_sample_play=FamiToneSamplePlay
 .else
 _sample_play:
 	rts
@@ -1035,16 +1044,10 @@ _pad_poll:
 
 @padPollLoop:
 
-	; lda CTRL_PORT1,y
-	; lsr a
-	; rol <PAD_BUF-1,x
-	; bcc @padPollLoop
-
-	LDA CTRL_PORT1,y
-	AND #%00000011
-	CMP #$01
-	ROL <PAD_BUF-1,x
-	BCC @padPollLoop
+	lda CTRL_PORT1,y
+	lsr a
+	rol <PAD_BUF-1,x
+	bcc @padPollLoop
 
 	dex
 	bne @padPollPort
@@ -1446,6 +1449,235 @@ palBrightTableH:
 	.byte >palBrightTable3,>palBrightTable4,>palBrightTable5
 	.byte >palBrightTable6,>palBrightTable7,>palBrightTable8
 
+.if(VS_SYS_ENABLED)	
+palBrightTableL_RP2C04_0002:
+
+	.byte <palBrightTable0_RP2C04_0002,<palBrightTable1_RP2C04_0002,<palBrightTable2_RP2C04_0002
+	.byte <palBrightTable3_RP2C04_0002,<palBrightTable4_RP2C04_0002,<palBrightTable5_RP2C04_0002
+	.byte <palBrightTable6_RP2C04_0002,<palBrightTable7_RP2C04_0002,<palBrightTable8_RP2C04_0002
+
+palBrightTableH_RP2C04_0002:
+
+	.byte >palBrightTable0_RP2C04_0002,>palBrightTable1_RP2C04_0002,>palBrightTable2_RP2C04_0002
+	.byte >palBrightTable3_RP2C04_0002,>palBrightTable4_RP2C04_0002,>palBrightTable5_RP2C04_0002
+	.byte >palBrightTable6_RP2C04_0002,>palBrightTable7_RP2C04_0002,>palBrightTable8_RP2C04_0002
+
+palBrightTableL_RP2C04_0003:
+
+	.byte <palBrightTable0_RP2C04_0003,<palBrightTable1_RP2C04_0003,<palBrightTable2_RP2C04_0003
+	.byte <palBrightTable3_RP2C04_0003,<palBrightTable4_RP2C04_0003,<palBrightTable5_RP2C04_0003
+	.byte <palBrightTable6_RP2C04_0003,<palBrightTable7_RP2C04_0003,<palBrightTable8_RP2C04_0003
+
+palBrightTableH_RP2C04_0003:
+
+	.byte >palBrightTable0_RP2C04_0003,>palBrightTable1_RP2C04_0003,>palBrightTable2_RP2C04_0003
+	.byte >palBrightTable3_RP2C04_0003,>palBrightTable4_RP2C04_0003,>palBrightTable5_RP2C04_0003
+	.byte >palBrightTable6_RP2C04_0003,>palBrightTable7_RP2C04_0003,>palBrightTable8_RP2C04_0003
+
+palBrightTableL_RP2C04_0004:
+
+	.byte <palBrightTable0_RP2C04_0004,<palBrightTable1_RP2C04_0004,<palBrightTable2_RP2C04_0004
+	.byte <palBrightTable3_RP2C04_0004,<palBrightTable4_RP2C04_0004,<palBrightTable5_RP2C04_0004
+	.byte <palBrightTable6_RP2C04_0004,<palBrightTable7_RP2C04_0004,<palBrightTable8_RP2C04_0004
+
+palBrightTableH_RP2C04_0004:
+
+	.byte >palBrightTable0_RP2C04_0004,>palBrightTable1_RP2C04_0004,>palBrightTable2_RP2C04_0004
+	.byte >palBrightTable3_RP2C04_0004,>palBrightTable4_RP2C04_0004,>palBrightTable5_RP2C04_0004
+	.byte >palBrightTable6_RP2C04_0004,>palBrightTable7_RP2C04_0004,>palBrightTable8_RP2C04_0004
+
+palBrightTableL_2C03:
+
+	.byte <palBrightTable0_2C03,<palBrightTable1_2C03,<palBrightTable2_2C03
+	.byte <palBrightTable3_2C03,<palBrightTable4_2C03,<palBrightTable5_2C03
+	.byte <palBrightTable6_2C03,<palBrightTable7_2C03,<palBrightTable8_2C03
+
+palBrightTableH_2C03:
+
+	.byte >palBrightTable0_2C03,>palBrightTable1_2C03,>palBrightTable2_2C03
+	.byte >palBrightTable3_2C03,>palBrightTable4_2C03,>palBrightTable5_2C03
+	.byte >palBrightTable6_2C03,>palBrightTable7_2C03,>palBrightTable8_2C03
+
+palBrightTableL_2C02:
+
+	.byte <palBrightTable0_2C02,<palBrightTable1_2C02,<palBrightTable2_2C02
+	.byte <palBrightTable3_2C02,<palBrightTable4_2C02,<palBrightTable5_2C02
+	.byte <palBrightTable6_2C02,<palBrightTable7_2C02,<palBrightTable8_2C02
+
+palBrightTableH_2C02:
+
+	.byte >palBrightTable0_2C02,>palBrightTable1_2C02,>palBrightTable2_2C02
+	.byte >palBrightTable3_2C02,>palBrightTable4_2C02,>palBrightTable5_2C02
+	.byte >palBrightTable6_2C02,>palBrightTable7_2C02,>palBrightTable8_2C02
+.endif ;.if(VS_SYS_ENABLED)	
+
+
+.if(VS_SYS_ENABLED)
+; Treat RP2C04_0001 as the default, for easier code compatitbility with NES.
+palBrightTable0:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	;black
+palBrightTable1:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+palBrightTable2:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+palBrightTable3:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+
+; Remapping (rgb: 772) to [54] (rgb: 770).
+palBrightTable4:
+        .byte $9,$1f,$2d,$35,$c,$b,$2b,$29,$e,$5,$33,$3a,$25,$1a,$1a,$1a
+palBrightTable5:
+        .byte $32,$39,$17,$2c,$27,$7,$2,$37,$3e,$31,$3a,$26,$4,$1a,$1a,$1a
+palBrightTable6:
+        .byte $8,$10,$3,$1,$1e,$3d,$2e,$a,$d,$13,$23,$19,$24,$1d,$1a,$1a
+palBrightTable7:
+        .byte $8,$21,$15,$22,$2a,$0,$16,$36,$3c,$34,$3f,$19,$14,$1c,$1a,$1a
+
+palBrightTable8:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f	;white
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+palBrightTable0_RP2C04_0002:
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00	;black
+palBrightTable1_RP2C04_0002:
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+palBrightTable2_RP2C04_0002:
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+palBrightTable3_RP2C04_0002:
+	.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+
+; Remapping (rgb: 772) to [59] (rgb: 770).
+palBrightTable4_RP2C04_0002:
+        .byte $2a,$35,$27,$1f,$20,$3d,$12,$3a,$1d,$2b,$3e,$f,$34,$0,$0,$0
+palBrightTable5_RP2C04_0002:
+        .byte $26,$24,$2c,$9,$28,$36,$8,$33,$2,$37,$f,$14,$6,$0,$0,$0
+palBrightTable6_RP2C04_0002:
+        .byte $c,$11,$17,$d,$19,$5,$22,$1,$2e,$15,$32,$1b,$39,$3f,$0,$0
+palBrightTable7_RP2C04_0002:
+        .byte $c,$7,$1c,$23,$b,$3c,$21,$3b,$a,$3,$4,$1b,$e,$13,$0,$0
+
+palBrightTable8_RP2C04_0002:
+	.byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c	;white
+	.byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c
+	.byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c
+	.byte $0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c,$0c
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+palBrightTable0_RP2C04_0003:
+	.byte $09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09	;black
+palBrightTable1_RP2C04_0003:
+	.byte $09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
+palBrightTable2_RP2C04_0003:
+	.byte $09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
+palBrightTable3_RP2C04_0003:
+	.byte $09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09,$09
+
+; Remapping (rgb: 772) to [35] (rgb: 770).
+palBrightTable4_RP2C04_0003:
+        .byte $18,$8,$1b,$19,$29,$12,$1d,$34,$b,$7,$38,$4,$3f,$9,$9,$9
+palBrightTable5_RP2C04_0003:
+        .byte $3,$2c,$13,$3c,$0,$c,$1c,$16,$15,$14,$4,$17,$11,$9,$9,$9
+palBrightTable6_RP2C04_0003:
+        .byte $5,$2a,$10,$20,$2b,$1,$26,$25,$36,$28,$35,$3d,$30,$2d,$9,$9
+palBrightTable7_RP2C04_0003:
+        .byte $5,$6,$3a,$33,$1e,$1f,$a,$23,$3b,$32,$2,$3d,$f,$d,$9,$9
+
+palBrightTable8_RP2C04_0003:
+	.byte $05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05	;white
+	.byte $05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05
+	.byte $05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05
+	.byte $05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05	
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+palBrightTable0_RP2C04_0004:
+	.byte $04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04	;black
+palBrightTable1_RP2C04_0004:
+	.byte $04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04
+palBrightTable2_RP2C04_0004:
+	.byte $04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04
+palBrightTable3_RP2C04_0004:
+	.byte $04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04
+
+; Remapping (rgb: 772) to [13] (rgb: 770).
+palBrightTable4_RP2C04_0004:
+        .byte $26,$6,$23,$1,$1c,$20,$16,$22,$32,$3f,$21,$e,$28,$4,$4,$4
+palBrightTable5_RP2C04_0004:
+        .byte $8,$2a,$12,$24,$25,$27,$33,$7,$0,$1b,$e,$19,$2,$4,$4,$4
+palBrightTable6_RP2C04_0004:
+        .byte $31,$1f,$1a,$3a,$2f,$10,$17,$39,$3,$3c,$a,$35,$3e,$2e,$4,$4
+palBrightTable7_RP2C04_0004:
+        .byte $31,$3b,$3d,$30,$13,$5,$c,$d,$2d,$f,$1e,$35,$37,$29,$4,$4
+
+palBrightTable8_RP2C04_0004:
+	.byte $31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31	;white
+	.byte $31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31
+	.byte $31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31
+	.byte $31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31,$31	
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;NOTE: 	This is basically indenticle to the NES except that 2d and 3d are black on this PPU (instead of grey).
+;		You will find that some of the mappings are different too, but that is arbitrary. The alorithm to generate
+;		this data just happen to choose (for instance) a different identicle white.
+palBrightTable0_2C03:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f	;black
+palBrightTable1_2C03:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+palBrightTable2_2C03:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+palBrightTable3_2C03:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+
+; Remapping (rgb: 444) to [0] (rgb: 333).
+; Remapping (rgb: 666) to [49] (rgb: 567).
+palBrightTable4_2C03:
+        .byte $0,$1,$2,$3,$4,$5,$6,$7,$8,$9,$a,$b,$c,$d,$d,$d
+palBrightTable5_2C03:
+        .byte $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$b,$1b,$1c,$d,$d,$d
+palBrightTable6_2C03:
+        .byte $20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$2a,$2b,$2c,$0,$d,$d
+palBrightTable7_2C03:
+        .byte $20,$31,$32,$33,$34,$35,$36,$37,$38,$39,$3a,$2b,$3c,$31,$d,$d
+
+palBrightTable8_2C03:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	;white
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; 1:1 NES PPU.
+palBrightTable0_2C02:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f	;black
+palBrightTable1_2C02:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+palBrightTable2_2C02:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+palBrightTable3_2C02:
+	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f
+palBrightTable4_2C02:
+	.byte $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0a,$0b,$0c,$0f,$0f,$0f	;normal colors
+palBrightTable5_2C02:
+	.byte $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1a,$1b,$1c,$00,$00,$00
+palBrightTable6_2C02:
+	.byte $10,$21,$22,$23,$24,$25,$26,$27,$28,$29,$2a,$2b,$2c,$10,$10,$10	;$10 because $20 is the same as $30
+palBrightTable7_2C02:
+	.byte $30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$3a,$3b,$3c,$20,$20,$20
+palBrightTable8_2C02:
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	;white
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
+	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	
+	
+.else
 palBrightTable0:
 	.byte $0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f,$0f	;black
 palBrightTable1:
@@ -1459,14 +1691,14 @@ palBrightTable4:
 palBrightTable5:
 	.byte $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1a,$1b,$1c,$00,$00,$00
 palBrightTable6:
-	.byte $20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$2a,$2b,$2c,$2d,$10,$10	;$10 because $20 is the same as $30
+	.byte $10,$21,$22,$23,$24,$25,$26,$27,$28,$29,$2a,$2b,$2c,$10,$10,$10	;$10 because $20 is the same as $30
 palBrightTable7:
-	.byte $30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$3a,$3b,$3c,$3d,$20,$20
+	.byte $30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$3a,$3b,$3c,$20,$20,$20
 palBrightTable8:
 	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30	;white
 	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
 	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
 	.byte $30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30,$30
-
+.endif ;VS_SYS_ENABLED
 ;;	.include "famitone2.s"
 ; included in crt0.s
