@@ -285,7 +285,11 @@ void __fastcall__ delay(unsigned char frames);
 #define PAD_DOWN		0x04
 #define PAD_LEFT		0x02
 #define PAD_RIGHT		0x01
+#if VS_SYS_ENABLED
+#define PAD_ANY_CONFIRM_BUTTON  (PAD_A | PAD_START | PAD_SELECT) // select is used for the numbered buttons #2 and #4
+#else
 #define PAD_ANY_CONFIRM_BUTTON  (PAD_A | PAD_START)
+#endif // VS_SYS_ENABLED
 #define PAD_ANY_BUTTON  (PAD_A | PAD_B | PAD_START | PAD_SELECT)
 
 #define OAM_FLIP_V		0x80
